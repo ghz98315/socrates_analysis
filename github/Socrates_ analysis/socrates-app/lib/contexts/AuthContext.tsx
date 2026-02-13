@@ -11,7 +11,7 @@ import type { User } from '@supabase/supabase-js';
 interface UserProfile {
   id: string;
   email?: string;
-  role: 'admin' | 'student';
+  role: 'admin' | 'student' | 'parent';
   theme_preference?: 'junior' | 'senior';
   grade_level?: number;
   display_name?: string;
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
 
   // Fetch user profile from database
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string): Promise<UserProfile | null> => {
     // 防止重复请求
     if (fetchingRef.current === userId) {
       console.log('Already fetching profile for user:', userId);
@@ -60,8 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single()
-        .maybeSingle(); // 修复 406 错误：使用 maybeSingle 允许返回 null
+        .maybeSingle(); // 允许返回 null
 
       if (error) {
         console.error('Error fetching profile:', JSON.stringify(error, null, 2));
@@ -69,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       console.log('Profile fetched:', data);
-      return data as UserProfile;
+      return (data as UserProfile | null);
     } catch (error: any) {
       console.error('Exception fetching profile:', error?.message || error);
       return null;
@@ -81,14 +80,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check active session and set up auth listener
     const getSession = async () => {
+      console.log('[AuthContext] Getting initial session');
       const { data: { session }, error } = await supabase.auth.getSession();
 
       if (error) {
-        console.error('Error getting session:', error);
+        console.error('[AuthContext] Error getting session:', error);
         setLoading(false);
         return;
       }
 
+      console.log('[AuthContext] Initial session:', !!session?.user);
       if (session?.user) {
         setUser(session.user);
         const userProfile = await fetchProfile(session.user.id);
@@ -103,6 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('[AuthContext] onAuthStateChange:', event, !!session?.user);
         if (session?.user) {
           setUser(session.user);
           const userProfile = await fetchProfile(session.user.id);
@@ -141,6 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, name?: string) => {
+    console.log('[AuthContext] signUp started');
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -152,12 +155,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
     });
 
+    console.log('[AuthContext] signUp response:', { hasUser: !!data.user, hasSession: !!data.session, error });
+
     if (error) {
+      console.error('[AuthContext] signUp error:', error);
       setLoading(false);
       throw error;
     }
 
+    // 检查是否有 session（如果没有 session，说明需要邮箱确认）
+    if (!data.session) {
+      console.error('[AuthContext] No session after signUp');
+      setLoading(false);
+      throw new Error('注册成功，但需要邮箱确认。请检查您的邮箱。');
+    }
+
     if (data.user) {
+      console.log('[AuthContext] Setting user:', data.user.id);
       setUser(data.user);
 
       // 等待触发器创建 profile，然后获取
@@ -165,31 +179,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       let userProfile = null;
       for (let i = 0; i < 5; i++) {
         await new Promise(resolve => setTimeout(resolve, 500));
+        console.log(`[AuthContext] Fetching profile attempt ${i + 1}/5`);
         userProfile = await fetchProfile(data.user.id);
-        if (userProfile) break;
+        if (userProfile) {
+          console.log('[AuthContext] Profile fetched successfully');
+          break;
+        }
       }
 
       // 如果触发器未创建 profile，手动创建
       if (!userProfile) {
+        console.log('[AuthContext] Profile not found after retries, creating manually');
         const { error: insertError } = await supabase
           .from('profiles')
           .insert({
             id: data.user.id,
             role: 'student',
             display_name: name || email.split('@')[0],
-          })
+          } as any)
           .select()
-          .single();
+          .maybeSingle();
 
         if (insertError) {
-          console.error('Error creating profile:', insertError);
+          console.error('[AuthContext] Error creating profile:', insertError);
         } else {
+          console.log('[AuthContext] Profile created, fetching again');
           userProfile = await fetchProfile(data.user.id);
         }
       }
 
+      console.log('[AuthContext] Setting profile:', userProfile);
       setProfile(userProfile);
     }
+
+    console.log('[AuthContext] signUp completed, setting loading to false');
     setLoading(false);
   };
 
@@ -221,7 +244,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // 使用 update() 方法直接更新
       const { data, error } = await supabase
         .from('profiles')
-        .update(updates)
+        .update(updates as any)
         .eq('id', user.id)
         .select()
         .single();

@@ -1,26 +1,15 @@
 // =====================================================
-// Project Socrates - Study Session API (Mock)
+// Project Socrates - Study Session API
 // =====================================================
 
 import { NextResponse, type NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
-// 内存存储模拟数据库
-interface StudySession {
-  id: string;
-  student_id: string;
-  session_type: 'error_analysis' | 'review';
-  start_time: string;
-  end_time: string | null;
-  last_heartbeat: string;
-  duration_seconds: number | null;
-}
-
-const sessionsStore = new Map<string, StudySession>();
-
-// 生成唯一ID
-function generateId(): string {
-  return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
+// 创建 Supabase 服务端客户端
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 // POST endpoint - 管理学习会话 (开始/结束/心跳)
 export async function POST(req: NextRequest) {
@@ -37,20 +26,24 @@ export async function POST(req: NextRequest) {
     switch (action) {
       case 'start': {
         // 开始新的学习会话
-        const newSession: StudySession = {
-          id: generateId(),
-          student_id,
-          session_type: session_type || 'error_analysis',
-          start_time: now,
-          end_time: null,
-          last_heartbeat: now,
-          duration_seconds: null,
-        };
+        const { data, error } = await supabase
+          .from('study_sessions')
+          .insert({
+            student_id,
+            session_type: session_type || 'error_analysis',
+            start_time: now,
+            last_heartbeat: now,
+          })
+          .select()
+          .single();
 
-        sessionsStore.set(newSession.id, newSession);
+        if (error) {
+          console.error('Error starting study session:', error);
+          return NextResponse.json({ error: 'Failed to start session' }, { status: 500 });
+        }
 
         return NextResponse.json({
-          data: { session_id: newSession.id },
+          data: { session_id: data.id },
           message: 'Study session started',
         });
       }
@@ -61,7 +54,13 @@ export async function POST(req: NextRequest) {
 
         // 如果提供了session_id，直接结束该会话
         if (session_id) {
-          const session = sessionsStore.get(session_id);
+          // 先获取会话开始时间计算时长
+          const { data: session } = await supabase
+            .from('study_sessions')
+            .select('start_time')
+            .eq('id', session_id)
+            .single();
+
           if (!session) {
             return NextResponse.json({ error: 'Session not found' }, { status: 404 });
           }
@@ -70,24 +69,35 @@ export async function POST(req: NextRequest) {
             (new Date(end_time).getTime() - new Date(session.start_time).getTime()) / 1000
           );
 
-          session.end_time = end_time;
-          session.duration_seconds = duration;
-          sessionsStore.set(session_id, session);
+          const { error } = await supabase
+            .from('study_sessions')
+            .update({
+              end_time: end_time,
+              duration_seconds: duration,
+            })
+            .eq('id', session_id);
+
+          if (error) {
+            console.error('Error ending study session:', error);
+            return NextResponse.json({ error: 'Failed to end session' }, { status: 500 });
+          }
 
           return NextResponse.json({
-            data: { session_id: session.id, duration_seconds: duration },
+            data: { session_id, duration_seconds: duration },
             message: 'Study session ended',
           });
         }
 
         // 否则查找该学生的活跃会话
-        let activeSession: StudySession | null = null;
-        for (const session of sessionsStore.values()) {
-          if (session.student_id === student_id && !session.end_time) {
-            activeSession = session;
-            break;
-          }
-        }
+        const { data: activeSessions } = await supabase
+          .from('study_sessions')
+          .select('*')
+          .eq('student_id', student_id)
+          .is('end_time', null)
+          .order('start_time', { ascending: false })
+          .limit(1);
+
+        const activeSession = activeSessions?.[0];
 
         if (!activeSession) {
           return NextResponse.json({ error: 'No active session found' }, { status: 404 });
@@ -97,9 +107,18 @@ export async function POST(req: NextRequest) {
           (new Date(end_time).getTime() - new Date(activeSession.start_time).getTime()) / 1000
         );
 
-        activeSession.end_time = end_time;
-        activeSession.duration_seconds = duration;
-        sessionsStore.set(activeSession.id, activeSession);
+        const { error } = await supabase
+          .from('study_sessions')
+          .update({
+            end_time: end_time,
+            duration_seconds: duration,
+          })
+          .eq('id', activeSession.id);
+
+        if (error) {
+          console.error('Error ending study session:', error);
+          return NextResponse.json({ error: 'Failed to end session' }, { status: 500 });
+        }
 
         return NextResponse.json({
           data: { session_id: activeSession.id, duration_seconds: duration },
@@ -113,16 +132,18 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ error: 'session_id is required for heartbeat' }, { status: 400 });
         }
 
-        const session = sessionsStore.get(session_id);
-        if (!session) {
-          return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+        const { error } = await supabase
+          .from('study_sessions')
+          .update({ last_heartbeat: now })
+          .eq('id', session_id);
+
+        if (error) {
+          console.error('Error updating heartbeat:', error);
+          return NextResponse.json({ error: 'Failed to update heartbeat' }, { status: 500 });
         }
 
-        session.last_heartbeat = now;
-        sessionsStore.set(session_id, session);
-
         return NextResponse.json({
-          data: { session_id: session.id },
+          data: { session_id },
           message: 'Heartbeat recorded',
         });
       }
@@ -148,41 +169,40 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'student_id is required' }, { status: 400 });
     }
 
-    // 获取该学生的所有会话
-    const studentSessions: StudySession[] = [];
-    for (const session of sessionsStore.values()) {
-      if (session.student_id === student_id) {
-        // 日期过滤
-        const sessionDate = new Date(session.start_time);
-        let include = true;
+    // 构建查询
+    let query = supabase
+      .from('study_sessions')
+      .select('*')
+      .eq('student_id', student_id);
 
-        if (start_date) {
-          include = include && sessionDate >= new Date(start_date);
-        }
-        if (end_date) {
-          include = include && sessionDate <= new Date(end_date);
-        }
+    if (start_date) {
+      query = query.gte('start_time', start_date);
+    }
+    if (end_date) {
+      query = query.lte('start_time', end_date);
+    }
 
-        if (include) {
-          studentSessions.push(session);
-        }
-      }
+    const { data: sessions, error } = await query;
+
+    if (error) {
+      console.error('Error fetching study sessions:', error);
+      return NextResponse.json({ error: 'Failed to fetch sessions' }, { status: 500 });
     }
 
     // Helper function to check if a session is from today
-    const isToday = (session: StudySession): boolean => {
-      const sessionDate = new Date(session.start_time);
+    const isToday = (startTime: string): boolean => {
+      const sessionDate = new Date(startTime);
       const today = new Date();
       return sessionDate.toDateString() === today.toDateString();
     };
 
     // 计算统计
-    const totalSessions = studentSessions.length;
-    const totalDurationSeconds = studentSessions.reduce(
+    const totalSessions = sessions?.length || 0;
+    const totalDurationSeconds = sessions?.reduce(
       (sum, s) => sum + (s.duration_seconds || 0),
       0
-    );
-    const todaySessionsList = studentSessions.filter(isToday);
+    ) || 0;
+    const todaySessionsList = sessions?.filter(s => isToday(s.start_time)) || [];
     const todayDurationSeconds = todaySessionsList.reduce(
       (sum, s) => sum + (s.duration_seconds || 0),
       0

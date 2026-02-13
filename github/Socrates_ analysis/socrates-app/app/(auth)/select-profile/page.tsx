@@ -19,7 +19,7 @@ interface ProfileOption {
   icon: React.ReactNode;
   theme: ThemeType;
   gradeLevel?: [number, number];
-  role: 'student' | 'admin';
+  role: 'student' | 'parent';
 }
 
 const profileOptions: ProfileOption[] = [
@@ -47,7 +47,7 @@ const profileOptions: ProfileOption[] = [
     subtitle: 'Dashboard',
     icon: <ChartBar className="w-12 h-12" />,
     theme: 'senior',
-    role: 'admin',
+    role: 'parent',
   },
 ];
 
@@ -66,7 +66,7 @@ export default function SelectProfilePage() {
 
       // 修改：不再自动跳转，始终显示角色选择界面让用户可以重新选择
       // if (hasSelectedRole) {
-      //   if (profile.role === 'admin') {
+      //   if (profile.role === 'parent') {
       //     router.push('/dashboard');
       //   } else {
       //     router.push('/workbench');
@@ -101,10 +101,10 @@ export default function SelectProfilePage() {
         display_name: profile?.display_name || user.user_metadata?.display_name || user.email?.split('@')[0],
       });
 
-      console.log('Profile updated, navigating to:', option.role === 'admin' ? '/dashboard' : '/workbench');
+      console.log('Profile updated, navigating to:', option.role === 'parent' ? '/dashboard' : '/workbench');
 
       // 直接跳转，不需要 setTimeout
-      if (option.role === 'admin') {
+      if (option.role === 'parent') {
         router.push('/dashboard');
       } else {
         router.push('/workbench');

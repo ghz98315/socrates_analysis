@@ -50,7 +50,7 @@ export async function updateProfile(data: Partial<UserProfile>) {
 
   const { data: profile, error } = await supabase
     .from('profiles')
-    .update(data)
+    .update(data as any)
     .eq('id', user.id)
     .select()
     .single();
@@ -74,7 +74,7 @@ export async function getCurrentUser() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   return {
     ...user,

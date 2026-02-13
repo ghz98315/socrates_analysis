@@ -69,6 +69,8 @@ export default function DashboardPage() {
   const router = useRouter();
 
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
+  const [selectedStudentName, setSelectedStudentName] = useState<string>('');
+  const [students, setStudents] = useState<Array<{ id: string; display_name: string; grade_level: number }>>([]);
   const [stats, setStats] = useState<StudentStats | null>(null);
   const [heatmapData, setHeatmapData] = useState<{ date: string; count: number }[]>([]);
   const [weakPoints, setWeakPoints] = useState<{ tag: string; count: number; trend?: 'up' | 'down' | 'stable' }[]>([]);
@@ -80,47 +82,69 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
+  // 加载学生列表
+  useEffect(() => {
+    const loadStudents = async () => {
+      try {
+        const response = await fetch('/api/students');
+        if (!response.ok) {
+          console.error('Failed to load students');
+          return;
+        }
+        const result = await response.json();
+        setStudents(result.data || []);
+      } catch (error) {
+        console.error('Error loading students:', error);
+      }
+    };
+    loadStudents();
+  }, []);
+
   // 加载仪表板数据
   useEffect(() => {
     const loadDashboardData = async () => {
-      // TODO: 从 Supabase 加载真实数据
-      // 暂时使用模拟数据
-      setStats({
-        student_id: 'mock',
-        total_errors: 12,
-        mastered_count: 8,
-        mastery_rate: 66.7,
-      });
-
-      // 生成热力图数据（最近30天）
-      const today = new Date();
-      const heatmap: { date: string; count: number }[] = [];
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        heatmap.push({
-          date: `${date.getMonth() + 1}/${date.getDate()}`,
-          count: Math.floor(Math.random() * 8), // 模拟 0-8 题每天
-        });
+      if (!selectedStudent) {
+        setLoading(false);
+        return;
       }
-      setHeatmapData(heatmap.reverse());
 
-      // 生成薄弱知识点数据
-      setWeakPoints([
-        { tag: '勾股定理', count: 12, trend: 'up' },
-        { tag: '方程求解', count: 8, trend: 'down' },
-        { tag: '力的计算', count: 5, trend: 'stable' },
-        { tag: '化学方程式', count: 4, trend: 'up' },
-        { tag: '函数图像', count: 3, trend: 'down' },
-        { tag: '单位换算', count: 2, trend: 'stable' },
-      ]);
+      try {
+        // 从 API 获取真实数据
+        const response = await fetch(`/api/student/stats?student_id=${selectedStudent}&days=30`);
 
-      // 加载学习时长统计
-      await loadStudyTimeStats();
+        if (!response.ok) {
+          console.error('Failed to load student stats');
+          setLoading(false);
+          return;
+        }
+
+        const result = await response.json();
+        const data = result.data;
+
+        // 更新统计数据
+        setStats({
+          student_id: selectedStudent,
+          total_errors: data.total_errors,
+          mastered_count: data.mastered_count,
+          mastery_rate: data.mastery_rate,
+        });
+
+        // 更新热力图数据
+        setHeatmapData(data.heatmap_data);
+
+        // 更新薄弱知识点
+        setWeakPoints(data.weak_points);
+
+        // 加载学习时长统计
+        await loadStudyTimeStats();
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      }
+
+      setLoading(false);
     };
 
     loadDashboardData();
-    setLoading(false);
   }, [selectedStudent]);
 
   // 加载学习时长统计
@@ -195,12 +219,15 @@ export default function DashboardPage() {
             {/* Student Header */}
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold text-card-foreground">
-                {selectedStudent} 的学习报告
+                {selectedStudentName || selectedStudent} 的学习报告
               </h2>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setSelectedStudent(null)}
+                onClick={() => {
+                  setSelectedStudent(null);
+                  setSelectedStudentName('');
+                }}
               >
                 切换学生
               </Button>
@@ -282,20 +309,23 @@ export default function DashboardPage() {
                 请选择要查看详细数据的学生
               </p>
 
-              {/* TODO: 从数据库加载真实学生列表 */}
+              {/* 从数据库加载真实学生列表 */}
               <div className="grid grid-cols-2 gap-4">
-                {['小明', '小红'].map(student => (
+                {students.map(student => (
                   <Button
-                    key={student}
+                    key={student.id}
                     variant="outline"
-                    onClick={() => setSelectedStudent(student)}
+                    onClick={() => {
+                      setSelectedStudent(student.id);
+                      setSelectedStudentName(student.display_name);
+                    }}
                     className="h-24 flex flex-col gap-2 btn-press"
                   >
                     <span className="text-xl font-medium">
-                      {student}
+                      {student.display_name}
                     </span>
                     <span className="text-sm text-muted-foreground">
-                      {student === '小明' ? '小学' : '初中'}
+                      {student.grade_level}年级
                     </span>
                   </Button>
                 ))}
