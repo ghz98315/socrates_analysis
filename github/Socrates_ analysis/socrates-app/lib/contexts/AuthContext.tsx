@@ -4,7 +4,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
@@ -38,42 +38,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 防止重复请求
-  const fetchingRef = useRef<string | null>(null);
-  const updatingRef = useRef<boolean>(false);
-
   const supabase = createClient();
 
   // Fetch user profile from database
   const fetchProfile = async (userId: string): Promise<UserProfile | null> => {
-    // 防止重复请求
-    if (fetchingRef.current === userId) {
-      console.log('Already fetching profile for user:', userId);
-      return null;
-    }
-
-    fetchingRef.current = userId;
-
     try {
-      console.log('Fetching profile for user:', userId);
-      const { data, error } = await supabase
+      console.log('[AuthContext] Fetching profile for user:', userId);
+
+      // 使用 Promise.race 添加超时机制
+      const queryPromise = supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .maybeSingle(); // 允许返回 null
+        .maybeSingle();
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Query timeout after 5s')), 5000)
+      );
+
+      const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
 
       if (error) {
-        console.error('Error fetching profile:', JSON.stringify(error, null, 2));
+        console.error('[AuthContext] Error fetching profile:', JSON.stringify(error, null, 2));
         return null;
       }
 
-      console.log('Profile fetched:', data);
+      console.log('[AuthContext] Profile fetched:', data);
       return (data as UserProfile | null);
     } catch (error: any) {
-      console.error('Exception fetching profile:', error?.message || error);
+      if (error?.message === 'Query timeout after 5s') {
+        console.error('[AuthContext] Profile fetch timeout - returning null');
+        return null;
+      }
+      console.error('[AuthContext] Exception fetching profile:', error?.message || error);
       return null;
-    } finally {
-      fetchingRef.current = null;
     }
   };
 
@@ -230,14 +228,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error('Not authenticated');
     }
 
-    // 防止重复更新
-    if (updatingRef.current) {
-      console.log('Update already in progress');
-      return;
-    }
-
-    updatingRef.current = true;
-
     console.log('updateProfile called with:', updates);
 
     try {
@@ -261,8 +251,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err: any) {
       console.error('Exception in updateProfile:', err);
       throw err;
-    } finally {
-      updatingRef.current = false;
     }
   };
 
