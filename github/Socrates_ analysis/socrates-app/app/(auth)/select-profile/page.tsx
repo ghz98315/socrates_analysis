@@ -89,6 +89,12 @@ export default function SelectProfilePage() {
       return;
     }
 
+    // 防止重复点击
+    if (selecting) {
+      console.log('Already selecting, ignoring click');
+      return;
+    }
+
     setSelecting(option.id);
 
     try {
@@ -103,16 +109,12 @@ export default function SelectProfilePage() {
 
       console.log('Profile updated, navigating to:', option.role === 'parent' ? '/dashboard' : '/workbench');
 
-      // 直接跳转，不需要 setTimeout
-      if (option.role === 'parent') {
-        router.push('/dashboard');
-      } else {
-        router.push('/workbench');
-      }
+      // 使用 replace 而不是 push，避免返回时重新触发
+      const targetUrl = option.role === 'parent' ? '/dashboard' : '/workbench';
+      window.location.href = targetUrl;
     } catch (error: any) {
       console.error('Failed to update profile:', error);
       alert(`设置角色失败: ${error?.message || JSON.stringify(error)}`);
-    } finally {
       setSelecting(null);
     }
   };
