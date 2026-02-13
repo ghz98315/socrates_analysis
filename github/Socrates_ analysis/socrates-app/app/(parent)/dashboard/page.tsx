@@ -6,14 +6,15 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import { LogOut, Calendar, Users, TrendingUp, CheckCircle, Loader2 } from 'lucide-react';
+import { LogOut, Calendar, Users, TrendingUp, CheckCircle, Loader2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import type { StudentStats } from '@/lib/supabase/types';
 import { LearningHeatmap } from '@/components/LearningHeatmap';
 import { WeakKnowledgePoints } from '@/components/WeakKnowledgePoints';
 import { TodayStats, WeeklyStats } from '@/components/StudyTimeCards';
+import { Input } from '@/components/ui/input';
 
 interface StudyTimeStats {
   total_sessions: number;
@@ -76,10 +77,49 @@ export default function DashboardPage() {
   const [weakPoints, setWeakPoints] = useState<{ tag: string; count: number; trend?: 'up' | 'down' | 'stable' }[]>([]);
   const [studyStats, setStudyStats] = useState<StudyTimeStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAddStudentModal, setShowAddStudentModal] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     router.push('/login');
+  };
+
+  const handleAddStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    const display_name = formData.get('studentName') as string;
+    const phone = formData.get('phone') as string;
+    const password = formData.get('password') as string;
+    const grade_level = formData.get('grade') as string;
+
+    try {
+      const response = await fetch('/api/students/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ display_name, phone, password, grade_level }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(`添加失败: ${error.error || '未知错误'}`);
+        return;
+      }
+
+      const result = await response.json();
+
+      // Show success message
+      alert(`学生 ${result.data.display_name} 添加成功！`);
+
+      // Close modal
+      setShowAddStudentModal(false);
+
+      // Refresh student list
+      window.location.reload();
+    } catch (error) {
+      console.error('Error adding student:', error);
+      alert(`添加失败: ${error}`);
+    }
   };
 
   // 加载学生列表
@@ -193,6 +233,16 @@ export default function DashboardPage() {
                 返回概览
               </Button>
             )}
+
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => setShowAddStudentModal(true)}
+              className="gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              添加学生
+            </Button>
 
             <Button
               variant="ghost"
@@ -374,6 +424,83 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Add Student Modal */}
+      {showAddStudentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>添加学生</CardTitle>
+              <button
+                onClick={() => setShowAddStudentModal(false)}
+                className="ml-auto text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleAddStudent} className="space-y-4">
+                {/* Display Name */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">学生姓名</label>
+                  <Input
+                    id="studentName"
+                    name="studentName"
+                    placeholder="请输入学生姓名"
+                    required
+                  />
+                </div>
+
+                {/* Phone */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">手机号</label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="请输入手机号"
+                    pattern="[0-9]{11}"
+                    required
+                  />
+                </div>
+
+                {/* Password */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">密码</label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="至少6位"
+                    minLength={6}
+                    required
+                  />
+                </div>
+
+                {/* Grade Level */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">年级</label>
+                  <select id="grade" name="grade" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <option value="">请选择</option>
+                    <option value="1">一年级</option>
+                    <option value="2">二年级</option>
+                    <option value="3">三年级</option>
+                    <option value="4">四年级</option>
+                    <option value="5">五年级</option>
+                    <option value="6">六年级</option>
+                  </select>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button type="submit" className="flex-1">
+                    添加学生
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
