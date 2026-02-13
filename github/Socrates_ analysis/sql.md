@@ -1,0 +1,2 @@
+{"idx":0,"id":"3bce0742-c79f-46a3-9fd1-ab67ad7d29b4","role":"student","display_name":"ghz","grade_level":7,"theme_preference":"senior","avatar_url":null,"xp_points":0,"created_at":"2026-02-13 01:58:37.012117+00"}
+{"idx":1,"id":"6cc61a50-3e98-4f68-b3f2-ab4101ecb145","role":"student","display_name":"ruixuan","grade_level":7,"theme_preference":"senior","avatar_url":null,"xp_points":0,"created_at":"2026-02-13 02:05:32.84708+00"}
