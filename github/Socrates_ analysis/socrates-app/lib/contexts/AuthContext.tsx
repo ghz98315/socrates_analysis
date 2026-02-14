@@ -120,8 +120,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (emailOrPhone: string, password: string) => {
     setLoading(true);
+
+    // 判断是手机号还是邮箱
+    const phoneRegex = /^1[3-9]\d{9}$/;
+    const email = phoneRegex.test(emailOrPhone)
+      ? `${emailOrPhone}@student.local`  // 手机号转换为 email
+      : emailOrPhone;
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -140,15 +147,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   };
 
-  const signUp = async (email: string, password: string, name?: string) => {
+  const signUp = async (emailOrPhone: string, password: string, name?: string) => {
     console.log('[AuthContext] signUp started');
     setLoading(true);
+
+    // 判断是手机号还是邮箱
+    const phoneRegex = /^1[3-9]\d{9}$/;
+    const isPhone = phoneRegex.test(emailOrPhone);
+    const email = isPhone
+      ? `${emailOrPhone}@student.local`  // 手机号转换为 email
+      : emailOrPhone;
+
+    // 记录原始手机号（如果是手机号注册）
+    const phone = isPhone ? emailOrPhone : null;
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           display_name: name,
+          phone: phone,  // 存储手机号到 metadata
         },
       },
     });
@@ -193,7 +212,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .insert({
             id: data.user.id,
             role: 'student',
-            display_name: name || email.split('@')[0],
+            display_name: name || phone || email.split('@')[0],
+            phone: phone,  // 存储手机号到 profiles 表
           } as any)
           .select()
           .maybeSingle();

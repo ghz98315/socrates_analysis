@@ -17,7 +17,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { signIn } = useAuth();
 
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -28,10 +28,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await signIn(email, password);
+      await signIn(phone, password);
       router.push('/select-profile');
     } catch (err: any) {
-      setError(err.message || '登录失败，请检查邮箱和密码');
+      setError(err.message || '登录失败，请检查手机号和密码');
     } finally {
       setLoading(false);
     }
@@ -56,15 +56,17 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                邮箱
+              <label htmlFor="phone" className="text-sm font-medium">
+                手机号
               </label>
               <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="phone"
+                type="tel"
+                placeholder="请输入手机号"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                pattern="[0-9]{11}"
+                maxLength={11}
                 required
                 disabled={loading}
                 className="rounded-xl h-12"

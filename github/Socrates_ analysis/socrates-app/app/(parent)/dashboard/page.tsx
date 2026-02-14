@@ -66,7 +66,7 @@ function StatCard({ title, value, unit, icon, trend }: StatCardProps) {
 }
 
 export default function DashboardPage() {
-  const { profile, signOut } = useAuth();
+  const { profile, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
 
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
@@ -122,9 +122,12 @@ export default function DashboardPage() {
     }
   };
 
-  // 加载学生列表
+  // 加载学生列表 - 等待用户认证完成
   useEffect(() => {
     const loadStudents = async () => {
+      // 等待认证完成且 profile 可用
+      if (authLoading || !profile) return;
+
       try {
         const response = await fetch('/api/students');
         if (!response.ok) {
@@ -138,7 +141,7 @@ export default function DashboardPage() {
       }
     };
     loadStudents();
-  }, []);
+  }, [profile, authLoading]);
 
   // 加载仪表板数据
   useEffect(() => {

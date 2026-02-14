@@ -11,6 +11,10 @@ export async function GET(req: NextRequest) {
   try {
     // 创建服务端客户端，自动处理 cookies
     const cookieStore = await cookies();
+
+    // 调试：打印所有 cookies
+    console.log('[API /students] Cookies:', Array.from(cookieStore.getAll()).map(c => c.name));
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -25,6 +29,8 @@ export async function GET(req: NextRequest) {
 
     // 获取当前用户
     const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    console.log('[API /students] Auth result:', { hasUser: !!user, userError: userError?.message });
 
     if (userError || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });

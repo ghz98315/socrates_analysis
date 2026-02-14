@@ -81,8 +81,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to create student account' }, { status: 500 });
     }
 
-    // 2. 创建 profiles 记录
-    const { error: insertError } = await supabase
+    // 2. 创建 profiles 记录（使用 admin 客户端绕过 RLS）
+    const { error: insertError } = await supabaseAdmin
       .from('profiles')
       .insert({
         id: authUser.id, // 使用 auth 用户 ID

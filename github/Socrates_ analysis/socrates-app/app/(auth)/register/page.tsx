@@ -17,7 +17,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const { signUp } = useAuth();
 
-  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -27,6 +27,13 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // 验证手机号
+    const phoneRegex = /^1[3-9]\d{9}$/;
+    if (!phoneRegex.test(phone)) {
+      setError('请输入正确的手机号');
+      return;
+    }
 
     // 验证密码
     if (password !== confirmPassword) {
@@ -42,7 +49,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await signUp(email, password, displayName || undefined);
+      await signUp(phone, password, displayName || undefined);
       router.push('/select-profile');
     } catch (err: any) {
       setError(err.message || '注册失败，请稍后重试');
@@ -85,15 +92,17 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                邮箱
+              <label htmlFor="phone" className="text-sm font-medium">
+                手机号
               </label>
               <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="phone"
+                type="tel"
+                placeholder="请输入11位手机号"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                pattern="[0-9]{11}"
+                maxLength={11}
                 required
                 disabled={loading}
                 className="rounded-xl h-12"

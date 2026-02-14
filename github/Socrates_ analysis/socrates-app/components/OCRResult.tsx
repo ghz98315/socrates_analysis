@@ -6,13 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
-// File object for sending to backend
-interface FileData {
-  file: Uint8Array;
-  fileName: string;
-  type: string;
-}
-
 // Base64 conversion utility function
 function getBase64FromDataURL(dataUrl: string): string {
   if (dataUrl.startsWith('data:')) {
@@ -20,14 +13,6 @@ function getBase64FromDataURL(dataUrl: string): string {
   }
   return dataUrl;
 }
-
-// Convert dataURL to File object
-const dataURLtoFile = (dataUrl: string): FileData => {
-  const byteString = atob(dataUrl.split(',')[1], 'base64');
-  const byteNumbers = new Uint8Array(byteString);
-  const blob = new Blob([byteNumbers], { type: 'image/png' });
-  return new File([blob], { type: 'image/png' });
-};
 
 interface OCRResultProps {
   initialText: string;
@@ -84,19 +69,15 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
 
       const base64Image = getBase64FromDataURL(imageData);
 
+      // Send JSON with base64 image data (backend expects "image" key)
       const response = await fetch(OCR_API_URL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YZr0gW',
+          'Content-Type': 'application/json',
         },
-        body: (() => {
-          const formData = new FormData();
-          const fileData = dataURLtoFile(base64Image);
-
-          formData.append('file', fileData);
-
-          return formData;
-        })(),
+        body: JSON.stringify({
+          image: base64Image,
+        }),
       });
 
       setProgress(50);
@@ -138,8 +119,6 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
     }
   };
 
-  // Fallback OCR solution: Tesseract.js
-  // eslint-disable-next-line no-use-before-declaration
   const fallbackOCR = async () => {
     try {
       setStatus('Loading Tesseract.js...');
@@ -215,7 +194,7 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
               <textarea
                 value={text}
                 onChange={handleTextChange}
-                placeholder="Click upload image above, AI will automatically recognize the question content...
+                placeholder="Click upload image above, AI will automatically recognize the question content..."
                 className="w-full h-32 rounded-xl border border-input bg-transparent px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
