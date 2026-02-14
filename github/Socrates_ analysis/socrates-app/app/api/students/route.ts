@@ -3,21 +3,39 @@
 // =====================================================
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
-// 创建 Supabase 服务端客户端
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-// GET endpoint - 获取学生列表
+// GET endpoint - 获取当前家长的学生列表
 export async function GET(req: NextRequest) {
   try {
+    // 创建服务端客户端，自动处理 cookies
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+        },
+      }
+    );
+
+    // 获取当前用户
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    // 只返回 parent_id 指向当前用户的学生
     const { data: students, error } = await supabase
       .from('profiles')
       .select('id, display_name, grade_level, avatar_url')
       .eq('role', 'student')
+      .eq('parent_id', user.id)  // 只返回这个家长的学生
       .order('display_name', { ascending: true });
 
     if (error) {
