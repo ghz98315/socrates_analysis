@@ -6,6 +6,17 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
+// Fix encoding for Chinese OCR results
+const fixChineseEncoding = (text: string): string => {
+  if (!text) return '';
+  try {
+    // Try to fix common encoding issues
+    return decodeURIComponent(escape(text));
+  } catch {
+    return text;
+  }
+};
+
 interface OCRResultProps {
   initialText: string;
   onTextChange: (text: string) => void;
@@ -40,6 +51,17 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
       return dataUrl.split(',')[1];
     }
     return dataUrl;
+  };
+
+  // Fix encoding for Chinese characters
+  const fixChineseEncoding = (text: string): string => {
+    if (!text) return '';
+    try {
+      // Try to fix common encoding issues
+      return decodeURIComponent(escape(text));
+    } catch {
+      return text;
+    }
   };
 
   const handleReOCR = async () => {
@@ -81,8 +103,10 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
       setStatus('Processing recognition results...');
 
       if (result.success && result.text) {
-        setText(result.text);
-        onTextChange(result.text);
+        // Fix encoding for Chinese characters
+        const fixedText = fixChineseEncoding(result.text);
+        setText(fixedText);
+        onTextChange(fixedText);
         setProgress(100);
         setStatus('Recognition complete!');
       } else {
