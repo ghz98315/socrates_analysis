@@ -139,6 +139,7 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
   };
 
   // Fallback OCR solution: Tesseract.js
+  // eslint-disable-next-line no-use-before-declaration
   const fallbackOCR = async () => {
     try {
       setStatus('Loading Tesseract.js...');
