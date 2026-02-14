@@ -6,6 +6,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
+// File object for sending to backend
+interface FileData {
+  file: Uint8Array;
+  fileName: string;
+  type: string;
+}
+
 // Base64 conversion utility function
 function getBase64FromDataURL(dataUrl: string): string {
   if (dataUrl.startsWith('data:')) {
@@ -14,6 +21,14 @@ function getBase64FromDataURL(dataUrl: string): string {
   return dataUrl;
 }
 
+// Convert dataURL to File object
+const dataURLtoFile = (dataUrl: string): FileData => {
+  const byteString = atob(dataUrl.split(',')[1], 'base64');
+  const byteNumbers = new Uint8Array(byteString);
+  const blob = new Blob([byteNumbers], { type: 'image/png' });
+  return new File([blob], { type: 'image/png' });
+};
+
 interface OCRResultProps {
   initialText: string;
   onTextChange: (text: string) => void;
@@ -21,7 +36,6 @@ interface OCRResultProps {
   imageData?: string | null;
 }
 
-// OCR backend service URL
 const OCR_API_URL = 'http://localhost:8000/ocr-base64';
 
 // Fix encoding for Chinese characters
@@ -69,17 +83,20 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
       setStatus('Connecting to OCR service...');
 
       const base64Image = getBase64FromDataURL(imageData);
-      setProgress(20);
 
       const response = await fetch(OCR_API_URL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json; charset=utf-8',
+          'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YZr0gW',
         },
-        body: JSON.stringify({
-          file: base64Image,
-          language: 'chi_sim+eng',
-        }),
+        body: (() => {
+          const formData = new FormData();
+          const fileData = dataURLtoFile(base64Image);
+
+          formData.append('file', fileData);
+
+          return formData;
+        })(),
       });
 
       setProgress(50);
@@ -184,27 +201,24 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
           )}
         </h3>
 
-        {isProcessing && (
+        {isProcessing ? (
           <div className="mb-3">
             <Progress value={progress} className="h-2" />
             <p className="text-xs text-muted-foreground text-center mt-1">
               {progress > 0 && `Progress: ${progress}%`}
             </p>
           </div>
-        )}
-
-        {!isProcessing && (
-          <div className="space-y-3">
-            <div className="space-y-2">
+        ) : (
+          <>
+            <div className="space-y-3">
               <textarea
                 value={text}
                 onChange={handleTextChange}
                 placeholder="Click upload image above, AI will automatically recognize the question content...
-
-You can also directly input or paste the question content"
                 className="w-full h-32 rounded-xl border border-input bg-transparent px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
+
             <div className="flex gap-2 mt-3">
               <Button
                 size="sm"
@@ -213,7 +227,6 @@ You can also directly input or paste the question content"
                 onClick={handleReOCR}
                 disabled={isProcessing || !imageData}
               >
-                <RefreshCw className="w-4 h-4" />
                 Re-recognize
               </Button>
               <Button
@@ -226,7 +239,7 @@ You can also directly input or paste the question content"
                 Confirm & Start Learning
               </Button>
             </div>
-          </div>
+          </>
         )}
 
         {error && (
@@ -234,13 +247,6 @@ You can also directly input or paste the question content"
             <AlertCircle className="w-3 h-3" />
             {error}
           </div>
-        )}
-
-        {!error && !text && !isProcessing && (
-          <p className="mt-2 text-xs text-muted-foreground text-center">
-            Upload an image containing text, AI will automatically recognize the question content<br />
-            Recognition results can be manually edited and corrected
-          </p>
         )}
       </CardContent>
     </Card>
