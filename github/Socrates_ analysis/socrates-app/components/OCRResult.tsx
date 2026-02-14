@@ -24,7 +24,7 @@ interface OCRResultProps {
   imageData?: string | null;
 }
 
-// OCR backend service URL
+// OCR backend service URL - 使用正确的后端路由
 const OCR_API_URL = 'http://localhost:8000/ocr-base64';
 
 export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: OCRResultProps) {
