@@ -1,12 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2, Check, AlertCircle, Sparkles } from 'lucide-react';
+import { Loader2, Check, RefreshCw, AlertCircle, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
-// Fix encoding for Chinese OCR results
+interface OCRResultProps {
+  initialText: string;
+  onTextChange: (text: string) => void;
+  onConfirm: () => void;
+  imageData?: string | null;
+}
+
+// OCR backend service URL
+const OCR_API_URL = 'http://localhost:8000/ocr-base64';
+
+// Fix encoding for Chinese characters
 const fixChineseEncoding = (text: string): string => {
   if (!text) return '';
   try {
@@ -16,16 +26,6 @@ const fixChineseEncoding = (text: string): string => {
     return text;
   }
 };
-
-interface OCRResultProps {
-  initialText: string;
-  onTextChange: (text: string) => void;
-  onConfirm: () => void;
-  imageData?: string | null;
-}
-
-// OCR backend service URL - 使用正确的后端路由
-const OCR_API_URL = 'http://localhost:8000/ocr-base64';
 
 export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: OCRResultProps) {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -43,25 +43,6 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
     setText(e.target.value);
     onTextChange(e.target.value);
     setError('');
-  };
-
-  // Convert dataURL to base64 format
-  const getBase64FromDataURL = (dataUrl: string): string => {
-    if (dataUrl.startsWith('data:')) {
-      return dataUrl.split(',')[1];
-    }
-    return dataUrl;
-  };
-
-  // Fix encoding for Chinese characters
-  const fixChineseEncoding = (text: string): string => {
-    if (!text) return '';
-    try {
-      // Try to fix common encoding issues
-      return decodeURIComponent(escape(text));
-    } catch {
-      return text;
-    }
   };
 
   const handleReOCR = async () => {
@@ -85,10 +66,11 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
       const response = await fetch(OCR_API_URL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json; charset=utf-8',
         },
         body: JSON.stringify({
-          image: base64Image,
+          file: base64Image,
+          language: 'chi_sim+eng',
         }),
       });
 
@@ -100,7 +82,6 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
 
       const result = await response.json();
       setProgress(80);
-      setStatus('Processing recognition results...');
 
       if (result.success && result.text) {
         // Fix encoding for Chinese characters
@@ -110,7 +91,9 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
         setProgress(100);
         setStatus('Recognition complete!');
       } else {
-        setError('No text recognized, please ensure the image is clear and contains text');
+        setError('No text recognized, please ensure image is clear and contains text');
+        setProgress(0);
+        setStatus('Recognition failed');
       }
     } catch (err: any) {
       if (err.message?.includes('fetch') || err.message?.includes('connect') || err.code === 'ECONNREFUSED') {
@@ -158,9 +141,9 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
         setText(recognizedText);
         onTextChange(recognizedText);
         setProgress(100);
-        setStatus('Recognition complete (using fallback)');
+        setStatus('Recognition complete (using fallback)!');
       } else {
-        setError('No text recognized, please ensure the image is clear and contains text');
+        setError('No text recognized, please ensure image is clear and contains text');
       }
     } catch (err: any) {
       setError(err.message || 'OCR recognition failed, please try again');
@@ -178,10 +161,10 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
   return (
     <Card className="shadow-apple">
       <CardContent className="p-4">
-        <h3 className="text-sm font-medium mb-3 flex items-center justify-between">
-          <span className="flex items-center gap-1.5">
+        <h3 className="text-lg font-medium mb-3 flex items-center justify-between">
+          <span className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-purple-500" />
-            原题目内容
+            题目内容
             {usingPaddleOCR && (
               <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 font-medium">
                 PaddleOCR
@@ -196,23 +179,15 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
         {isProcessing && (
           <div className="mb-3">
             <Progress value={progress} className="h-2" />
-            <p className="text-xs text-muted-foreground mt-1 text-center">
+            <p className="text-xs text-muted-foreground text-center mt-1">
               {progress > 0 && `Progress: ${progress}%`}
             </p>
           </div>
         )}
 
-        {isProcessing ? (
-          <div className="flex flex-col items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground mb-2" />
-            <span className="text-sm text-muted-foreground">{status || 'Recognizing...'}</span>
-            <p className="text-xs text-muted-foreground mt-1">
-              {usingPaddleOCR ? 'Using PaddleOCR high-accuracy recognition' : 'Using Tesseract.js fallback'}
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="space-y-3">
+        {!isProcessing && (
+          <div className="space-y-3">
+            <div className="space-y-2">
               <textarea
                 value={text}
                 onChange={handleTextChange}
@@ -222,7 +197,6 @@ You can also directly input or paste the question content"
                 className="w-full h-32 rounded-xl border border-input bg-transparent px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
-
             <div className="flex gap-2 mt-3">
               <Button
                 size="sm"
@@ -231,6 +205,7 @@ You can also directly input or paste the question content"
                 onClick={handleReOCR}
                 disabled={isProcessing || !imageData}
               >
+                <RefreshCw className="w-4 h-4" />
                 Re-recognize
               </Button>
               <Button
@@ -243,21 +218,21 @@ You can also directly input or paste the question content"
                 Confirm & Start Learning
               </Button>
             </div>
+          </div>
+        )}
 
-            {error && (
-              <div className="mt-2 text-xs text-destructive flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
-                {error}
-              </div>
-            )}
+        {error && (
+          <div className="mt-2 text-xs text-destructive flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
+            {error}
+          </div>
+        )}
 
-            {!error && !text && !isProcessing && (
-              <p className="mt-2 text-xs text-muted-foreground text-center">
-                Upload an image containing text, AI will automatically recognize the content<br />
-                Recognition results can be manually edited and corrected
-              </p>
-            )}
-          </>
+        {!error && !text && !isProcessing && (
+          <p className="mt-2 text-xs text-muted-foreground text-center">
+            Upload an image containing text, AI will automatically recognize the question content<br />
+            Recognition results can be manually edited and corrected
+          </p>
         )}
       </CardContent>
     </Card>
