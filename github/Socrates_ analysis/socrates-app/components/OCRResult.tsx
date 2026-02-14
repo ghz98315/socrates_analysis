@@ -6,6 +6,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
+// Base64 conversion utility function
+function getBase64FromDataURL(dataUrl: string): string {
+  if (dataUrl.startsWith('data:')) {
+    return dataUrl.split(',')[1];
+  }
+  return dataUrl;
+}
+
 interface OCRResultProps {
   initialText: string;
   onTextChange: (text: string) => void;
