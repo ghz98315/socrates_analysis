@@ -21,160 +21,187 @@
 
 ```
 ███░░░░░░░░░░░░░░░░░░  35%
-██████████████░░░░░░░░  70% ⬆️
+██████████████░░░░░░░  70% ⬆️
 ```
 
 ### 最新进展 (2026-02-14)
 
 - ✅ **更新项目文档** - README.md 全面更新
 - ✅ **创建开发进度文档** - DEVELOPMENT.md
-- ✅ **家长-学生关联** - 添加 parent_id 数据库字段
-- ✅ **手机号注册支持** - 添加 phone 数据库字段
-- ✅ **角色约束修复** - 支持 parent 角色
+- ✅ **创建迁移指南** - scripts/MIGRATE.md
+- ✅ **家长-学生关联** - 添加 parent_id 数据库字段 (待执行)
+- ✅ **手机号注册支持** - 添加 phone 数据库字段 (待执行)
+- ✅ **角色约束修复** - 支持 parent 角色 (待执行)
 - ✅ **学生 API 权限控制** - 只返回当前家长的学生
 - ✅ **添加学生 API** - `/api/students/add`
+
+---
+
+## 完整待开发清单
+
+### 🔴 P0 - 必须完成 (阻塞发布)
+
+| ID | 任务 | 状态 | 文件/位置 | 预计时间 |
+|----|------|------|-----------|----------|
+| P0-1 | **执行数据库迁移** | 🟡 待执行 | `scripts/MIGRATE.md` | 30分钟 |
+| P0-2 | **测试完整认证流程** | 🟡 待测试 | `app/(auth)/` | 1小时 |
+| P0-3 | **测试错题记录保存** | 🟡 待测试 | `app/api/error-session` | 1小时 |
+| P0-4 | **测试家长添加学生功能** | 🟡 待测试 | `app/api/students/add` | 1小时 |
+| P0-5 | **修复发现的 Bug** | 🟡 待修复 | - | 视情况 |
+
+### 🟡 P1 - 重要功能 (核心体验)
+
+| ID | 任务 | 状态 | 文件/位置 | 预计时间 |
+|----|------|------|-----------|----------|
+| P1-1 | **配置真实 AI API Keys** | 🟡 待配置 | `.env.local` | 30分钟 |
+| P1-2 | **实现复习计划生成 API** | 🔴 待开发 | `app/api/review/` | 3-4小时 |
+| P1-3 | **实现学习报告生成** | 🔴 待开发 | `app/api/reports/` | 3-4小时 |
+| P1-4 | **添加家长复核功能** | 🔴 待开发 | `app/(parent)/review/` | 2-3小时 |
+| P1-5 | **完善错误处理和加载状态** | 🔴 待开发 | 全局 | 2-3小时 |
+| P1-6 | **家长注册流程优化** | 🔴 待开发 | `app/(auth)/register/` | 2-3小时 |
+| P1-7 | **学生手机号注册** | 🔴 待开发 | `app/(auth)/register/` | 2-3小时 |
+| P1-8 | **优化学习会话管理** | 🟡 待优化 | `app/api/study/session/` | 2-3小时 |
+
+### 🟢 P2 - 增强功能 (体验提升)
+
+| ID | 任务 | 状态 | 预计时间 |
+|----|------|------|----------|
+| P2-1 | 语音输入功能 | 🔴 | 3-4小时 |
+| P2-2 | 语音朗读 (TTS) | 🔴 | 2-3小时 |
+| P2-3 | 图片标注功能 | 🔴 | 2-3小时 |
+| P2-4 | 批量错题上传 | 🔴 | 3-4小时 |
+| P2-5 | 导出学习报告 PDF | 🔴 | 2-3小时 |
+| P2-6 | 错题本功能 (分类/筛选) | 🔴 | 4-5小时 |
+| P2-7 | 变式题目生成 (AI) | 🔴 | 3-4小时 |
+| P2-8 | 学习成就系统 | 🔴 | 3-4小时 |
+
+### 🔵 P3 - 长期规划 (未来版本)
+
+| ID | 任务 | 说明 | 预计时间 |
+|----|------|------|----------|
+| P3-1 | 多科目支持 | 扩展到物理、化学、英语 | 1-2天 |
+| P3-2 | 社交功能 | 同学互动、排行榜 | 2-3天 |
+| P3-3 | 移动端适配 | React Native 或 PWA | 1周+ |
+| P3-4 | 离线功能支持 | Service Worker + IndexedDB | 2-3天 |
+| P3-5 | 数据分析优化 | 更多可视化图表 | 2-3天 |
+
+---
+
+## 下一步开发计划
+
+### 📅 本周计划 (Week 7: Feb 14-20)
+
+#### Monday - Feb 14 (今天)
+- [x] ~~更新项目文档~~ ✅
+- [x] ~~创建迁移指南~~ ✅
+- [ ] **执行数据库迁移** (P0-1) ← **立即执行**
+- [ ] 测试认证流程 (P0-2)
+- [ ] 测试添加学生功能 (P0-4)
+
+#### Tuesday - Feb 15
+- [ ] 配置真实 AI API Keys (P1-1)
+- [ ] 实现复习计划生成 API (P1-2)
+- [ ] 测试复习功能
+
+#### Wednesday - Feb 16
+- [ ] 实现学习报告生成 (P1-3)
+- [ ] 添加家长复核功能 (P1-4)
+- [ ] 完善错误处理 (P1-5)
+
+#### Thursday - Feb 17
+- [ ] 家长注册流程优化 (P1-6)
+- [ ] 学生手机号注册 (P1-7)
+- [ ] 端到端测试
+
+#### Friday - Feb 18
+- [ ] 优化学习会话管理 (P1-8)
+- [ ] Bug 修复
+- [ ] 发布准备
+
+---
+
+## 当前阻塞项
+
+| 阻塞项 | 影响 | 解决方案 | 状态 |
+|--------|------|---------|------|
+| 数据库迁移未执行 | 无法使用家长-学生关联 | 手动执行 SQL | 🟡 进行中 |
+| AI API Key 未配置 | AI 使用预设响应 | 获取真实 API Key | 🟡 待配置 |
+| Supabase 环境变量 | 无法连接生产数据库 | 配置 .env.local | 🟡 待配置 |
+
+---
+
+## 里程碑
+
+| 里程碑 | 目标日期 | 状态 |
+|--------|---------|------|
+| v0.7.0 - 数据库完整 | Feb 15 | 🟡 进行中 |
+| v0.8.0 - 核心功能完成 | Feb 22 | 🔴 未开始 |
+| v0.9.0 - Beta 测试 | Mar 1 | 🔴 未开始 |
+| v1.0.0 - 正式发布 | Mar 15 | 🔴 未开始 |
+
+---
+
+## 技术债务
+
+| 项目 | 优先级 | 说明 |
+|------|---------|------|
+| 添加单元测试 | P1 | Jest/Vitest 配置 |
+| 添加 E2E 测试 | P1 | Playwright 配置 |
+| 代码重构 | P2 | 优化组件结构 |
+| 性能优化 | P2 | 图片懒加载、代码分割 |
+| 文档完善 | P2 | API 文档、组件文档 |
+
+---
+
+## 下一步操作 (立即)
+
+### 1. 执行数据库迁移 ⬅️
+
+**请按顺序执行以下 SQL** (参考 `scripts/MIGRATE.md`):
+
+```sql
+-- Migration 1: Add parent_id
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS parent_id UUID;
+ALTER TABLE profiles ADD CONSTRAINT profiles_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES profiles(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS profiles_parent_id_idx ON profiles(parent_id);
+
+-- Migration 2: Add phone
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS phone TEXT;
+CREATE INDEX IF NOT EXISTS profiles_phone_idx ON profiles(phone);
+
+-- Migration 3: Fix role constraint
+ALTER TABLE profiles DROP CONSTRAINT IF EXISTS profiles_role_check;
+ALTER TABLE profiles ADD CONSTRAINT profiles_role_check CHECK (role = 'student' OR role = 'parent' OR role = 'admin');
+```
+
+**执行位置**: https://app.supabase.com/project/_/sql
+
+### 2. 验证迁移
+
+```sql
+SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'profiles' AND column_name IN ('parent_id', 'phone');
+```
+
+### 3. 开始测试
+
+- [ ] 家长登录
+- [ ] 添加学生
+- [ ] 学生登录
+- [ ] 上传错题
+- [ ] AI 对话
 
 ---
 
 ## 功能模块进度
 
 ### 1. 基础架构 ✅ 100%
-
-| 功能 | 状态 | 说明 |
-|------|------|------|
-| Next.js 项目初始化 | ✅ | App Router 配置完成 |
-| TypeScript 配置 | ✅ | 类型安全 |
-| Tailwind CSS v4 | ✅ | 样式系统 |
-| Shadcn/UI 组件 | ✅ | 基础 UI 组件库 |
-
----
-
 ### 2. 认证系统 ✅ 100%
-
-| 功能 | 状态 | 文件 |
-|------|------|------|
-| 登录页面 | ✅ | `app/(auth)/login/page.tsx` |
-| 注册页面 | ✅ | `app/(auth)/register/page.tsx` |
-| 角色选择 | ✅ | `app/(auth)/select-profile/page.tsx` |
-| AuthContext | ✅ | `lib/contexts/AuthContext.tsx` |
-| 三种角色支持 | ✅ | Junior / Senior / Parent |
-| Profile 自动创建 | ✅ | 触发器 + 手动兜底 |
-
----
-
 ### 3. 学生工作台 ✅ 80%
-
-| 功能 | 状态 | 文件 |
-|------|------|------|
-| 图片上传 | ✅ | `components/ImageUploader.tsx` |
-| OCR 识别 | ✅ | `components/OCRResult.tsx` |
-| PaddleOCR 后端 | ✅ | `backend/ocr_server.py` |
-| AI 对话 | ✅ | `app/api/chat/route.ts` |
-| 学习会话追踪 | ✅ | `app/api/study/session/route.ts` |
-| Chat 组件 | ✅ | `components/ChatInput.tsx`, `ChatMessage.tsx` |
-| 主题切换 | ✅ | Junior/Senior 主题 |
-
-**待完成**:
-- [ ] 优化 OCR 识别速度
-- [ ] 添加语音输入功能
-
----
-
-### 4. 家长仪表板 ✅ 75% ⬆️
-
-| 功能 | 状态 | 文件 |
-|------|------|------|
-| 仪表板页面 | ✅ | `app/(parent)/dashboard/page.tsx` |
-| 学习热力图 | ✅ | `components/LearningHeatmap.tsx` |
-| 学习时长卡片 | ✅ | `components/StudyTimeCards.tsx` |
-| 薄弱知识点 | ✅ | `components/WeakKnowledgePoints.tsx` |
-| 学生选择器 | ✅ | 动态加载学生列表 |
-| 添加学生功能 | ✅ | 表单 + API |
-| 学生 API 权限 | ✅ | 只返回当前家长的学生 |
-
-**待完成**:
-- [ ] 从 Supabase 获取真实数据
-- [ ] 实现数据刷新机制
-- [ ] 添加学习报告导出功能
-
----
-
+### 4. 家长仪表板 ✅ 75%
 ### 5. 复习系统 ✅ 60%
-
-| 功能 | 状态 | 文件 |
-|------|------|------|
-| 复习页面 | ✅ | `app/(student)/review/page.tsx` |
-| 复习列表展示 | 🟡 | 需 Supabase 数据 |
-| 艾宾浩斯算法 | 🟡 | 需后端支持 |
-
-**待完成**:
-- [ ] 复习计划生成 API
-- [ ] 变式题目生成 (AI)
-- [ ] 复习进度更新
-
----
-
-### 6. 数据库设计 ✅ 95%
-
-| 表名 | 状态 | 说明 |
-|------|------|------|
-| profiles | ✅ | 用户信息 (新增 parent_id, phone) |
-| error_sessions | ✅ | 错题会话 |
-| chat_messages | ✅ | 对话历史 |
-| review_schedule | ✅ | 复习计划 |
-| study_sessions | ✅ | 学习时长 |
-| knowledge_tags | ✅ | 知识点标签 |
-| learning_reports | ✅ | 学习报告 |
-| parent_reviews | ✅ | 家长复核 |
-| multi_question_images | ✅ | 多题处理 |
-
-**最新迁移脚本** (待执行):
-- ✅ `supabase/add-parent-id-column.sql` - 家长-学生关联
-- ✅ `supabase/add-phone-column.sql` - 手机号字段
-- ✅ `supabase/fix-profile-role-constraint.sql` - 角色约束修复
-
----
-
+### 6. 数据库设计 ✅ 95% (待迁移)
 ### 7. AI 集成 ✅ 85%
-
-| 功能 | 状态 | 说明 |
-|------|------|------|
-| OpenAI API | ✅ | GPT 模型支持 |
-| 阿里通义千问 | ✅ | 备用 AI 服务 |
-| 流式响应 | ✅ | 实时对话体验 |
-| 苏格拉底式引导 | ✅ | Prompt 工程完成 |
-| 学科适配 | ✅ | 数学/语文/英语 |
-
-**配置文件**: `.env.local`
-- `OPENAI_API_KEY` - 需配置
-- `ALIBABA_API_KEY` - 需配置
-
----
-
 ### 8. OCR 服务 ✅ 90%
-
-| 功能 | 状态 | 说明 |
-|------|------|------|
-| PaddleOCR 后端 | ✅ | Python FastAPI |
-| 客户端集成 | ✅ | 自动回退机制 |
-| 中文识别 | ✅ | 95%+ 准确率 |
-| 数学符号 | ✅ | 良好支持 |
-
-**启动脚本**: `backend/start_ocr_server.bat`
-
----
-
-## 后端 API 进度 ✅ 70%
-
-| 端点 | 方法 | 状态 | 说明 |
-|-----|------|-----|-----|
-| `/api/ocr` | POST | ✅ | OCR 文字识别 |
-| `/api/chat` | POST | ✅ | AI 对话接口 |
-| `/api/error-session` | POST | ✅ | 错题会话管理 |
-| `/api/study/session` | POST | ✅ | 学习会话追踪 |
-| `/api/students` | GET | ✅ | 学生列表 (含权限控制) |
-| `/api/students/add` | POST | ✅ | 添加学生账号 |
-| `/api/student/stats` | GET | ✅ | 学生统计数据 |
 
 ---
 
@@ -182,6 +209,7 @@
 
 | 提交 | 描述 | 日期 |
 |-----|------|-----|
+| `873483f` | Update PROGRESS.md with latest development status | 2026-02-14 |
 | `6c295b9` | Update project documentation and API permissions | 2026-02-14 |
 | `9a5df89` | Add student modal and form to parent dashboard | - |
 | `67d1e9c` | Fix duplicate updateProfile calls in select-profile | - |
@@ -191,150 +219,11 @@
 
 ---
 
-## 待办事项
-
-### 优先级 P0 (必须完成) 🔴
-
-- [ ] **在 Supabase 执行数据库迁移**
-  - [ ] `supabase/add-parent-id-column.sql`
-  - [ ] `supabase/add-phone-column.sql`
-  - [ ] `supabase/fix-profile-role-constraint.sql`
-- [ ] 测试完整认证流程
-- [ ] 测试错题记录保存
-- [ ] 测试家长添加学生功能
-
-### 优先级 P1 (重要) 🟡
-
-- [ ] 配置真实 AI API Keys
-- [ ] 实现复习计划生成
-- [ ] 实现学习报告生成
-- [ ] 添加家长复核功能
-- [ ] 完善错误处理和加载状态
-
-### 优先级 P2 (增强) 🟢
-
-- [ ] 语音输入功能
-- [ ] 语音朗读 (TTS)
-- [ ] 图片标注功能
-- [ ] 批量错题上传
-- [ ] 导出学习报告 PDF
-
----
-
-## 下一步计划
-
-### Phase 1: 稳定现有功能 (1-2天)
-
-1. **执行数据库迁移** ⬅️ 立即
-   - 在 Supabase SQL Editor 中运行 3 个 SQL 文件
-
-2. **提交代码变更** ⬅️ 立即
-   - 确认所有变更已提交
-
-3. **端到端测试**
-   - 用户注册/登录
-   - 家长添加学生
-   - 学生上传错题
-
-### Phase 2: 完善核心流程 (3-5天)
-
-4. **家长注册流程优化**
-   - 支持家长直接注册
-   - 注册后可立即添加学生
-
-5. **学生手机号注册**
-   - 支持手机号+密码注册
-   - 手机号验证
-
-6. **完善学习会话管理**
-   - 优化心跳机制
-   - 添加会话恢复功能
-
-### Phase 3: 数据分析与报告 (5-7天)
-
-7. **实现复习提醒系统**
-   - 基于艾宾浩斯遗忘曲线
-   - 推送/邮件提醒
-
-8. **实现学习报告生成**
-   - PDF 格式报告
-   - 邮件发送
-
-9. **优化统计数据展示**
-   - 更多数据可视化
-   - 趋势分析
-
----
-
-## 环境配置状态
-
-### 前端 (.env.local)
-
-| 变量 | 状态 | 说明 |
-|------|------|------|
-| `NEXT_PUBLIC_SUPABASE_URL` | 🟡 | 需配置 |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | 🟡 | 需配置 |
-| `SUPABASE_SERVICE_ROLE_KEY` | 🟡 | 需配置 |
-| `OPENAI_API_KEY` | 🟡 | 需配置 |
-| `ALIBABA_API_KEY` | 🟡 | 需配置 |
-
-### 后端服务
-
-| 服务 | 状态 | 端口 |
-|------|------|------|
-| Next.js Dev Server | ✅ 运行中 | 3000 |
-| PaddleOCR Server | ✅ 运行中 | 8000 |
-
----
-
 ## 已知问题
 
-| 问题 | 影响 | 状态 |
-|------|------|------|
-| 数据库迁移未执行 | parent_id/phone 字段不存在 | 🔴 |
-| AI API Key 未配置 | AI 无法使用 | 🟡 |
-| 复习功能未完成 | 无法复习错题 | 🟡 |
-
----
-
-## 文件结构
-
-```
-socrates-app/
-├── app/
-│   ├── (auth)/           # 认证相关页面
-│   ├── (student)/        # 学生页面
-│   │   ├── workbench/    # 学习工作台
-│   │   └── review/       # 复习页面
-│   ├── (parent)/         # 家长页面
-│   │   └── dashboard/   # 仪表板
-│   └── api/             # API 路由
-│       ├── chat/         # AI 对话
-│       ├── students/     # 学生管理 ⬅️ 新增
-│       ├── ocr/         # OCR 配置
-│       └── study/       # 学习会话
-├── components/           # React 组件
-├── lib/                 # 工具库
-│   ├── contexts/        # React Context
-│   └── supabase/       # Supabase 客户端
-├── backend/            # Python 后端
-│   └── ocr_server.py   # PaddleOCR 服务
-└── supabase/           # 数据库文件 ⬅️ 新增
-    ├── add-parent-id-column.sql
-    ├── add-phone-column.sql
-    └── fix-profile-role-constraint.sql
-```
-
----
-
-## 部署清单
-
-### 生产环境准备
-
-- [ ] 配置生产环境域名
-- [ ] 配置 Supabase 生产项目
-- [ ] 配置 AI API 生产密钥
-- [ ] 设置 CORS 策略
-- [ ] 配置存储桶权限
-- [ ] 设置 CDN (图片)
-- [ ] 配置监控和日志
+| 问题 | 影响 | 优先级 |
+|------|------|---------|
+| 数据库迁移未执行 | parent_id/phone 字段不存在 | 🔴 P0 |
+| AI API Key 未配置 | AI 无法使用真实响应 | 🟡 P1 |
+| 复习功能未完成 | 无法复习错题 | 🟡 P1 |
+| 测试覆盖不足 | 潜在 Bug 风险 | 🟡 P1 |
