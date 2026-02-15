@@ -559,3 +559,71 @@ html {
 .dark ::selection {
   background: rgba(10, 132, 255, 0.3);
 }
+
+/* =====================================================
+   Mobile Optimizations
+   ===================================================== */
+
+/* Ensure touch targets are at least 44px */
+@media (max-width: 640px) {
+  button,
+  [role="button"],
+  a,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Reduce padding on mobile */
+  .page-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Safe area insets for notched devices */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Prevent text size adjustment */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Improve touch scrolling */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Hide scrollbars on mobile but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Tap highlight color */
+@media (hover: none) {
+  button:active,
+  [role="button"]:active,
+  a:active {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .dark button:active,
+  .dark [role="button"]:active,
+  .dark a:active {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}

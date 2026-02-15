@@ -67,7 +67,7 @@ export function ChatInput({
             size="icon"
             onClick={handleSubmit}
             disabled={disabled || isLoading || !message.trim()}
-            className="rounded-full h-10 w-10 flex-shrink-0 btn-press"
+            className="rounded-full h-11 w-11 flex-shrink-0 btn-press active:scale-95 transition-transform"
           >
             {isLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -76,7 +76,7 @@ export function ChatInput({
             )}
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-2 text-center">
+        <p className="text-xs text-muted-foreground mt-2 text-center hidden sm:block">
           按 Enter 发送，Shift + Enter 换行
         </p>
       </CardContent>

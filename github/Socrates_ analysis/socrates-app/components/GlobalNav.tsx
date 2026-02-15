@@ -163,7 +163,8 @@ export function GlobalNav() {
           {/* 移动端菜单按钮 */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="sm:hidden p-2 rounded-lg hover:bg-muted transition-all duration-300"
+            className="sm:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-muted transition-all duration-300 active:scale-95"
+            aria-label="打开菜单"
           >
             <div className="w-6 h-6 relative">
               <span
@@ -287,7 +288,7 @@ export function GlobalNav() {
       <div
         className={cn(
           "sm:hidden overflow-hidden transition-all duration-500 ease-out",
-          isMobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          isMobileMenuOpen ? "max-h-[80vh] opacity-100" : "max-h-0 opacity-0"
         )}
       >
         <div className="border-t border-border/50 bg-card/95 backdrop-blur-xl">
