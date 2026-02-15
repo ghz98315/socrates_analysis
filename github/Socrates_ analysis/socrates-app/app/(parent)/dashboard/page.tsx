@@ -5,10 +5,9 @@
 
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import {
-  Calendar,
   Users,
   TrendingUp,
   CheckCircle,
@@ -30,7 +29,7 @@ import { LearningHeatmap } from '@/components/LearningHeatmap';
 import { WeakKnowledgePoints } from '@/components/WeakKnowledgePoints';
 import { TodayStats, WeeklyStats } from '@/components/StudyTimeCards';
 import { Input } from '@/components/ui/input';
-import { PageHeader, StatCard, StatsRow, ScrollFadeContainer } from '@/components/PageHeader';
+import { PageHeader, StatCard, StatsRow } from '@/components/PageHeader';
 import { cn } from '@/lib/utils';
 
 interface StudyTimeStats {
@@ -151,6 +150,29 @@ export default function DashboardPage() {
     }
   };
 
+  // 加载学习时长统计
+  const loadStudyTimeStats = useCallback(async () => {
+    if (!selectedStudent) {
+      setStudyStats(null);
+      return;
+    }
+
+    try {
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const response = await fetch(`/api/study/session?student_id=${selectedStudent}&start_date=${weekAgo}`);
+
+      if (!response.ok) {
+        console.error('Failed to load study stats');
+        return;
+      }
+
+      const result = await response.json();
+      setStudyStats(result.data || null);
+    } catch (error) {
+      console.error('Error loading study stats:', error);
+    }
+  }, [selectedStudent]);
+
   // 加载学生列表
   useEffect(() => {
     const loadStudents = async () => {
@@ -209,30 +231,7 @@ export default function DashboardPage() {
     };
 
     loadDashboardData();
-  }, [selectedStudent]);
-
-  // 加载学习时长统计
-  const loadStudyTimeStats = async () => {
-    if (!selectedStudent) {
-      setStudyStats(null);
-      return;
-    }
-
-    try {
-      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const response = await fetch(`/api/study/session?student_id=${selectedStudent}&start_date=${weekAgo}`);
-
-      if (!response.ok) {
-        console.error('Failed to load study stats');
-        return;
-      }
-
-      const result = await response.json();
-      setStudyStats(result.data || null);
-    } catch (error) {
-      console.error('Error loading study stats:', error);
-    }
-  };
+  }, [selectedStudent, loadStudyTimeStats]);
 
   return (
     <div className="min-h-screen bg-background">

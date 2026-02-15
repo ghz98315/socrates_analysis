@@ -5,9 +5,9 @@
 
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,9 +19,8 @@ import {
   AlertCircle,
   Filter
 } from 'lucide-react';
-import type { ErrorSession, ReviewSchedule } from '@/lib/supabase/types';
 import { createClient } from '@/lib/supabase/client';
-import { formatReviewDate, getUrgencyColor, getUrgencyLabel, REVIEW_STAGES } from '@/lib/review/utils';
+import { formatReviewDate, getUrgencyLabel, REVIEW_STAGES } from '@/lib/review/utils';
 import { PageHeader, StatCard, StatsRow } from '@/components/PageHeader';
 import { cn } from '@/lib/utils';
 
@@ -63,24 +62,12 @@ interface ReviewItem {
   isOverdue: boolean;
 }
 
-interface ReviewScheduleData {
-  id: string;
-  session_id: string;
-  review_stage: number;
-  next_review_at: string;
-  is_completed: boolean;
-}
-
-interface ErrorSessionData {
-  id: string;
-  subject: 'math' | 'physics' | 'chemistry';
-  concept_tags: string[] | null;
-  difficulty_rating: number | null;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SupabaseClient = any;
 
 export default function ReviewPage() {
   const { profile } = useAuth();
-  const supabase = createClient() as any;
+  const supabase = createClient() as SupabaseClient;
 
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,12 +77,7 @@ export default function ReviewPage() {
   const filterAnimation = useScrollAnimation();
   const listAnimation = useScrollAnimation();
 
-  // 加载复习列表
-  useEffect(() => {
-    loadReviews();
-  }, []);
-
-  const loadReviews = async () => {
+  const loadReviews = useCallback(async () => {
     setLoading(true);
 
     const { data: reviewData, error: reviewError } = await supabase
@@ -111,10 +93,10 @@ export default function ReviewPage() {
       return;
     }
 
-    const reviewSchedules = (reviewData as any) || [];
+    const reviewSchedules = reviewData || [];
 
     // 关联错题会话信息
-    const sessionIds = reviewSchedules.map((r: any) => r.session_id) || [];
+    const sessionIds = reviewSchedules.map((r: { session_id: string }) => r.session_id) || [];
 
     if (sessionIds.length > 0) {
       const { data: sessionData } = await supabase
@@ -122,13 +104,13 @@ export default function ReviewPage() {
         .select('*')
         .in('id', sessionIds);
 
-      const sessions = (sessionData as any) || [];
+      const sessions = sessionData || [];
 
       // 组合数据
-      const sessionMap = new Map(sessions.map((s: any) => [s.id, s]));
+      const sessionMap = new Map(sessions.map((s: { id: string }) => [s.id, s]));
 
-      const enrichedReviews: ReviewItem[] = reviewSchedules.map((review: any) => {
-        const session = sessionMap.get(review.session_id) as any;
+      const enrichedReviews: ReviewItem[] = reviewSchedules.map((review: { id: string; session_id: string; next_review_at: string; review_stage: number }) => {
+        const session = sessionMap.get(review.session_id) as { subject?: string; concept_tags?: string[]; difficulty_rating?: number } | undefined;
         const now = new Date();
         const nextReviewDate = new Date(review.next_review_at);
         const daysUntil = Math.ceil((nextReviewDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -152,7 +134,12 @@ export default function ReviewPage() {
     }
 
     setLoading(false);
-  };
+  }, [profile?.id, supabase]);
+
+  // 加载复习列表
+  useEffect(() => {
+    loadReviews();
+  }, [loadReviews]);
 
   const filteredReviews = reviews.filter(review => {
     if (filterStatus === 'pending') return !review.isOverdue;
@@ -173,7 +160,7 @@ export default function ReviewPage() {
       return;
     }
 
-    const reviewSchedule = (currentReview as any);
+    const reviewSchedule = currentReview as { review_stage: number; next_review_at: string };
 
     // 计算下一阶段
     const nextStage = Math.min(reviewSchedule.review_stage + 1, 4);

@@ -10,11 +10,9 @@ import { useAuth } from '@/lib/contexts/AuthContext';
 import {
   BookOpen,
   Camera,
-  Clock,
   Play,
   Pause,
   RefreshCw,
-  Sparkles,
   Bot,
   Timer
 } from 'lucide-react';
@@ -61,6 +59,8 @@ function usePageAnimation() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // This is a valid pattern for triggering mount animations
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

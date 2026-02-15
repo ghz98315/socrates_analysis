@@ -30,8 +30,9 @@ export default function LoginPage() {
     try {
       await signIn(phone, password);
       router.push('/select-profile');
-    } catch (err: any) {
-      setError(err.message || '登录失败，请检查手机号和密码');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '登录失败，请检查手机号和密码';
+      setError(message);
     } finally {
       setLoading(false);
     }

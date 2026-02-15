@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import {
   BarChart3,
@@ -97,12 +97,7 @@ export default function ReportsPage() {
   const chartAnimation = useScrollAnimation();
   const historyAnimation = useScrollAnimation();
 
-  // 加载报告数据
-  useEffect(() => {
-    loadReportData();
-  }, [profile, selectedPeriod]);
-
-  const loadReportData = async () => {
+  const loadReportData = useCallback(async () => {
     if (!profile?.id) return;
 
     setLoading(true);
@@ -136,7 +131,12 @@ export default function ReportsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile?.id, selectedPeriod]);
+
+  // 加载报告数据
+  useEffect(() => {
+    loadReportData();
+  }, [loadReportData]);
 
   const handleRefresh = async () => {
     setGenerating(true);

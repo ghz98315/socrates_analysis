@@ -9,8 +9,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import type { ThemeType } from '@/lib/supabase/types';
 import { GraduationCap, UserCircle, ChartBar, Loader2 } from 'lucide-react';
-import type { User } from '@supabase/supabase-js';
-import { createClient } from '@/lib/supabase/client';
 
 interface ProfileOption {
   id: string;
@@ -62,16 +60,8 @@ export default function SelectProfilePage() {
   useEffect(() => {
     if (!loading && profile) {
       // 检查是否已经设置过角色（有 theme_preference 或 grade_level）
-      const hasSelectedRole = profile.theme_preference || profile.grade_level;
-
-      // 修改：不再自动跳转，始终显示角色选择界面让用户可以重新选择
-      // if (hasSelectedRole) {
-      //   if (profile.role === 'parent') {
-      //     router.push('/dashboard');
-      //   } else {
-      //     router.push('/workbench');
-      //   }
-      // }
+      // 注释掉自动跳转逻辑，始终显示角色选择界面
+      // const hasSelectedRole = profile.theme_preference || profile.grade_level;
     }
   }, [profile, loading, router]);
 
@@ -111,10 +101,12 @@ export default function SelectProfilePage() {
 
       // 使用 replace 而不是 push，避免返回时重新触发
       const targetUrl = option.role === 'parent' ? '/dashboard' : '/workbench';
-      window.location.href = targetUrl;
-    } catch (error: any) {
+      router.push(targetUrl);
+      router.refresh();
+    } catch (error) {
       console.error('Failed to update profile:', error);
-      alert(`设置角色失败: ${error?.message || JSON.stringify(error)}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      alert(`设置角色失败: ${errorMessage}`);
       setSelecting(null);
     }
   };

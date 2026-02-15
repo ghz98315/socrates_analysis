@@ -73,8 +73,9 @@ export default function RegisterPage() {
 
       // 跳转到选择角色页面
       router.push('/select-profile');
-    } catch (err: any) {
-      setError(err.message || '注册失败，请稍后重试');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '注册失败，请稍后重试';
+      setError(message);
     } finally {
       setLoading(false);
     }
