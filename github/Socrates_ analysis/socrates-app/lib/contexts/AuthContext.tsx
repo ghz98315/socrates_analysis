@@ -7,6 +7,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import type { Database } from '@/lib/supabase/database.types';
+
+type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 
 interface UserProfile {
   id: string;
@@ -253,9 +257,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // 使用 update() 方法直接更新
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('profiles')
-        .update(updates as any)
+        .update(updates)
         .eq('id', user.id)
         .select()
         .single();

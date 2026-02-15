@@ -3,21 +3,20 @@
 // 防止重复创建客户端导致的问题
 // =====================================================
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { createClient } from '@supabase/supabase-js';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 // 单例客户端
-let clientInstance: ReturnType<typeof createClient> | null = null;
+let clientInstance: ReturnType<typeof createSupabaseClient> | null = null;
 
 export function getSupabaseClient() {
   if (clientInstance) {
     return clientInstance;
   }
 
-  clientInstance = createClient(supabaseUrl, supabaseAnonKey, {
+  clientInstance = createSupabaseClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,

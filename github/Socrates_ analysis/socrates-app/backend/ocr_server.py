@@ -70,6 +70,16 @@ async def root():
     }
 
 
+@app.get("/health")
+async def health():
+    """健康检查端点"""
+    return {
+        "status": "ok",
+        "ocr_available": OCR_AVAILABLE,
+        "engine": "RapidOCR"
+    }
+
+
 @app.post("/ocr")
 async def recognize_text(file: UploadFile = File(...)):
     """

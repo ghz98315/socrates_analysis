@@ -51,7 +51,7 @@ const prepareImageForOCR = (file: File): Promise<string> => {
 // 导出配置
 export const OCR_CONFIG = {
   // 推荐使用阿里云或腾讯云 OCR，对中文支持更好
-  RECOMMENDED_API: 'alibaba-ocr' | 'tencent-ocr',
+  RECOMMENDED_API: 'alibaba-ocr' as const,
 
   // Tesseract 配置（如果使用）
   TESSERACT_CONFIG: {

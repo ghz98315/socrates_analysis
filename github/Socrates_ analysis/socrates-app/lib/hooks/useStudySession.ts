@@ -41,7 +41,7 @@ export function useStudySession(options: UseStudySessionOptions = {}) {
         await endSession();
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('study_sessions')
         .insert({
           session_type: sessionType,
@@ -80,7 +80,7 @@ export function useStudySession(options: UseStudySessionOptions = {}) {
 
     const duration = Math.floor((Date.now() - startTimeRef.current.getTime()) / 1000);
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('study_sessions')
       .update({ duration_seconds: duration })
       .eq('id', session.id);
@@ -106,7 +106,7 @@ export function useStudySession(options: UseStudySessionOptions = {}) {
       ? Math.floor((endTime.getTime() - startTimeRef.current.getTime()) / 1000)
       : 0;
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('study_sessions')
       .update({
         end_time: endTime.toISOString(),
@@ -124,7 +124,7 @@ export function useStudySession(options: UseStudySessionOptions = {}) {
 
   // 获取历史会话
   const getHistory = useCallback(async (limit = 10) => {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('study_sessions')
       .select('*')
       .order('start_time', { ascending: false })
@@ -194,7 +194,7 @@ class SessionManager {
       await this.end();
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await (this.supabase as any)
       .from('study_sessions')
       .insert({
         session_type: sessionType,
@@ -218,7 +218,7 @@ class SessionManager {
     const endTime = new Date();
     const duration = Math.floor((endTime.getTime() - this.startTime.getTime()) / 1000);
 
-    await this.supabase
+    await (this.supabase as any)
       .from('study_sessions')
       .update({
         end_time: endTime.toISOString(),
@@ -243,7 +243,7 @@ class SessionManager {
 
     const duration = Math.floor((Date.now() - this.startTime.getTime()) / 1000);
 
-    await this.supabase
+    await (this.supabase as any)
       .from('study_sessions')
       .update({ duration_seconds: duration })
       .eq('id', this.session.id);

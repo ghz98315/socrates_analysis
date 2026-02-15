@@ -16,9 +16,10 @@ const supabaseAdmin = createClient(
 // DELETE endpoint - 删除学生账号
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { studentId: string } }
+  { params }: { params: Promise<{ studentId: string }> }
 ) {
   try {
+    const { studentId } = await params;
     // 创建服务端客户端，用于认证当前用户
     const cookieStore = await cookies();
     const supabase = createServerClient(
@@ -51,7 +52,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Only parents can delete students' }, { status: 403 });
     }
 
-    const studentId = params.studentId;
+    // studentId already destructured above
 
     // 验证学生确实属于当前家长
     const { data: studentProfile, error: studentError } = await supabase

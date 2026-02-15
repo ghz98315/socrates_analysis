@@ -22,8 +22,10 @@ export function createClient() {
   // 包装所有数据库查询，添加重试逻辑
   const originalFrom = client.from.bind(client);
 
-  client.from = (table: string) => {
-    const queryBuilder = originalFrom(table);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (client as any).from = (table: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const queryBuilder: any = originalFrom(table);
 
     // 包装查询方法
     const originalSelect = queryBuilder.select.bind(queryBuilder);
@@ -58,33 +60,29 @@ export function createClient() {
 }
 
 // 重试操作函数
-async function retryOperation<T>(
-  operation: () => T,
-  retries = MAX_RETRIES
-): Promise<T> {
-  let lastError: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function retryOperation<T extends (...args: any[]) => any>(
+  operation: T
+): Promise<ReturnType<T>> {
+  let lastError: Error | null = null;
 
-  for (let i = 0; i <= retries; i++) {
+  for (let i = 0; i < MAX_RETRIES; i++) {
     try {
       return await operation();
     } catch (error: any) {
       lastError = error;
 
-      // 如果是 AbortError 且不是最后一次重试，则重试
-      if (error?.message?.includes('AbortError') && i < retries) {
-        console.log(`请求被中止，重试 ${i + 1}/${retries}...`);
+      // 检查是否是网络错误
+      if (error.message?.includes('network') || error.message?.includes('timeout')) {
+        console.warn(`Retry ${i + 1}/${MAX_RETRIES} after network error`);
         await delay(RETRY_DELAY * (i + 1)); // 指数退避
         continue;
       }
 
-      // 如果是其他错误或已达到最大重试次数，抛出错误
+      // 非网络错误直接抛出
       throw error;
     }
   }
 
-  throw lastError;
-}
-
-export async function createServerClient() {
-  return createSupabaseClient(supabaseUrl, supabaseAnonKey);
+  throw lastError || new Error('Operation failed after retries');
 }

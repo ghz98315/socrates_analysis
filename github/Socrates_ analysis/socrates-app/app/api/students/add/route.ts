@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
     // 验证年级（必须是1-12的整数）
     const parsedGradeLevel = grade_level ? parseInt(String(grade_level), 10) : null;
-    if (grade_level !== '' && grade_level !== null && grade_level !== undefined && (isNaN(parsedGradeLevel) || parsedGradeLevel < 1 || parsedGradeLevel > 12)) {
+    if (parsedGradeLevel !== null && (isNaN(parsedGradeLevel) || parsedGradeLevel < 1 || parsedGradeLevel > 12)) {
       return NextResponse.json({ error: 'Grade level must be between 1 and 12' }, { status: 400 });
     }
 

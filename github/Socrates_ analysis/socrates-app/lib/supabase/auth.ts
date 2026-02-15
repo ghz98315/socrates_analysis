@@ -48,9 +48,9 @@ export async function updateProfile(data: Partial<UserProfile>) {
     throw new Error('Not authenticated');
   }
 
-  const { data: profile, error } = await supabase
+  const { data: profile, error } = await (supabase as any)
     .from('profiles')
-    .update(data as any)
+    .update(data)
     .eq('id', user.id)
     .select()
     .single();

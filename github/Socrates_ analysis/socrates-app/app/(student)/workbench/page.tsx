@@ -1,19 +1,31 @@
 // =====================================================
 // Project Socrates - Workbench Page (Student)
+// 方案二：分层卡片设计
 // =====================================================
 
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import { BookOpen, MessageSquare, Camera, X, Clock, Play, Pause, RefreshCw } from 'lucide-react';
+import {
+  BookOpen,
+  Camera,
+  Clock,
+  Play,
+  Pause,
+  RefreshCw,
+  Sparkles,
+  Bot,
+  Timer
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ImageUploader } from '@/components/ImageUploader';
 import { OCRResult } from '@/components/OCRResult';
 import { ChatMessageList, type Message } from '@/components/ChatMessage';
 import { ChatInput } from '@/components/ChatInput';
+import { PageHeader } from '@/components/PageHeader';
 
 type Step = 'upload' | 'ocr' | 'chat';
 
@@ -169,22 +181,18 @@ export default function WorkbenchPage() {
 
   const handleOCRComplete = async (text: string) => {
     setOcrText(text);
-    // OCR 完成后，先切换到聊天界面
     setCurrentStep('chat');
 
-    // 创建错题会话到数据库
-    // 检查 profile 是否存在
     if (!profile?.id) {
       console.error('No profile ID, cannot save error session');
-      // 不中断流程，继续到聊天界面
       return;
     }
 
-    // 异步保存错题会话，不阻塞 UI
     saveErrorSession(text);
   };
 
   const saveErrorSession = async (text: string) => {
+    if (!profile?.id) return;
     try {
       console.log('Creating error session with profile ID:', profile.id);
       const response = await fetch('/api/error-session', {
@@ -192,7 +200,7 @@ export default function WorkbenchPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           student_id: profile.id,
-          subject: 'math', // 默认数学，后续可以扩展
+          subject: 'math',
           original_image_url: imagePreview || null,
           extracted_text: text,
         }),
@@ -200,7 +208,6 @@ export default function WorkbenchPage() {
 
       if (response.ok) {
         const result = await response.json();
-        // 保存 session_id 用于后续对话记录
         chatSessionRef.current = result.data.session_id;
         console.log('Error session created successfully:', result.data.session_id);
       } else {
@@ -217,7 +224,6 @@ export default function WorkbenchPage() {
     setImagePreview(null);
     setOcrText('');
     setCurrentStep('upload');
-    // Clear chat when image is removed
     setMessages([]);
     chatSessionRef.current = `session_${Date.now()}`;
   };
@@ -290,162 +296,196 @@ export default function WorkbenchPage() {
   }, [messages]);
 
   const themeClass = profile?.theme_preference === 'junior' ? 'theme-junior' : 'theme-senior';
+  const aiName = profile?.theme_preference === 'junior' ? 'Jasper' : 'Logic';
 
   return (
     <div className={`min-h-screen bg-background ${themeClass}`}>
-      {/* Study Session Toolbar - below global nav */}
-      <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm px-6 py-2">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">
-              {profile?.theme_preference === 'junior' ? 'Jasper' : 'Logic'} AI
-            </span>
-            {profile?.theme_preference && (
-              <span className="text-xs text-muted-foreground">
-                · {profile.theme_preference === 'junior' ? '小学版' : '中学版'}
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Study Session Timer */}
-            {isStudying && (
-              <Badge className="bg-green-100 text-green-700 flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5" />
-                <span className="text-xs">学习中</span>
-                <span className="text-xs font-medium">{formatDuration(studyDuration)}</span>
-              </Badge>
-            )}
-            {!isStudying && (
-              <Badge className="bg-muted text-muted-foreground flex items-center gap-1">
-                <span className="text-xs">未开始</span>
-              </Badge>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleStudySession}
-              className="h-7 gap-1 text-xs"
-            >
+      {/* 页面标题卡片 */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+        <PageHeader
+          title="学习工作台"
+          description={profile?.theme_preference === 'junior' ? '小学版 · AI引导学习' : '中学版 · AI推理分析'}
+          icon={BookOpen}
+          iconColor="text-green-500"
+          actions={
+            <div className="flex items-center gap-3">
+              {/* Study Session Timer */}
               {isStudying ? (
-                <>
-                  <Pause className="w-3 h-3" />
-                  暂停
-                </>
+                <Badge className="bg-green-100 text-green-700 flex items-center gap-2 px-3 py-1">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <Timer className="w-3.5 h-3.5" />
+                  <span>{formatDuration(studyDuration)}</span>
+                </Badge>
               ) : (
-                <>
-                  <Play className="w-3 h-3" />
-                  开始
-                </>
+                <Badge className="bg-muted text-muted-foreground px-3 py-1">
+                  未开始
+                </Badge>
               )}
-            </Button>
-          </div>
-        </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleStudySession}
+                className="gap-2"
+              >
+                {isStudying ? (
+                  <>
+                    <Pause className="w-4 h-4" />
+                    暂停
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4" />
+                    开始学习
+                  </>
+                )}
+              </Button>
+            </div>
+          }
+        />
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-6" style={{ minHeight: 'calc(100vh - 64px)' }}>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Left Panel - 40% */}
-          <div className="lg:col-span-2 space-y-4">
-            {/* Image Upload */}
-            <ImageUploader
-              onImageSelect={handleImageSelect}
-              onImageRemove={handleImageRemove}
-              currentImage={imagePreview}
-              maxSize={10}
-            />
+          <div className="lg:col-span-2 space-y-6">
+            {/* Image Upload Card */}
+            <Card className="border-border/50">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Camera className="w-5 h-5 text-primary" />
+                  上传错题
+                </CardTitle>
+                <CardDescription>
+                  拍摄或上传你的错题图片
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ImageUploader
+                  onImageSelect={handleImageSelect}
+                  onImageRemove={handleImageRemove}
+                  currentImage={imagePreview}
+                  maxSize={10}
+                />
+              </CardContent>
+            </Card>
 
-            {/* OCR Result */}
+            {/* OCR Result Card */}
             {selectedImage && (
-              <OCRResult
-                initialText={ocrText}
-                onTextChange={setOcrText}
-                onConfirm={handleOCRComplete}
-                imageData={imagePreview}
-              />
+              <Card className="border-border/50">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Sparkles className="w-5 h-5 text-orange-500" />
+                    题目识别
+                  </CardTitle>
+                  <CardDescription>
+                    确认识别结果是否正确
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <OCRResult
+                    initialText={ocrText}
+                    onTextChange={setOcrText}
+                    onConfirm={handleOCRComplete}
+                    imageData={imagePreview}
+                  />
+                </CardContent>
+              </Card>
             )}
           </div>
 
-          {/* Right Panel - 60% */}
-          <div className="lg:col-span-3 bg-card rounded-2xl shadow-apple flex flex-col">
-            <div className="flex-1 p-6">
+          {/* Right Panel - 60% - Chat Area */}
+          <div className="lg:col-span-3">
+            <Card className="border-border/50 h-full flex flex-col min-h-[600px]">
               {currentStep === 'upload' && (
-                <div className="h-full flex items-center justify-center text-center">
-                  <Camera className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold text-card-foreground">
-                    {profile?.theme_preference === 'junior' ? '上传错题开始学习 🌟' : '上传错题开始学习'}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {profile?.theme_preference === 'junior'
-                      ? 'Jasper 会帮你理解问题，而不是直接给答案'
-                      : 'Logic 会引导你通过推理找到答案'}
-                  </p>
+                <div className="flex-1 flex items-center justify-center p-8">
+                  <div className="text-center space-y-6">
+                    <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                      <Bot className="w-12 h-12 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2">
+                        {profile?.theme_preference === 'junior' ? '准备好学习了吗?' : '开始你的学习之旅'}
+                      </h3>
+                      <p className="text-muted-foreground max-w-sm mx-auto">
+                        {profile?.theme_preference === 'junior'
+                          ? `${aiName} 会引导你理解问题，一步步找到答案`
+                          : `${aiName} 将通过苏格拉底式提问帮助你深入思考`}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      {aiName} 已就绪
+                    </div>
+                  </div>
                 </div>
               )}
 
               {currentStep === 'ocr' && (
-                <div className="h-full flex items-center justify-center text-center">
-                  <div className="animate-pulse w-12 h-12 rounded-full border-4 border-primary mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-card-foreground">
-                    正在分析你的错题...
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    请稍候
-                  </p>
+                <div className="flex-1 flex items-center justify-center p-8">
+                  <div className="text-center space-y-4">
+                    <div className="relative w-16 h-16 mx-auto">
+                      <div className="absolute inset-0 rounded-full border-4 border-primary/30"></div>
+                      <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+                    </div>
+                    <h3 className="text-lg font-semibold">
+                      正在分析你的错题...
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      AI 正在识别题目内容
+                    </p>
+                  </div>
                 </div>
               )}
 
               {currentStep === 'chat' && (
-                <div className="h-full flex flex-col">
+                <div className="flex-1 flex flex-col">
                   {/* Chat Header */}
-                  <div className="flex items-center justify-between pb-4 border-b border-border/50">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                        <span className="text-lg">
-                          {profile?.theme_preference === 'junior' ? 'J' : 'L'}
-                        </span>
+                  <CardHeader className="border-b border-border/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-white font-bold">
+                          {aiName.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{aiName}</p>
+                          <p className="text-xs text-muted-foreground">AI 学习导师</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">
-                          {profile?.theme_preference === 'junior' ? 'Jasper' : 'Logic'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          AI 学习导师
-                        </p>
-                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleResetChat}
+                        className="gap-2"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                        重新开始
+                      </Button>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={handleResetChat}
-                      className="gap-2"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      重新开始
-                    </Button>
-                  </div>
+                  </CardHeader>
 
                   {/* OCR Context */}
                   {ocrText && (
-                    <div className="p-3 rounded-lg bg-muted/30 mb-4">
-                      <p className="text-xs text-muted-foreground mb-1">题目内容：</p>
-                      <p className="text-sm line-clamp-3">{ocrText}</p>
+                    <div className="px-6 pt-4">
+                      <div className="p-4 rounded-xl bg-muted/30 border border-border/30">
+                        <p className="text-xs text-muted-foreground mb-1 font-medium">当前题目：</p>
+                        <p className="text-sm line-clamp-2">{ocrText}</p>
+                      </div>
                     </div>
                   )}
 
                   {/* Messages */}
-                  <div className="flex-1 overflow-auto">
+                  <CardContent className="flex-1 overflow-auto px-6">
                     <ChatMessageList
                       messages={messages}
                       theme={profile?.theme_preference || 'junior'}
                       isLoading={isChatLoading}
                     />
                     <div ref={messagesEndRef} />
-                  </div>
+                  </CardContent>
 
                   {/* Input */}
-                  <div className="pt-4 border-t border-border/50">
+                  <div className="p-4 border-t border-border/50">
                     <ChatInput
                       onSend={handleSendMessage}
                       isLoading={isChatLoading}
@@ -458,16 +498,16 @@ export default function WorkbenchPage() {
                   </div>
                 </div>
               )}
-            </div>
+            </Card>
           </div>
         </div>
       </main>
 
       {/* Development Notice */}
-      <div className="fixed bottom-4 left-0 right-0 p-4">
+      <div className="fixed bottom-4 left-0 right-0 p-4 pointer-events-none">
         <div className="max-w-7xl mx-auto">
-          <div className="mx-auto bg-card/80 backdrop-blur-xl rounded-full px-4 py-2 text-sm text-muted-foreground shadow-apple">
-            🚧 工作台正在开发中...更多功能即将上线
+          <div className="mx-auto bg-card/80 backdrop-blur-xl rounded-full px-4 py-2 text-sm text-muted-foreground shadow-sm border border-border/50 w-fit">
+            工作台开发中...更多功能即将上线
           </div>
         </div>
       </div>
