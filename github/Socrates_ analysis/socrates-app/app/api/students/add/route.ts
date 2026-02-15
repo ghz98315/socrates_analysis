@@ -66,10 +66,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
     }
 
+    // 验证年级（必须是1-12的整数）
+    const parsedGradeLevel = grade_level ? parseInt(String(grade_level), 10) : null;
+    if (grade_level !== '' && grade_level !== null && grade_level !== undefined && (isNaN(parsedGradeLevel) || parsedGradeLevel < 1 || parsedGradeLevel > 12)) {
+      return NextResponse.json({ error: 'Grade level must be between 1 and 12' }, { status: 400 });
+    }
+
+    // 检查手机号是否已注册
+    const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers();
+    const alreadyExists = existingUser.users.find(u => u.email === `${phone}@student.local`);
+
+    if (alreadyExists) {
+      return NextResponse.json({
+        error: '该手机号已注册，请让学生先自行登录或使用其他手机号',
+        code: 'PHONE_EXISTS'
+      }, { status: 400 });
+    }
+
     // 1. 创建 auth.users 记录
     const { data: { user: authUser }, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email: `${phone}@student.local`, // 使用 phone@student.local 作为 email
       password,
+      email_confirm: true, // 自动确认邮箱（因为使用手机号注册，无邮件验证流程）
       user_metadata: {
         display_name,
         parent_id: user.id, // 记录父级用户 ID
@@ -78,6 +96,15 @@ export async function POST(req: NextRequest) {
 
     if (authError || !authUser) {
       console.error('Error creating auth user:', authError);
+
+      // 处理邮箱已存在的错误
+      if (authError?.message?.includes('already been registered') || authError?.message?.includes('User already registered')) {
+        return NextResponse.json({
+          error: '该手机号已注册，请让学生先自行登录或使用其他手机号',
+          code: 'PHONE_EXISTS'
+        }, { status: 400 });
+      }
+
       return NextResponse.json({ error: 'Failed to create student account' }, { status: 500 });
     }
 
@@ -90,7 +117,7 @@ export async function POST(req: NextRequest) {
         parent_id: user.id, // 设置父级用户 ID
         display_name,
         phone,
-        grade_level,
+        grade_level: parsedGradeLevel,
         theme_preference: 'junior', // 默认主题
       });
 
@@ -104,7 +131,7 @@ export async function POST(req: NextRequest) {
         id: authUser.id,
         display_name,
         phone,
-        grade_level,
+        grade_level: parsedGradeLevel,
         role: 'student',
       },
       message: 'Student added successfully',

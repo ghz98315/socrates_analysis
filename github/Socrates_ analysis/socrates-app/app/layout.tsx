@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/contexts/AuthContext";
+import { GlobalNav } from "@/components/GlobalNav";
 
 export const metadata: Metadata = {
   title: "Socrates - AI Learning Companion",
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
         <AuthProvider>
+          <GlobalNav />
           {children}
         </AuthProvider>
       </body>

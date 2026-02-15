@@ -174,25 +174,28 @@ export default function ReviewPage() {
 
   return (
     <div className={`min-h-screen bg-background ${profile?.theme_preference === 'junior' ? 'theme-junior' : 'theme-senior'}`}>
-      {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-xl sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      {/* Review Toolbar - below global nav */}
+      <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm px-6 py-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">复习中心</h1>
+            <span className="text-sm font-medium">复习计划</span>
             {profile?.theme_preference === 'junior' && (
-              <span className="text-sm text-muted-foreground">Junior</span>
+              <span className="text-xs text-muted-foreground">· 小学版</span>
+            )}
+            {profile?.theme_preference === 'senior' && (
+              <span className="text-xs text-muted-foreground">· 中学版</span>
             )}
           </div>
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => window.history.back()}
-            className="gap-2"
+            onClick={() => window.location.href = '/workbench'}
+            className="h-7 text-xs"
           >
             返回工作台
           </Button>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-6">

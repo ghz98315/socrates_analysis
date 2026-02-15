@@ -15,7 +15,7 @@ import { Loader2 } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { signUp } = useAuth();
+  const { signIn } = useAuth();
 
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -49,7 +49,29 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await signUp(phone, password, displayName || undefined);
+      // 调用服务端注册 API
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone,
+          password,
+          display_name: displayName || undefined,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || '注册失败，请稍后重试');
+      }
+
+      // 注册成功后自动登录
+      await signIn(phone, password);
+
+      // 跳转到选择角色页面
       router.push('/select-profile');
     } catch (err: any) {
       setError(err.message || '注册失败，请稍后重试');

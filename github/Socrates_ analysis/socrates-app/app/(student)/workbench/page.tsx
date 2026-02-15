@@ -6,11 +6,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import { BookOpen, MessageSquare, LogOut, Camera, X, Clock, Play, Pause, RefreshCw } from 'lucide-react';
+import { BookOpen, MessageSquare, Camera, X, Clock, Play, Pause, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useRouter } from 'next/navigation';
 import { ImageUploader } from '@/components/ImageUploader';
 import { OCRResult } from '@/components/OCRResult';
 import { ChatMessageList, type Message } from '@/components/ChatMessage';
@@ -19,8 +18,7 @@ import { ChatInput } from '@/components/ChatInput';
 type Step = 'upload' | 'ocr' | 'chat';
 
 export default function WorkbenchPage() {
-  const { profile, signOut } = useAuth();
-  const router = useRouter();
+  const { profile } = useAuth();
 
   console.log('WorkbenchPage rendered, profile:', profile);
 
@@ -40,23 +38,6 @@ export default function WorkbenchPage() {
   const [studySessionId, setStudySessionId] = useState<string | null>(null);
   const [studyDuration, setStudyDuration] = useState(0);
   const studyTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleSignOut = async () => {
-    // End study session before signing out
-    if (isStudying && studySessionId) {
-      await endStudySession();
-    }
-
-    try {
-      await signOut();
-      // 使用 window.location.href 强制跳转，避免路由问题
-      window.location.href = '/login';
-    } catch (error) {
-      console.error('Sign out error:', error);
-      // 仍然尝试跳转
-      router.push('/login');
-    }
-  };
 
   // Start study session when component mounts
   useEffect(() => {
@@ -312,64 +293,55 @@ export default function WorkbenchPage() {
 
   return (
     <div className={`min-h-screen bg-background ${themeClass}`}>
-      {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-xl sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      {/* Study Session Toolbar - below global nav */}
+      <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm px-6 py-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">Socrates</h1>
-            {profile?.theme_preference === 'junior' && (
-              <span className="text-sm text-muted-foreground">Junior</span>
-            )}
-            {profile?.theme_preference === 'senior' && (
-              <span className="text-sm text-muted-foreground">Senior</span>
+            <span className="text-sm font-medium">
+              {profile?.theme_preference === 'junior' ? 'Jasper' : 'Logic'} AI
+            </span>
+            {profile?.theme_preference && (
+              <span className="text-xs text-muted-foreground">
+                · {profile.theme_preference === 'junior' ? '小学版' : '中学版'}
+              </span>
             )}
           </div>
 
-          {/* Study Session Timer */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Study Session Timer */}
             {isStudying && (
               <Badge className="bg-green-100 text-green-700 flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span className="text-sm">学习中</span>
-                <span className="text-xs ml-2">{formatDuration(studyDuration)}</span>
+                <Clock className="w-3.5 h-3.5" />
+                <span className="text-xs">学习中</span>
+                <span className="text-xs font-medium">{formatDuration(studyDuration)}</span>
               </Badge>
             )}
             {!isStudying && (
-              <Badge className="bg-muted text-muted-foreground flex items-center gap-2">
-                <span className="text-sm">未开始</span>
+              <Badge className="bg-muted text-muted-foreground flex items-center gap-1">
+                <span className="text-xs">未开始</span>
               </Badge>
             )}
             <Button
               variant="ghost"
               size="sm"
               onClick={toggleStudySession}
-              className="gap-2"
+              className="h-7 gap-1 text-xs"
             >
               {isStudying ? (
                 <>
-                  <Pause className="w-4 h-4" />
+                  <Pause className="w-3 h-3" />
                   暂停
                 </>
               ) : (
                 <>
-                  <Play className="w-4 h-4" />
-                  开始学习
+                  <Play className="w-3 h-3" />
+                  开始
                 </>
               )}
             </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSignOut}
-              className="gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              退出
-            </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-6" style={{ minHeight: 'calc(100vh - 64px)' }}>

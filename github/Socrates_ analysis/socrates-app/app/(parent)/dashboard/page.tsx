@@ -6,10 +6,9 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
-import { LogOut, Calendar, Users, TrendingUp, CheckCircle, Loader2, Plus } from 'lucide-react';
+import { Calendar, Users, TrendingUp, CheckCircle, Loader2, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
 import type { StudentStats } from '@/lib/supabase/types';
 import { LearningHeatmap } from '@/components/LearningHeatmap';
 import { WeakKnowledgePoints } from '@/components/WeakKnowledgePoints';
@@ -66,8 +65,7 @@ function StatCard({ title, value, unit, icon, trend }: StatCardProps) {
 }
 
 export default function DashboardPage() {
-  const { profile, loading: authLoading, signOut } = useAuth();
-  const router = useRouter();
+  const { profile, loading: authLoading } = useAuth();
 
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [selectedStudentName, setSelectedStudentName] = useState<string>('');
@@ -78,11 +76,8 @@ export default function DashboardPage() {
   const [studyStats, setStudyStats] = useState<StudyTimeStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
-
-  const handleSignOut = async () => {
-    await signOut();
-    router.push('/login');
-  };
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,6 +114,42 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Error adding student:', error);
       alert(`添加失败: ${error}`);
+    }
+  };
+
+  const handleDeleteStudent = async () => {
+    if (!studentToDelete) return;
+
+    try {
+      const response = await fetch(`/api/students/${studentToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(`删除失败: ${error.error || '未知错误'}`);
+        return;
+      }
+
+      // Show success message
+      alert(`学生 ${studentToDelete.name} 已删除`);
+
+      // Close modal
+      setShowDeleteConfirm(false);
+      setStudentToDelete(null);
+
+      // If deleted student was selected, clear selection
+      if (selectedStudent === studentToDelete.id) {
+        setSelectedStudent(null);
+        setSelectedStudentName('');
+        setStats(null);
+      }
+
+      // Refresh student list
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      alert(`删除失败: ${error}`);
     }
   };
 
@@ -216,12 +247,17 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-xl sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      {/* Dashboard Toolbar - below global nav */}
+      <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm px-6 py-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-semibold">Dashboard</h1>
-            <span className="text-sm text-muted-foreground">Parent</span>
+            <span className="text-sm font-medium">家长中心</span>
+            {selectedStudent && (
+              <>
+                <span className="text-muted-foreground">·</span>
+                <span className="text-sm text-muted-foreground">{selectedStudentName}</span>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -231,7 +267,7 @@ export default function DashboardPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelectedStudent(null)}
-                className="gap-2"
+                className="h-7 text-xs"
               >
                 返回概览
               </Button>
@@ -241,24 +277,14 @@ export default function DashboardPage() {
               variant="default"
               size="sm"
               onClick={() => setShowAddStudentModal(true)}
-              className="gap-2"
+              className="h-7 gap-1 text-xs"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3 h-3" />
               添加学生
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSignOut}
-              className="gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              退出
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-6">
@@ -274,16 +300,30 @@ export default function DashboardPage() {
               <h2 className="text-2xl font-semibold text-card-foreground">
                 {selectedStudentName || selectedStudent} 的学习报告
               </h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setSelectedStudent(null);
-                  setSelectedStudentName('');
-                }}
-              >
-                切换学生
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setStudentToDelete({ id: selectedStudent, name: selectedStudentName });
+                    setShowDeleteConfirm(true);
+                  }}
+                  className="gap-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  删除学生
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedStudent(null);
+                    setSelectedStudentName('');
+                  }}
+                >
+                  切换学生
+                </Button>
+              </div>
             </div>
 
             {/* Original Stats Grid */}
@@ -365,22 +405,35 @@ export default function DashboardPage() {
               {/* 从数据库加载真实学生列表 */}
               <div className="grid grid-cols-2 gap-4">
                 {students.map(student => (
-                  <Button
-                    key={student.id}
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedStudent(student.id);
-                      setSelectedStudentName(student.display_name);
-                    }}
-                    className="h-24 flex flex-col gap-2 btn-press"
-                  >
-                    <span className="text-xl font-medium">
-                      {student.display_name}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {student.grade_level}年级
-                    </span>
-                  </Button>
+                  <div key={student.id} className="relative group">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedStudent(student.id);
+                        setSelectedStudentName(student.display_name);
+                      }}
+                      className="w-full h-24 flex flex-col gap-2 btn-press pr-10"
+                    >
+                      <span className="text-xl font-medium">
+                        {student.display_name}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {student.grade_level}年级
+                      </span>
+                    </Button>
+                    {/* Delete button - always visible */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setStudentToDelete({ id: student.id, name: student.display_name });
+                        setShowDeleteConfirm(true);
+                      }}
+                      className="absolute top-1 right-1 w-7 h-7 bg-red-100 hover:bg-red-500 hover:text-white text-red-500 rounded-lg shadow-sm transition-all flex items-center justify-center"
+                      title="删除学生"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -500,6 +553,44 @@ export default function DashboardPage() {
                   </Button>
                 </div>
               </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Delete Student Confirmation Modal */}
+      {showDeleteConfirm && studentToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>确认删除</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                确定要删除学生 <span className="font-medium text-foreground">{studentToDelete.name}</span> 吗？
+              </p>
+              <p className="text-xs text-destructive">
+                ⚠️ 此操作将永久删除该学生的所有数据（错题记录、学习报告等），无法恢复。
+              </p>
+              <div className="flex gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setStudentToDelete(null);
+                  }}
+                >
+                  取消
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="flex-1"
+                  onClick={handleDeleteStudent}
+                >
+                  确认删除
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

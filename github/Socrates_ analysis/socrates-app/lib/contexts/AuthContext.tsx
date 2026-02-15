@@ -165,6 +165,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
       options: {
+        emailRedirectTo: undefined, // 不需要邮件验证
         data: {
           display_name: name,
           phone: phone,  // 存储手机号到 metadata
