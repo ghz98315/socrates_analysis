@@ -133,11 +133,21 @@
   --accent-foreground: 230 81 0;
 }
 
+.theme-junior.dark {
+  --junior-accent: 255 179 64; /* Slightly lighter orange for dark mode */
+  --junior-accent-light: 62 39 35;
+}
+
 .theme-senior {
   --primary: var(--senior-accent);
   --primary-foreground: 255 255 255;
   --accent: var(--senior-accent-light);
   --accent-foreground: 0 51 204;
+}
+
+.theme-senior.dark {
+  --senior-accent: 10 132 255;
+  --senior-accent-light: 28 28 30;
 }
 
 /* =====================================================

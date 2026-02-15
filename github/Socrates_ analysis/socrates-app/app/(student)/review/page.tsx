@@ -291,7 +291,7 @@ export default function ReviewPage() {
                     onClick={() => setFilterStatus('pending')}
                     className={cn(
                       "transition-all duration-200",
-                      filterStatus === 'pending' && 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                      filterStatus === 'pending' && 'bg-yellow-500 hover:bg-yellow-600 text-white dark:bg-yellow-600 dark:hover:bg-yellow-700'
                     )}
                   >
                     待复习 ({pendingCount})
@@ -302,7 +302,7 @@ export default function ReviewPage() {
                     onClick={() => setFilterStatus('overdue')}
                     className={cn(
                       "transition-all duration-200",
-                      filterStatus === 'overdue' && 'bg-red-500 hover:bg-red-600 text-white'
+                      filterStatus === 'overdue' && 'bg-red-500 hover:bg-red-600 text-white dark:bg-red-600 dark:hover:bg-red-700'
                     )}
                   >
                     已到期 ({overdueCount})
