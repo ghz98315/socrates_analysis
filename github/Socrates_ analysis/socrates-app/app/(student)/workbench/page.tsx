@@ -1,6 +1,6 @@
 // =====================================================
 // Project Socrates - Workbench Page (Student)
-// 方案二：分层卡片设计
+// 方案二：分层卡片设计 + 苹果风格动画
 // =====================================================
 
 'use client';
@@ -26,13 +26,52 @@ import { OCRResult } from '@/components/OCRResult';
 import { ChatMessageList, type Message } from '@/components/ChatMessage';
 import { ChatInput } from '@/components/ChatInput';
 import { PageHeader } from '@/components/PageHeader';
+import { cn } from '@/lib/utils';
 
 type Step = 'upload' | 'ocr' | 'chat';
 
+// 滚动动画 Hook
+function useScrollAnimation(threshold = 0.1) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(element);
+        }
+      },
+      { threshold }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return { ref, isVisible };
+}
+
+// 页面进入动画 Hook
+function usePageAnimation() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  return mounted;
+}
+
 export default function WorkbenchPage() {
   const { profile } = useAuth();
-
-  console.log('WorkbenchPage rendered, profile:', profile);
+  const pageAnimation = usePageAnimation();
+  const leftPanelAnimation = useScrollAnimation();
+  const rightPanelAnimation = useScrollAnimation();
 
   const [currentStep, setCurrentStep] = useState<Step>('upload');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -60,14 +99,14 @@ export default function WorkbenchPage() {
       if (isStudying && studySessionId) {
         sendHeartbeat();
       }
-    }, 30000); // Every 30 seconds
+    }, 30000);
 
     // Set up duration update interval
     studyTimerRef.current = setInterval(() => {
       if (isStudying) {
         setStudyDuration(prev => prev + 1);
       }
-    }, 1000); // Update every second
+    }, 1000);
 
     // Cleanup on unmount
     return () => {
@@ -299,58 +338,74 @@ export default function WorkbenchPage() {
   const aiName = profile?.theme_preference === 'junior' ? 'Jasper' : 'Logic';
 
   return (
-    <div className={`min-h-screen bg-background ${themeClass}`}>
+    <div className={cn("min-h-screen bg-background", themeClass)}>
       {/* 页面标题卡片 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
-        <PageHeader
-          title="学习工作台"
-          description={profile?.theme_preference === 'junior' ? '小学版 · AI引导学习' : '中学版 · AI推理分析'}
-          icon={BookOpen}
-          iconColor="text-green-500"
-          actions={
-            <div className="flex items-center gap-3">
-              {/* Study Session Timer */}
-              {isStudying ? (
-                <Badge className="bg-green-100 text-green-700 flex items-center gap-2 px-3 py-1">
-                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <Timer className="w-3.5 h-3.5" />
-                  <span>{formatDuration(studyDuration)}</span>
-                </Badge>
-              ) : (
-                <Badge className="bg-muted text-muted-foreground px-3 py-1">
-                  未开始
-                </Badge>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleStudySession}
-                className="gap-2"
-              >
+        <div
+          style={{
+            opacity: pageAnimation ? 1 : 0,
+            transform: pageAnimation ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.5s ease-out, transform 0.5s ease-out',
+          }}
+        >
+          <PageHeader
+            title="学习工作台"
+            description={profile?.theme_preference === 'junior' ? '小学版 · AI引导学习' : '中学版 · AI推理分析'}
+            icon={BookOpen}
+            iconColor="text-green-500"
+            actions={
+              <div className="flex items-center gap-3">
+                {/* Study Session Timer */}
                 {isStudying ? (
-                  <>
-                    <Pause className="w-4 h-4" />
-                    暂停
-                  </>
+                  <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 flex items-center gap-2 px-3 py-1">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <Timer className="w-3.5 h-3.5" />
+                    <span>{formatDuration(studyDuration)}</span>
+                  </Badge>
                 ) : (
-                  <>
-                    <Play className="w-4 h-4" />
-                    开始学习
-                  </>
+                  <Badge className="bg-muted text-muted-foreground px-3 py-1">
+                    未开始
+                  </Badge>
                 )}
-              </Button>
-            </div>
-          }
-        />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleStudySession}
+                  className="gap-2 transition-all duration-200 hover:scale-105"
+                >
+                  {isStudying ? (
+                    <>
+                      <Pause className="w-4 h-4" />
+                      暂停
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4" />
+                      开始学习
+                    </>
+                  )}
+                </Button>
+              </div>
+            }
+          />
+        </div>
       </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Left Panel - 40% */}
-          <div className="lg:col-span-2 space-y-6">
+          <div
+            ref={leftPanelAnimation.ref}
+            className="lg:col-span-2 space-y-6"
+            style={{
+              opacity: leftPanelAnimation.isVisible ? 1 : 0,
+              transform: leftPanelAnimation.isVisible ? 'translateX(0)' : 'translateX(-30px)',
+              transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+            }}
+          >
             {/* Image Upload Card */}
-            <Card className="border-border/50">
+            <Card className="border-border/50 transition-all duration-300 hover:shadow-lg">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Camera className="w-5 h-5 text-primary" />
@@ -372,35 +427,42 @@ export default function WorkbenchPage() {
 
             {/* OCR Result Card */}
             {selectedImage && (
-              <Card className="border-border/50">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Sparkles className="w-5 h-5 text-orange-500" />
-                    题目识别
-                  </CardTitle>
-                  <CardDescription>
-                    确认识别结果是否正确
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <OCRResult
-                    initialText={ocrText}
-                    onTextChange={setOcrText}
-                    onConfirm={handleOCRComplete}
-                    imageData={imagePreview}
-                  />
-                </CardContent>
-              </Card>
+              <div
+                className="animate-slide-up"
+                style={{
+                  animation: 'slideUp 0.4s ease-out forwards',
+                }}
+              >
+                <OCRResult
+                  initialText={ocrText}
+                  onTextChange={setOcrText}
+                  onConfirm={handleOCRComplete}
+                  imageData={imagePreview}
+                />
+              </div>
             )}
           </div>
 
           {/* Right Panel - 60% - Chat Area */}
-          <div className="lg:col-span-3">
-            <Card className="border-border/50 h-full flex flex-col min-h-[600px]">
+          <div
+            ref={rightPanelAnimation.ref}
+            className="lg:col-span-3"
+            style={{
+              opacity: rightPanelAnimation.isVisible ? 1 : 0,
+              transform: rightPanelAnimation.isVisible ? 'translateX(0)' : 'translateX(30px)',
+              transition: 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
+            }}
+          >
+            <Card className="border-border/50 h-full flex flex-col min-h-[600px] transition-all duration-300 hover:shadow-lg">
               {currentStep === 'upload' && (
                 <div className="flex-1 flex items-center justify-center p-8">
                   <div className="text-center space-y-6">
-                    <div className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                    <div
+                      className="w-24 h-24 mx-auto rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center"
+                      style={{
+                        animation: 'float 6s ease-in-out infinite',
+                      }}
+                    >
                       <Bot className="w-12 h-12 text-primary" />
                     </div>
                     <div>
@@ -456,7 +518,7 @@ export default function WorkbenchPage() {
                         size="sm"
                         variant="ghost"
                         onClick={handleResetChat}
-                        className="gap-2"
+                        className="gap-2 transition-all duration-200 hover:rotate-180"
                       >
                         <RefreshCw className="w-4 h-4" />
                         重新开始

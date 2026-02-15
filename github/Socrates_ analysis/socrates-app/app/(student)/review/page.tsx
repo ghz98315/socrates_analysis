@@ -1,11 +1,11 @@
 // =====================================================
 // Project Socrates - Review List Page
-// 方案二：分层卡片设计
+// 方案二：分层卡片设计 + 苹果风格动画
 // =====================================================
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +24,32 @@ import { createClient } from '@/lib/supabase/client';
 import { formatReviewDate, getUrgencyColor, getUrgencyLabel, REVIEW_STAGES } from '@/lib/review/utils';
 import { PageHeader, StatCard, StatsRow } from '@/components/PageHeader';
 import { cn } from '@/lib/utils';
+
+// 滚动动画 Hook
+function useScrollAnimation(threshold = 0.1) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(element);
+        }
+      },
+      { threshold }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return { ref, isVisible };
+}
 
 interface ReviewItem {
   id: string;
@@ -59,6 +85,10 @@ export default function ReviewPage() {
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'overdue'>('all');
+
+  // 滚动动画 refs
+  const filterAnimation = useScrollAnimation();
+  const listAnimation = useScrollAnimation();
 
   // 加载复习列表
   useEffect(() => {
@@ -203,6 +233,7 @@ export default function ReviewPage() {
               variant="outline"
               size="sm"
               onClick={() => window.location.href = '/workbench'}
+              className="transition-all duration-200 hover:scale-105"
             >
               返回工作台
             </Button>
@@ -215,24 +246,28 @@ export default function ReviewPage() {
               value={reviews.length}
               icon={Calendar}
               color="text-blue-500"
+              delay={0}
             />
             <StatCard
               label="待复习"
               value={pendingCount}
               icon={Clock}
               color="text-yellow-500"
+              delay={0.1}
             />
             <StatCard
               label="已到期"
               value={overdueCount}
               icon={AlertCircle}
               color="text-red-500"
+              delay={0.2}
             />
             <StatCard
               label="完成率"
               value="0%"
               icon={CheckCircle}
               color="text-green-500"
+              delay={0.3}
             />
           </StatsRow>
         </PageHeader>
@@ -240,40 +275,56 @@ export default function ReviewPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
-        {/* Filter Tabs Card */}
-        <Card className="border-border/50 mb-6">
-          <CardContent className="py-4">
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground mr-2">筛选:</span>
-              <div className="flex gap-2">
-                <Button
-                  variant={filterStatus === 'all' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setFilterStatus('all')}
-                >
-                  全部 ({reviews.length})
-                </Button>
-                <Button
-                  variant={filterStatus === 'pending' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setFilterStatus('pending')}
-                  className={cn(filterStatus === 'pending' && 'bg-yellow-500 hover:bg-yellow-600 text-white')}
-                >
-                  待复习 ({pendingCount})
-                </Button>
-                <Button
-                  variant={filterStatus === 'overdue' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setFilterStatus('overdue')}
-                  className={cn(filterStatus === 'overdue' && 'bg-red-500 hover:bg-red-600 text-white')}
-                >
-                  已到期 ({overdueCount})
-                </Button>
+        {/* Filter Tabs Card - 带动画 */}
+        <div
+          ref={filterAnimation.ref}
+          style={{
+            opacity: filterAnimation.isVisible ? 1 : 0,
+            transform: filterAnimation.isVisible ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.5s ease-out, transform 0.5s ease-out',
+          }}
+        >
+          <Card className="border-border/50 mb-6 transition-all duration-300 hover:shadow-lg">
+            <CardContent className="py-4">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground mr-2">筛选:</span>
+                <div className="flex gap-2">
+                  <Button
+                    variant={filterStatus === 'all' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setFilterStatus('all')}
+                    className="transition-all duration-200"
+                  >
+                    全部 ({reviews.length})
+                  </Button>
+                  <Button
+                    variant={filterStatus === 'pending' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setFilterStatus('pending')}
+                    className={cn(
+                      "transition-all duration-200",
+                      filterStatus === 'pending' && 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                    )}
+                  >
+                    待复习 ({pendingCount})
+                  </Button>
+                  <Button
+                    variant={filterStatus === 'overdue' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setFilterStatus('overdue')}
+                    className={cn(
+                      "transition-all duration-200",
+                      filterStatus === 'overdue' && 'bg-red-500 hover:bg-red-600 text-white'
+                    )}
+                  >
+                    已到期 ({overdueCount})
+                  </Button>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Loading State */}
         {loading ? (
@@ -283,48 +334,70 @@ export default function ReviewPage() {
           </div>
         ) : filteredReviews.length === 0 ? (
           /* Empty State */
-          <Card className="border-border/50">
-            <CardContent className="py-20">
-              <div className="flex flex-col items-center justify-center text-center">
-                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6">
-                  <Calendar className="w-10 h-10 text-muted-foreground" />
+          <div
+            style={{
+              opacity: filterAnimation.isVisible ? 1 : 0,
+              transform: filterAnimation.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
+            }}
+          >
+            <Card className="border-border/50">
+              <CardContent className="py-20">
+                <div className="flex flex-col items-center justify-center text-center">
+                  <div
+                    className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-6"
+                    style={{
+                      animation: 'float 6s ease-in-out infinite',
+                    }}
+                  >
+                    <Calendar className="w-10 h-10 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {filterStatus === 'all' && '暂无复习任务'}
+                    {filterStatus === 'pending' && '太棒了！没有待复习任务'}
+                    {filterStatus === 'overdue' && '没有过期的复习'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-sm">
+                    完成错题学习后，系统会自动安排复习计划
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="mt-6 transition-all duration-200 hover:scale-105"
+                    onClick={() => window.location.href = '/workbench'}
+                  >
+                    去学习错题
+                  </Button>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  {filterStatus === 'all' && '暂无复习任务'}
-                  {filterStatus === 'pending' && '太棒了！没有待复习任务'}
-                  {filterStatus === 'overdue' && '没有过期的复习'}
-                </h3>
-                <p className="text-sm text-muted-foreground max-w-sm">
-                  完成错题学习后，系统会自动安排复习计划
-                </p>
-                <Button
-                  variant="outline"
-                  className="mt-6"
-                  onClick={() => window.location.href = '/workbench'}
-                >
-                  去学习错题
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         ) : (
-          /* Review List */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredReviews.map(review => (
+          /* Review List - 带动画 */
+          <div
+            ref={listAnimation.ref}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {filteredReviews.map((review, index) => (
               <Card
                 key={review.id}
                 className={cn(
-                  "border-border/50 hover:shadow-md transition-all duration-200",
+                  "border-border/50 transition-all duration-300",
+                  "hover:shadow-lg hover:-translate-y-1",
                   review.isOverdue && "border-l-4 border-l-red-500"
                 )}
+                style={{
+                  opacity: listAnimation.isVisible ? 1 : 0,
+                  transform: listAnimation.isVisible ? 'translateY(0)' : 'translateY(30px)',
+                  transition: `opacity 0.5s ease-out ${index * 0.1}s, transform 0.5s ease-out ${index * 0.1}s`,
+                }}
               >
                 <CardContent className="p-5">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center",
-                        review.isOverdue ? "bg-red-100" : "bg-muted"
+                        "w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 hover:scale-110",
+                        review.isOverdue ? "bg-red-100 dark:bg-red-900/30" : "bg-muted"
                       )}>
                         <span className="text-lg">
                           {getSubjectIcon(review.subject)}
@@ -367,7 +440,7 @@ export default function ReviewPage() {
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-primary rounded-full transition-all"
+                          className="h-full bg-primary rounded-full transition-all duration-500"
                           style={{ width: `${(review.reviewStage / 4) * 100}%` }}
                         />
                       </div>
@@ -383,7 +456,7 @@ export default function ReviewPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => window.location.href = `/workbench?review=${review.sessionId}`}
-                      className="flex-1"
+                      className="flex-1 transition-all duration-200 hover:scale-105"
                     >
                       开始复习
                     </Button>
@@ -391,7 +464,7 @@ export default function ReviewPage() {
                       size="sm"
                       variant={review.isOverdue ? 'secondary' : 'default'}
                       onClick={() => handleCompleteReview(review.id)}
-                      className="flex-1 gap-2"
+                      className="flex-1 gap-2 transition-all duration-200 hover:scale-105"
                       disabled={review.isOverdue}
                     >
                       {review.isOverdue ? '已过期' : '完成'}
