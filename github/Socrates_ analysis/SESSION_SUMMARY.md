@@ -3,7 +3,7 @@
 ## 📌 下次开始从这里读取
 
 > 会话时间: 2026-02-16
-> Git提交: a5c7b58 (Dark mode improvements)
+> Git提交: eb90be8 (Add test plan and network access)
 > 项目版本: v0.92
 > 整体进度: 92%
 
@@ -35,6 +35,10 @@
 #### 构建测试 ✅
 - ✅ TypeScript 编译通过
 - ✅ Next.js 生产构建成功
+
+#### 测试准备 ✅
+- ✅ 创建功能测试计划 (TEST_PLAN.md)
+- ✅ 配置网络访问支持移动端测试 (`-H 0.0.0.0`)
 
 ---
 
@@ -69,6 +73,7 @@
 
 | 提交 | 说明 |
 |------|------|
+| eb90be8 | Add test plan and network access for mobile testing |
 | a5c7b58 | Dark mode improvements |
 | 72e5094 | Mobile responsiveness improvements |
 | b07b06c | Phase 1: Fix TypeScript and ESLint errors |
