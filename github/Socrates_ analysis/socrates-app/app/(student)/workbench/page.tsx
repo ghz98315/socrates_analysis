@@ -14,7 +14,9 @@ import {
   Pause,
   RefreshCw,
   Bot,
-  Timer
+  Timer,
+  Download,
+  FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -25,6 +27,7 @@ import { ChatMessageList, type Message } from '@/components/ChatMessage';
 import { ChatInput } from '@/components/ChatInput';
 import { PageHeader } from '@/components/PageHeader';
 import { cn } from '@/lib/utils';
+import { downloadErrorQuestionPDF } from '@/lib/pdf/ErrorQuestionPDF';
 
 type Step = 'upload' | 'ocr' | 'chat';
 
@@ -210,6 +213,29 @@ export default function WorkbenchPage() {
       return `${hours}h ${minutes}m`;
     }
     return `${minutes}m`;
+  };
+
+  // Export current error question as PDF
+  const handleExportPDF = async () => {
+    if (!ocrText && messages.length === 0) {
+      return;
+    }
+
+    try {
+      await downloadErrorQuestionPDF({
+        subject: 'math', // Default subject
+        createdAt: new Date().toISOString(),
+        studentName: profile?.display_name,
+        ocrText: ocrText || undefined,
+        imageUrl: imagePreview || undefined,
+        messages: messages.map(m => ({
+          role: m.role,
+          content: m.content,
+        })),
+      });
+    } catch (error) {
+      console.error('Failed to export PDF:', error);
+    }
   };
 
   const handleImageSelect = (file: File, preview: string) => {
@@ -514,15 +540,28 @@ export default function WorkbenchPage() {
                           <p className="text-xs text-muted-foreground">AI 学习导师</p>
                         </div>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={handleResetChat}
-                        className="gap-2 transition-all duration-200 hover:rotate-180"
-                      >
-                        <RefreshCw className="w-4 h-4" />
-                        重新开始
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        {currentStep === 'chat' && messages.length > 0 && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleExportPDF}
+                            className="gap-2"
+                          >
+                            <Download className="w-4 h-4" />
+                            导出PDF
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={handleResetChat}
+                          className="gap-2 transition-all duration-200 hover:rotate-180"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                          重新开始
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
 
