@@ -124,7 +124,7 @@ export function StatCard({ label, value, icon: Icon, trend, color = 'text-primar
     <div
       className={cn(
         "bg-muted/30 rounded-xl p-4 border border-border/30",
-        "transition-all duration-300 hover:bg-muted/50 hover:shadow-md hover:-translate-y-0.5"
+        "transition-all duration-300 hover:bg-muted/50 hover:shadow-md"
       )}
       style={{
         opacity: isVisible ? 1 : 0,
@@ -136,7 +136,7 @@ export function StatCard({ label, value, icon: Icon, trend, color = 'text-primar
         {Icon && (
           <div
             className={cn(
-              "w-10 h-10 rounded-lg flex items-center justify-center transition-transform duration-300 hover:scale-110",
+              "w-10 h-10 rounded-lg flex items-center justify-center transition-transform duration-300",
               color.includes('blue') && "bg-blue-500/10",
               color.includes('green') && "bg-green-500/10",
               color.includes('orange') && "bg-orange-500/10",

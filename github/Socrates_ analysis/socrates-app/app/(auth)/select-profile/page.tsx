@@ -142,7 +142,7 @@ export default function SelectProfilePage() {
               className={`
                 group relative bg-card rounded-2xl p-8
                 transition-all duration-300 ease-out
-                hover:shadow-apple-hover hover:-translate-y-1
+                hover:shadow-apple-hover
                 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
                 border border-transparent hover:border-gray-100
                 ${option.theme === 'junior' ? 'theme-junior' : 'theme-senior'}

@@ -433,11 +433,11 @@ export default function DashboardPage() {
                             className={cn(
                               "w-full p-4 rounded-xl border border-border/50 bg-card",
                               "flex flex-col items-center gap-3 transition-all duration-300",
-                              "hover:shadow-lg hover:border-primary/30 hover:-translate-y-1",
+                              "hover:shadow-lg hover:border-primary/30",
                               "active:scale-[0.98]"
                             )}
                           >
-                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center transition-transform duration-300">
                               <span className="text-xl font-bold text-primary">
                                 {student.display_name.charAt(0)}
                               </span>

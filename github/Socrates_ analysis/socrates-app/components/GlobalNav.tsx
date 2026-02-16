@@ -101,7 +101,7 @@ export function GlobalNav() {
                   "w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300",
                   "bg-gradient-to-br from-primary to-primary/80",
                   "shadow-lg shadow-primary/25",
-                  "group-hover:shadow-primary/40 group-hover:scale-105"
+                  "group-hover:shadow-primary/40"
                 )}
               >
                 <Trophy className="w-5 h-5 text-white" />
@@ -284,7 +284,53 @@ export function GlobalNav() {
         </div>
       </div>
 
-      {/* 移动端菜单 */}
+      {/* 移动端底部导航栏 */}
+      <nav
+        className={cn(
+          "sm:hidden fixed bottom-0 left-0 right-0 z-50",
+          "bg-white/95 dark:bg-black/95 backdrop-blur-xl",
+          "border-t border-border/50",
+          "pb-[env(safe-area-inset-bottom)]"
+        )}
+      >
+        <div className="flex items-center justify-around h-16">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-lg transition-all duration-200",
+                  "min-w-[60px] min-h-[44px]",
+                  active
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className={cn("w-5 h-5", active && item.color)} />
+                <span className="text-[10px] font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
+          {/* 更多菜单按钮 */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className={cn(
+              "flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-lg transition-all duration-200",
+              "min-w-[60px] min-h-[44px]",
+              isMobileMenuOpen ? "text-primary" : "text-muted-foreground"
+            )}
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <span className="text-[10px] font-medium">更多</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* 移动端展开菜单 */}
       <div
         className={cn(
           "sm:hidden overflow-hidden transition-all duration-500 ease-out",

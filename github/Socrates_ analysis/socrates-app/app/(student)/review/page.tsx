@@ -220,7 +220,7 @@ export default function ReviewPage() {
               variant="outline"
               size="sm"
               onClick={() => window.location.href = '/workbench'}
-              className="transition-all duration-200 hover:scale-105"
+              className="transition-all duration-200"
             >
               返回工作台
             </Button>
@@ -349,7 +349,7 @@ export default function ReviewPage() {
                   </p>
                   <Button
                     variant="outline"
-                    className="mt-6 transition-all duration-200 hover:scale-105"
+                    className="mt-6 transition-all duration-200"
                     onClick={() => window.location.href = '/workbench'}
                   >
                     去学习错题
@@ -369,7 +369,7 @@ export default function ReviewPage() {
                 key={review.id}
                 className={cn(
                   "border-border/50 transition-all duration-300",
-                  "hover:shadow-lg hover:-translate-y-1",
+                  "hover:shadow-lg",
                   review.isOverdue && "border-l-4 border-l-red-500"
                 )}
                 style={{
@@ -383,7 +383,7 @@ export default function ReviewPage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className={cn(
-                        "w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 hover:scale-110",
+                        "w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300",
                         review.isOverdue ? "bg-red-100 dark:bg-red-900/30" : "bg-muted"
                       )}>
                         <span className="text-lg">
@@ -443,7 +443,7 @@ export default function ReviewPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => window.location.href = `/workbench?review=${review.sessionId}`}
-                      className="flex-1 transition-all duration-200 hover:scale-105"
+                      className="flex-1 transition-all duration-200"
                     >
                       开始复习
                     </Button>
@@ -451,7 +451,7 @@ export default function ReviewPage() {
                       size="sm"
                       variant={review.isOverdue ? 'secondary' : 'default'}
                       onClick={() => handleCompleteReview(review.id)}
-                      className="flex-1 gap-2 transition-all duration-200 hover:scale-105"
+                      className="flex-1 gap-2 transition-all duration-200"
                       disabled={review.isOverdue}
                     >
                       {review.isOverdue ? '已过期' : '完成'}

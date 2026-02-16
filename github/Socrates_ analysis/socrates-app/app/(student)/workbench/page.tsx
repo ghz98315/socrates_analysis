@@ -371,7 +371,7 @@ export default function WorkbenchPage() {
                   variant="outline"
                   size="sm"
                   onClick={toggleStudySession}
-                  className="gap-2 transition-all duration-200 hover:scale-105"
+                  className="gap-2 transition-all duration-200"
                 >
                   {isStudying ? (
                     <>
