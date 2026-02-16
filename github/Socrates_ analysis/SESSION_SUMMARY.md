@@ -3,9 +3,9 @@
 ## 📌 下次开始从这里读取
 
 > 会话时间: 2026-02-16
-> Git提交: 7a5bf58 (Phase 1 complete)
-> 项目版本: v0.93
-> 整体进度: 95%
+> Git提交: 05f89ea (P0-3: Voice input)
+> 项目版本: v0.94
+> 整体进度: 98%
 
 ---
 
@@ -48,7 +48,7 @@
 
 ```
 阶段1: 测试与修复 ████████████ 100% ✅
-阶段2: 功能增强   ░░░░░░░░░░░░   0%
+阶段2: 功能增强   ████████░░░  70%
 阶段3: 上线准备   ░░░░░░░░░░░░   0%
 ```
 
@@ -56,10 +56,10 @@
 
 ## 📋 阶段2: 功能增强
 
-### 优先级 P0 (核心功能)
-- [ ] 注册/登录页面美化
-- [ ] PDF导出功能 (错题打印)
-- [ ] 语音输入功能
+### 优先级 P0 (核心功能) ✅ 完成
+- [x] 注册/登录页面美化 (苹果风格分屏设计)
+- [x] PDF导出功能 (错题打印)
+- [x] 语音输入功能 (Web Speech API)
 
 ### 优先级 P1 (用户体验)
 - [ ] 错题本导出/分享
@@ -77,6 +77,10 @@
 
 | 提交 | 说明 |
 |------|------|
+| 05f89ea | P0-3: Add voice input feature to chat |
+| 8a3ea8d | P0-2: Add PDF export feature for error questions |
+| aa7c3c8 | P0-1: Redesign login and register pages with Apple-style modern design |
+| 1107a5f | Update session summary: Phase 1 complete, ready for Phase 2 |
 | 7a5bf58 | Phase 1 complete: Mobile bottom nav and reduced animations |
 | 5647c49 | Update session summary with test plan progress |
 | 9aafd89 | Fix animation file extension and update session summary |
