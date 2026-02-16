@@ -20,7 +20,8 @@ import {
   Award,
   BarChart3,
   UserPlus,
-  Sparkles
+  Sparkles,
+  BookOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -434,7 +435,8 @@ export default function DashboardPage() {
                               "w-full p-4 rounded-xl border border-border/50 bg-card",
                               "flex flex-col items-center gap-3 transition-all duration-300",
                               "hover:shadow-lg hover:border-primary/30",
-                              "active:scale-[0.98]"
+                              "active:scale-[0.98]",
+                              selectedStudent === student.id && "border-primary bg-primary/5"
                             )}
                           >
                             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center transition-transform duration-300">
@@ -448,6 +450,19 @@ export default function DashboardPage() {
                                 {student.grade_level}年级
                               </p>
                             </div>
+                            {selectedStudent === student.id && (
+                              <Button
+                                size="sm"
+                                className="mt-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.location.href = `/workbench?student=${student.id}&name=${encodeURIComponent(student.display_name)}`;
+                                }}
+                              >
+                                <BookOpen className="w-4 h-4 mr-2" />
+                                开始辅导
+                              </Button>
+                            )}
                           </button>
                           {/* Delete button */}
                           <button

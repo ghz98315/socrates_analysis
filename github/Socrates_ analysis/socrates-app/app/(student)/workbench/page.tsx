@@ -1,5 +1,5 @@
 // =====================================================
-// Project Socrates - Workbench Page (Student)
+// Project Socrates - Workbench Page (Student & Parent)
 // 方案二：分层卡片设计 + 苹果风格动画
 // =====================================================
 
@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   BookOpen,
   Camera,
@@ -16,7 +17,9 @@ import {
   Bot,
   Timer,
   Download,
-  FileText
+  FileText,
+  Users,
+  ArrowLeft
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -28,6 +31,7 @@ import { ChatInput } from '@/components/ChatInput';
 import { PageHeader } from '@/components/PageHeader';
 import { cn } from '@/lib/utils';
 import { downloadErrorQuestionPDF } from '@/lib/pdf/ErrorQuestionPDF';
+import { createClient } from '@/lib/supabase/client';
 
 type Step = 'upload' | 'ocr' | 'chat';
 
@@ -72,9 +76,20 @@ function usePageAnimation() {
 
 export default function WorkbenchPage() {
   const { profile } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const pageAnimation = usePageAnimation();
   const leftPanelAnimation = useScrollAnimation();
   const rightPanelAnimation = useScrollAnimation();
+
+  // Parent student selection
+  const [parentStudents, setParentStudents] = useState<Array<{ id: string; display_name: string }>>([]);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [selectedStudentName, setSelectedStudentName] = useState<string>('');
+  const [loadingStudents, setLoadingStudents] = useState(false);
+
+  const isParent = profile?.role === 'parent';
+  const effectiveStudentId = isParent ? selectedStudentId : profile?.id;
 
   const [currentStep, setCurrentStep] = useState<Step>('upload');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -93,9 +108,52 @@ export default function WorkbenchPage() {
   const [studyDuration, setStudyDuration] = useState(0);
   const studyTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Load parent's students and check URL params
+  useEffect(() => {
+    if (isParent && profile?.id) {
+      loadParentStudents();
+    }
+
+    // Check for student param in URL (for parent navigation from dashboard)
+    const studentParam = searchParams.get('student');
+    const studentNameParam = searchParams.get('name');
+    if (studentParam) {
+      setSelectedStudentId(studentParam);
+      setSelectedStudentName(studentNameParam || '学生');
+    }
+  }, [isParent, profile?.id, searchParams]);
+
+  const loadParentStudents = async () => {
+    if (!profile?.id) return;
+    setLoadingStudents(true);
+    const supabase = createClient();
+
+    const { data: relations } = await supabase
+      .from('parent_students')
+      .select('student_id, profiles!parent_students_student_id_fkey(display_name)')
+      .eq('parent_id', profile.id);
+
+    if (relations) {
+      const students = relations.map((r: { student_id: string; profiles: { display_name: string } }) => ({
+        id: r.student_id,
+        display_name: r.profiles?.display_name || '未命名学生',
+      }));
+      setParentStudents(students);
+
+      // Auto-select first student if only one
+      if (students.length === 1 && !selectedStudentId) {
+        setSelectedStudentId(students[0].id);
+        setSelectedStudentName(students[0].display_name);
+      }
+    }
+    setLoadingStudents(false);
+  };
+
   // Start study session when component mounts
   useEffect(() => {
-    startStudySession();
+    if (!isParent || selectedStudentId) {
+      startStudySession();
+    }
 
     // Set up heartbeat interval
     const heartbeatInterval = setInterval(() => {
@@ -133,7 +191,7 @@ export default function WorkbenchPage() {
           'x-action': 'start',
         },
         body: JSON.stringify({
-          student_id: profile.id,
+          student_id: effectiveStudentId,
           session_type: 'error_analysis',
         }),
       });
@@ -161,7 +219,7 @@ export default function WorkbenchPage() {
           'x-action': 'end',
         },
         body: JSON.stringify({
-          student_id: profile?.id,
+          student_id: effectiveStudentId,
           session_id: studySessionId,
         }),
       });
@@ -187,7 +245,7 @@ export default function WorkbenchPage() {
           'x-action': 'heartbeat',
         },
         body: JSON.stringify({
-          student_id: profile?.id,
+          student_id: effectiveStudentId,
           session_id: studySessionId,
         }),
       });
@@ -264,7 +322,7 @@ export default function WorkbenchPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          student_id: profile.id,
+          student_id: effectiveStudentId,
           subject: 'math',
           original_image_url: imagePreview || null,
           extracted_text: text,
@@ -363,8 +421,87 @@ export default function WorkbenchPage() {
   const themeClass = profile?.theme_preference === 'junior' ? 'theme-junior' : 'theme-senior';
   const aiName = profile?.theme_preference === 'junior' ? 'Jasper' : 'Logic';
 
+  // Show student selector for parents without selected student
+  if (isParent && !effectiveStudentId) {
+    return (
+      <div className={cn("min-h-screen bg-background flex items-center justify-center p-6", themeClass)}>
+        <Card className="w-full max-w-md shadow-apple">
+          <CardHeader className="text-center">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+              <Users className="w-8 h-8 text-primary" />
+            </div>
+            <CardTitle className="text-xl">选择学习对象</CardTitle>
+            <CardDescription>请选择要辅导的学生</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {loadingStudents ? (
+              <div className="text-center py-8 text-muted-foreground">加载中...</div>
+            ) : parentStudents.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground mb-4">还没有关联的学生</p>
+                <Button onClick={() => router.push('/dashboard')}>
+                  去添加学生
+                </Button>
+              </div>
+            ) : (
+              parentStudents.map((student) => (
+                <Button
+                  key={student.id}
+                  variant="outline"
+                  className="w-full justify-start gap-3 h-14"
+                  onClick={() => {
+                    setSelectedStudentId(student.id);
+                    setSelectedStudentName(student.display_name);
+                  }}
+                >
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-primary font-bold">{student.display_name.charAt(0)}</span>
+                  </div>
+                  <span className="font-medium">{student.display_name}</span>
+                </Button>
+              ))
+            )}
+            <div className="pt-4 border-t">
+              <Button
+                variant="ghost"
+                className="w-full gap-2"
+                onClick={() => router.push('/dashboard')}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                返回仪表板
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className={cn("min-h-screen bg-background", themeClass)}>
+      {/* Parent indicator */}
+      {isParent && selectedStudentName && (
+        <div className="bg-primary/5 border-b border-primary/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <Users className="w-4 h-4 text-primary" />
+              <span className="text-muted-foreground">正在辅导：</span>
+              <span className="font-medium">{selectedStudentName}</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSelectedStudentId(null);
+                setSelectedStudentName('');
+              }}
+              className="text-xs"
+            >
+              切换学生
+            </Button>
+          </div>
+        </div>
+      )}
       {/* 页面标题卡片 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
         <div
