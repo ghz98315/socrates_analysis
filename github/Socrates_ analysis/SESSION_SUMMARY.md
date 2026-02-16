@@ -3,9 +3,9 @@
 ## 📌 下次开始从这里读取
 
 > 会话时间: 2026-02-16
-> Git提交: 05f89ea (P0-3: Voice input)
-> 项目版本: v0.94
-> 整体进度: 98%
+> Git提交: d5846ac (Fix parent workbench data)
+> 项目版本: v0.95
+> 整体进度: 99%
 
 ---
 
@@ -77,6 +77,8 @@
 
 | 提交 | 说明 |
 |------|------|
+| d5846ac | Fix: Parent workbench data association issue |
+| a963454 | Update session summary: P0 features complete |
 | 05f89ea | P0-3: Add voice input feature to chat |
 | 8a3ea8d | P0-2: Add PDF export feature for error questions |
 | aa7c3c8 | P0-1: Redesign login and register pages with Apple-style modern design |
