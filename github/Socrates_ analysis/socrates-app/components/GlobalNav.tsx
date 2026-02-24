@@ -17,7 +17,8 @@ import {
   Menu,
   X,
   Trophy,
-  ChevronRight
+  ChevronRight,
+  Bookmark
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRouter, usePathname } from 'next/navigation';
@@ -35,6 +36,7 @@ const parentNavItems = [
 
 const studentNavItems = [
   { href: '/workbench', icon: BookOpen, label: '学习', shortLabel: '工作', color: 'text-green-500' },
+  { href: '/error-book', icon: Bookmark, label: '错题本', shortLabel: '本子', color: 'text-red-500' },
   { href: '/review', icon: FileText, label: '复习', shortLabel: '计划', color: 'text-orange-500' },
 ];
 
