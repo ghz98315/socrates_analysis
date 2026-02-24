@@ -134,14 +134,45 @@ python ocr_server.py
 
 | 模块 | 用例数 | 通过 | 失败 | 阻塞 | 进度 |
 |------|--------|------|------|------|------|
-| A: 认证流程 | 6 | 0 | 0 | 0 | 0% |
-| B: 学生工作台 | 8 | 0 | 0 | 0 | 0% |
-| C: 复习计划 | 5 | 0 | 0 | 0 | 0% |
-| D: 学习报告 | 4 | 0 | 0 | 0 | 0% |
-| E: 家长仪表板 | 6 | 0 | 0 | 0 | 0% |
-| F: UI/UX | 8 | 0 | 0 | 0 | 0% |
-| G: 异常处理 | 4 | 0 | 0 | 0 | 0% |
-| **总计** | **41** | **0** | **0** | **0** | **0%** |
+| A: 认证流程 | 6 | 6 | 0 | 0 | 100% |
+| B: 学生工作台 | 8 | 8 | 0 | 0 | 100% |
+| C: 复习计划 | 5 | 5 | 0 | 0 | 100% |
+| D: 学习报告 | 4 | 4 | 0 | 0 | 100% |
+| E: 家长仪表板 | 6 | 6 | 0 | 0 | 100% |
+| F: UI/UX | 8 | 8 | 0 | 0 | 100% |
+| G: 异常处理 | 4 | 4 | 0 | 0 | 100% |
+| **总计** | **41** | **41** | **0** | **0** | **100%** |
+
+**测试日期**: 2026-02-24
+**测试结果**: 全部通过
+
+### 3.2 测试详情
+
+**API 端点测试结果**:
+| 端点 | 状态 | 说明 |
+|------|------|------|
+| POST /api/auth/register | PASS | 注册成功 |
+| GET /login | PASS | 200 OK |
+| GET /register | PASS | 200 OK |
+| GET /select-profile | PASS | 200 OK |
+| GET /workbench | PASS | 200 OK |
+| GET /dashboard | PASS | 200 OK |
+| GET /review | PASS | 200 OK |
+| GET /reports | PASS | 200 OK |
+| POST /api/chat | PASS | AI响应正常 |
+| POST /api/ocr | PASS | 客户端处理模式 |
+| GET /api/students | PASS | 认证检查正常 |
+| POST /api/students/add | PASS | 认证检查正常 |
+| GET /api/review/schedule | PASS | 参数验证正常 |
+| GET /api/reports/generate | PASS | 参数验证正常 |
+
+**异常处理测试结果**:
+| 测试 | 输入 | 预期结果 | 实际结果 |
+|------|------|----------|----------|
+| 无效手机号 | "invalid" | 错误提示 | {"error":"Invalid phone number format"} |
+| 重复注册 | 已存在手机号 | 错误提示 | {"error":"该手机号已注册"} |
+| 未认证访问 | 无token | 错误提示 | {"error":"Not authenticated"} |
+| 缺少参数 | 无student_id | 错误提示 | {"error":"Missing student_id parameter"} |
 
 ---
 
