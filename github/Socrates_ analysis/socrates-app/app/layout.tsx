@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/contexts/AuthContext";
 import { GlobalNav } from "@/components/GlobalNav";
+import { SyncManager } from "@/components/SyncManager";
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -28,8 +29,10 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
         <AuthProvider>
-          <GlobalNav />
-          {children}
+          <SyncManager>
+            <GlobalNav />
+            {children}
+          </SyncManager>
         </AuthProvider>
       </body>
     </html>

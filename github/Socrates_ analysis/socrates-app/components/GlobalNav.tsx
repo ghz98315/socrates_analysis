@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NotificationCenter } from '@/components/NotificationCenter';
+import { SyncStatusIndicator } from '@/components/SyncStatusIndicator';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -146,6 +147,9 @@ export function GlobalNav() {
 
             {/* 通知中心 */}
             <NotificationCenter />
+
+            {/* 同步状态 */}
+            <SyncStatusIndicator compact />
 
             {/* 设置按钮 */}
             <Link href="/settings">
