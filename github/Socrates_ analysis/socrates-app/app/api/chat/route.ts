@@ -1,49 +1,56 @@
 // =====================================================
 // Project Socrates - AI Chat API
-// Integrated with Tongyi Qianwen
+// Integrated with Multi-Model Support
 // =====================================================
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { callModelById } from '@/lib/ai-models/service';
+import { getDefaultModel } from '@/lib/ai-models/config';
 
 // 创建 Supabase 服务端客户端（使用 service_role 绕过 RLS）
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+let supabaseAdminInstance: ReturnType<typeof createClient> | null = null;
+function getSupabaseAdmin() {
+  if (!supabaseAdminInstance) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) {
+      throw new Error('Missing Supabase environment variables');
+    }
+    supabaseAdminInstance = createClient(url, key);
+  }
+  return supabaseAdminInstance;
+}
 
 // 对话历史存储（开发环境使用内存存储）
 const conversationHistory = new Map<string, Array<{role: string; content: string}>>();
 
-// 通义千问 API 配置
-async function callTongyiAPI(messages: Array<{role: string; content: string}>) {
-  const apiKey = process.env.DASHSCOPE_API_KEY;
+// 通用 AI 模型调用
+async function callAIModel(
+  messages: Array<{role: string; content: string}>,
+  modelId?: string,
+  isReasoning: boolean = false
+): Promise<string> {
+  // 确定使用的模型
+  let targetModelId = modelId;
 
-  if (!apiKey) {
-    throw new Error('DASHSCOPE_API_KEY not configured');
+  if (!targetModelId) {
+    // 根据是否需要推理选择默认模型
+    const defaultModel = getDefaultModel(isReasoning ? 'reasoning' : 'chat');
+    targetModelId = defaultModel.id;
   }
 
-  const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'qwen-turbo',
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 500,
-    }),
+  // 使用模型服务调用
+  const result = await callModelById(targetModelId, messages, {
+    temperature: isReasoning ? 0.3 : 0.7,
+    maxTokens: isReasoning ? 4096 : 2048,
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`API Error: ${response.status} - ${error}`);
+  if (!result.success) {
+    throw new Error(result.error || 'AI 模型调用失败');
   }
 
-  const data = await response.json();
-  return data.choices[0].message.content;
+  return result.content || '';
 }
 
 // 苏格拉底式教学系统提示词
@@ -500,15 +507,26 @@ function getSpecificHint(questionContent: string | undefined, theme: 'junior' | 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, sessionId, session_id, theme = 'junior', subject, questionContent } = body;
+    const {
+      message,
+      sessionId,
+      session_id,
+      theme = 'junior',
+      subject,
+      questionContent,
+      modelId,        // 可选：用户指定的模型 ID
+      useReasoning,   // 可选：是否使用推理模型
+      userId,         // 可选：用户 ID（用于获取模型偏好）
+    } = body;
 
     if (!message) {
       return NextResponse.json({ error: '消息不能为空' }, { status: 400 });
     }
 
-    // 检查是否配置了 API Key
-    const hasApiKey = process.env.DASHSCOPE_API_KEY &&
-                      process.env.DASHSCOPE_API_KEY !== 'your-api-key-here';
+    // 检查是否配置了任意 API Key
+    const hasApiKey = (process.env.AI_API_KEY_LOGIC && process.env.AI_API_KEY_LOGIC !== 'your-api-key-here') ||
+                      (process.env.AI_API_KEY_VISION && process.env.AI_API_KEY_VISION !== 'your-api-key-here') ||
+                      (process.env.DASHSCOPE_API_KEY && process.env.DASHSCOPE_API_KEY !== 'your-api-key-here');
 
     // 获取或创建对话历史（内存）
     const historySessionId = sessionId || session_id;
@@ -525,9 +543,14 @@ export async function POST(req: NextRequest) {
     let responseText: string;
 
     if (hasApiKey) {
-      // 使用通义千问 API
-      console.log('Using Tongyi Qianwen API');
-      responseText = await callTongyiAPI(history);
+      // 使用多模型 AI 服务
+      console.log('Using AI Model Service, modelId:', modelId || 'default');
+      try {
+        responseText = await callAIModel(history, modelId, useReasoning);
+      } catch (apiError: any) {
+        console.error('AI API Error, falling back to mock:', apiError.message);
+        responseText = generateImprovedMockResponse(message, theme, history, questionContent);
+      }
     } else {
       // 使用改进的预设回应
       console.log('Using fallback mock response mode');
@@ -540,8 +563,9 @@ export async function POST(req: NextRequest) {
     // 保存对话消息到 Supabase（如果提供了 session_id）
     if (session_id) {
       try {
+        const supabase = getSupabaseAdmin();
         // 保存用户消息
-        await supabase
+        await (supabase as any)
           .from('chat_messages')
           .insert({
             session_id: session_id,
@@ -551,7 +575,7 @@ export async function POST(req: NextRequest) {
           });
 
         // 保存助手消息
-        await supabase
+        await (supabase as any)
           .from('chat_messages')
           .insert({
             session_id: session_id,

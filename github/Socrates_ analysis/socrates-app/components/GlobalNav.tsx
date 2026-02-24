@@ -148,13 +148,15 @@ export function GlobalNav() {
             <NotificationCenter />
 
             {/* 设置按钮 */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full hover:bg-muted hover:rotate-90 transition-all duration-300"
-            >
-              <Settings className="w-5 h-5" />
-            </Button>
+            <Link href="/settings">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full hover:bg-muted hover:rotate-90 transition-all duration-300"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
+            </Link>
 
             {/* 退出按钮 */}
             <Button
@@ -411,14 +413,16 @@ export function GlobalNav() {
 
             {/* 操作按钮 */}
             <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                className="flex-1 justify-start gap-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <Settings className="w-4 h-4" />
-                设置
-              </Button>
+              <Link href="/settings" className="flex-1">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Settings className="w-4 h-4" />
+                  设置
+                </Button>
+              </Link>
               <Button
                 variant="ghost"
                 className="flex-1 justify-start gap-2 text-muted-foreground"
