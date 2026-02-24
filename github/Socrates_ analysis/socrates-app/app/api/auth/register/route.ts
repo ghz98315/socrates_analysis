@@ -6,18 +6,18 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 // 延迟创建 Supabase Admin 客户端（避免构建时环境变量问题）
-let getSupabaseAdmin(): ReturnType<typeof createClient> | null = null;
+let supabaseAdminInstance: ReturnType<typeof createClient> | null = null;
 
 function getSupabaseAdmin() {
-  if (!getSupabaseAdmin()) {
+  if (!supabaseAdminInstance) {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (!url || !key) {
       throw new Error('Missing Supabase environment variables');
     }
-    getSupabaseAdmin() = createClient(url, key);
+    supabaseAdminInstance = createClient(url, key);
   }
-  return getSupabaseAdmin();
+  return supabaseAdminInstance;
 }
 
 // POST endpoint - 注册新用户
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     // profiles 记录会由触发器自动创建
     // 但为了确保 phone 字段被正确存储，我们手动更新
-    const { error: updateError } = await getSupabaseAdmin()
+    const { error: updateError } = await (getSupabaseAdmin() as any)
       .from('profiles')
       .update({
         phone,
