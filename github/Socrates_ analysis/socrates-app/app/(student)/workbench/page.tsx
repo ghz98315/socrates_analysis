@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
@@ -74,7 +74,7 @@ function usePageAnimation() {
   return mounted;
 }
 
-export default function WorkbenchPage() {
+function WorkbenchPage() {
   const { profile } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -750,5 +750,29 @@ export default function WorkbenchPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading fallback component
+function WorkbenchLoading() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <div className="relative w-16 h-16 mx-auto">
+          <div className="absolute inset-0 rounded-full border-4 border-primary/30"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+        </div>
+        <p className="text-muted-foreground">加载中...</p>
+      </div>
+    </div>
+  );
+}
+
+// Export with Suspense wrapper for useSearchParams
+export default function WorkbenchPageWrapper() {
+  return (
+    <Suspense fallback={<WorkbenchLoading />}>
+      <WorkbenchPage />
+    </Suspense>
   );
 }
