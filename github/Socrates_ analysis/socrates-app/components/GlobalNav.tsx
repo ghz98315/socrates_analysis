@@ -39,6 +39,7 @@ const studentNavItems = [
   { href: '/workbench', icon: BookOpen, label: '学习', shortLabel: '工作', color: 'text-green-500' },
   { href: '/error-book', icon: Bookmark, label: '错题本', shortLabel: '本子', color: 'text-red-500' },
   { href: '/review', icon: FileText, label: '复习', shortLabel: '计划', color: 'text-orange-500' },
+  { href: '/achievements', icon: Trophy, label: '成就', shortLabel: '荣誉', color: 'text-yellow-500' },
 ];
 
 export function GlobalNav() {
