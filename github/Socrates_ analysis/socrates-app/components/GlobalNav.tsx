@@ -21,6 +21,7 @@ import {
   Bookmark
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { NotificationCenter } from '@/components/NotificationCenter';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -141,6 +142,9 @@ export function GlobalNav() {
                 {isParent ? '家长' : '学生'}
               </span>
             </div>
+
+            {/* 通知中心 */}
+            <NotificationCenter />
 
             {/* 设置按钮 */}
             <Button
