@@ -255,61 +255,119 @@ export default function ErrorBookPage() {
       </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
-        {/* Filters Bar */}
-        <Card className="mb-6 border-border/50">
-          <CardContent className="p-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Search */}
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="搜索题目内容或标签..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-
-              {/* Subject Filter */}
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="h-10 px-3 rounded-lg border border-input bg-background text-sm"
-                >
-                  <option value="all">全部科目</option>
-                  <option value="math">数学</option>
-                  <option value="physics">物理</option>
-                  <option value="chemistry">化学</option>
-                </select>
-              </div>
-
-              {/* Status Filter */}
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="h-10 px-3 rounded-lg border border-input bg-background text-sm"
-              >
-                <option value="all">全部状态</option>
-                <option value="analyzing">分析中</option>
-                <option value="guided_learning">学习中</option>
-                <option value="mastered">已掌握</option>
-              </select>
-
-              {/* Sort */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="h-10 px-3 rounded-lg border border-input bg-background text-sm"
-              >
-                <option value="newest">最新优先</option>
-                <option value="oldest">最早优先</option>
-                <option value="difficulty">难度优先</option>
-              </select>
+        {/* Stats Cards - 移到顶部 */}
+        {!loading && errors.length > 0 && (
+          <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/30 dark:to-blue-950/30 border border-blue-200/50 dark:border-blue-800/50">
+              <p className="text-3xl font-bold text-blue-600">{errors.length}</p>
+              <p className="text-xs text-blue-600/70">总错题数</p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-yellow-100 to-yellow-50 dark:from-yellow-900/30 dark:to-yellow-950/30 border border-yellow-200/50 dark:border-yellow-800/50">
+              <p className="text-3xl font-bold text-yellow-600">
+                {errors.filter(e => e.status === 'analyzing').length}
+              </p>
+              <p className="text-xs text-yellow-600/70">分析中</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-100 to-purple-50 dark:from-purple-900/30 dark:to-purple-950/30 border border-purple-200/50 dark:border-purple-800/50">
+              <p className="text-3xl font-bold text-purple-600">
+                {errors.filter(e => e.status === 'guided_learning').length}
+              </p>
+              <p className="text-xs text-purple-600/70">学习中</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-950/30 border border-green-200/50 dark:border-green-800/50">
+              <p className="text-3xl font-bold text-green-600">
+                {errors.filter(e => e.status === 'mastered').length}
+              </p>
+              <p className="text-xs text-green-600/70">已掌握 ✨</p>
+            </div>
+          </div>
+        )}
+
+        {/* Filters Bar - 胶囊按钮组 */}
+        <div className="mb-6 space-y-3">
+          {/* 搜索框 */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              placeholder="搜索题目内容或标签..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 h-12 rounded-2xl bg-white/80 dark:bg-slate-900/80 border-border/50"
+            />
+          </div>
+
+          {/* 胶囊筛选按钮组 */}
+          <div className="flex flex-wrap gap-2">
+            {/* 科目筛选 */}
+            <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-full">
+              {[
+                { value: 'all', label: '📚 全部', color: '' },
+                { value: 'math', label: '📐 数学', color: 'data-[active=true]:bg-blue-500 data-[active=true]:text-white' },
+                { value: 'physics', label: '⚛️ 物理', color: 'data-[active=true]:bg-purple-500 data-[active=true]:text-white' },
+                { value: 'chemistry', label: '🧪 化学', color: 'data-[active=true]:bg-green-500 data-[active=true]:text-white' },
+              ].map((subject) => (
+                <button
+                  key={subject.value}
+                  onClick={() => setSelectedSubject(subject.value)}
+                  data-active={selectedSubject === subject.value}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+                    selectedSubject === subject.value
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "hover:bg-muted"
+                  )}
+                >
+                  {subject.label}
+                </button>
+              ))}
+            </div>
+
+            {/* 状态筛选 */}
+            <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-full">
+              {[
+                { value: 'all', label: '📋 全部' },
+                { value: 'analyzing', label: '⏳ 分析中' },
+                { value: 'guided_learning', label: '📖 学习中' },
+                { value: 'mastered', label: '✅ 已掌握' },
+              ].map((status) => (
+                <button
+                  key={status.value}
+                  onClick={() => setSelectedStatus(status.value)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+                    selectedStatus === status.value
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "hover:bg-muted"
+                  )}
+                >
+                  {status.label}
+                </button>
+              ))}
+            </div>
+
+            {/* 排序 */}
+            <div className="flex items-center gap-1 p-1 bg-muted/50 rounded-full">
+              {[
+                { value: 'newest', label: '🆕 最新' },
+                { value: 'oldest', label: '📅 最早' },
+                { value: 'difficulty', label: '⭐ 难度' },
+              ].map((sort) => (
+                <button
+                  key={sort.value}
+                  onClick={() => setSortBy(sort.value as any)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+                    sortBy === sort.value
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "hover:bg-muted"
+                  )}
+                >
+                  {sort.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Action Bar */}
         {selectedIds.size > 0 && (

@@ -140,38 +140,79 @@ export default function AchievementsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-24 space-y-6">
         {/* 等级和统计卡片 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* 等级卡片 */}
-          <Card className="border-border/50 md:col-span-2">
-            <CardContent className="p-6">
+          {/* 等级卡片 - 带环形进度 */}
+          <Card className="border-border/50 md:col-span-2 bg-gradient-to-br from-yellow-50/50 via-white to-orange-50/50 dark:from-yellow-950/20 dark:via-slate-900 dark:to-orange-950/20 overflow-hidden relative">
+            {/* 装饰光晕 */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-orange-400/20 rounded-full blur-3xl" />
+
+            <CardContent className="p-6 relative">
               <div className="flex items-center gap-6">
-                {/* 等级图标 */}
+                {/* 环形进度等级图标 */}
                 <div className="relative">
-                  <div className={cn(
-                    "w-20 h-20 rounded-2xl flex items-center justify-center",
-                    "bg-gradient-to-br from-yellow-400 to-orange-500",
-                    "shadow-lg shadow-yellow-500/30"
-                  )}>
-                    <Crown className="w-10 h-10 text-white" />
+                  <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
+                    {/* 背景圆环 */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="42"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      className="text-muted/20"
+                    />
+                    {/* 进度圆环 */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="42"
+                      fill="none"
+                      stroke="url(#gradient)"
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                      strokeDasharray={`${(level?.progress || 0) * 2.64} 264`}
+                      className="transition-all duration-1000"
+                    />
+                    <defs>
+                      <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#f59e0b" />
+                        <stop offset="100%" stopColor="#f97316" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  {/* 中心等级图标 */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30 animate-[pulse-glow_2s_ease-in-out_infinite]">
+                      <Crown className="w-8 h-8 text-white" />
+                    </div>
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-card border-2 border-yellow-500 flex items-center justify-center">
-                    <span className="text-sm font-bold text-yellow-500">{level?.level || 1}</span>
+                  {/* 等级数字 */}
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-card border-2 border-yellow-500 rounded-full">
+                    <span className="text-sm font-bold text-yellow-500">Lv.{level?.level || 1}</span>
                   </div>
                 </div>
 
                 {/* 等级信息 */}
                 <div className="flex-1">
-                  <h2 className="text-2xl font-bold">{level?.title || '初学者'}</h2>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-500 bg-clip-text text-transparent">
+                    {level?.title || '初学者'}
+                  </h2>
                   <p className="text-muted-foreground text-sm mb-3">
-                    经验值: {level?.total_xp || 0} XP
+                    经验值: <span className="text-yellow-600 font-medium">{level?.total_xp || 0}</span> XP
                   </p>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span>升级进度</span>
-                      <span>{Math.round(level?.progress || 0)}%</span>
+                      <span className="text-muted-foreground">升级进度</span>
+                      <span className="font-medium text-yellow-600">{Math.round(level?.progress || 0)}%</span>
                     </div>
-                    <Progress value={level?.progress || 0} className="h-2" />
+                    <div className="h-3 bg-muted/50 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 rounded-full transition-all duration-1000"
+                        style={{ width: `${level?.progress || 0}%` }}
+                      />
+                    </div>
                     <p className="text-xs text-muted-foreground">
-                      距离下一级还需 {((level?.next || 0) - (level?.total_xp || 0))} XP
+                      距离下一级还需 <span className="text-orange-500 font-medium">{((level?.next || 0) - (level?.total_xp || 0))}</span> XP
                     </p>
                   </div>
                 </div>
@@ -180,24 +221,25 @@ export default function AchievementsPage() {
           </Card>
 
           {/* 统计卡片 */}
-          <Card className="border-border/50">
+          <Card className="border-border/50 bg-gradient-to-br from-purple-50/50 via-white to-pink-50/50 dark:from-purple-950/20 dark:via-slate-900 dark:to-pink-950/20">
             <CardContent className="p-6 space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
                 <span className="text-sm text-muted-foreground">已解锁成就</span>
-                <span className="font-bold">{stats?.unlocked_achievements || 0}/{stats?.total_achievements || 0}</span>
+                <span className="font-bold text-purple-600">{stats?.unlocked_achievements || 0}<span className="text-muted-foreground font-normal">/{stats?.total_achievements || 0}</span></span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
                 <span className="text-sm text-muted-foreground">获得积分</span>
                 <span className="font-bold text-yellow-500">{stats?.earned_points || 0} XP</span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30">
                 <span className="text-sm text-muted-foreground">当前连续</span>
-                <span className="font-bold flex items-center gap-1">
-                  <Flame className="w-4 h-4 text-orange-500" />
-                  {stats?.current_streak || 0} 天
+                <span className="font-bold flex items-center gap-1.5">
+                  <span className="text-lg animate-[flame_0.5s_ease-in-out_infinite]">🔥</span>
+                  <span className="text-orange-500">{stats?.current_streak || 0}</span>
+                  <span className="text-muted-foreground font-normal text-xs">天</span>
                 </span>
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
                 <span className="text-sm text-muted-foreground">最长连续</span>
                 <span className="font-bold">{stats?.longest_streak || 0} 天</span>
               </div>
