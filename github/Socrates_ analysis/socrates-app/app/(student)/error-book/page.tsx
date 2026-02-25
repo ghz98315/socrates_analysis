@@ -64,6 +64,18 @@ const subjectColors: Record<string, string> = {
   chemistry: 'text-green-500',
 };
 
+const subjectBorderColors: Record<string, string> = {
+  math: 'border-l-blue-500',
+  physics: 'border-l-purple-500',
+  chemistry: 'border-l-green-500',
+};
+
+const subjectBgColors: Record<string, string> = {
+  math: 'bg-blue-50 dark:bg-blue-950/30',
+  physics: 'bg-purple-50 dark:bg-purple-950/30',
+  chemistry: 'bg-green-50 dark:bg-green-950/30',
+};
+
 export default function ErrorBookPage() {
   const { profile } = useAuth();
   const router = useRouter();
@@ -207,7 +219,14 @@ export default function ErrorBookPage() {
   const themeClass = profile?.theme_preference === 'junior' ? 'theme-junior' : 'theme-senior';
 
   return (
-    <div className={cn('min-h-screen bg-background', themeClass)}>
+    <div className={cn('min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-slate-950 dark:via-slate-900 dark:to-orange-950/30', themeClass)}>
+      {/* Decorative background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-orange-200/30 dark:bg-orange-900/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-red-200/20 dark:bg-red-900/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 left-1/3 w-72 h-72 bg-yellow-200/20 dark:bg-yellow-900/20 rounded-full blur-3xl" />
+      </div>
+
       {/* Page Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
         <PageHeader
@@ -365,7 +384,9 @@ export default function ErrorBookPage() {
                 <Card
                   key={error.id}
                   className={cn(
-                    'border-border/50 transition-all duration-300 hover:shadow-md cursor-pointer',
+                    'border-border/50 border-l-4 transition-all duration-300 hover:shadow-md cursor-pointer',
+                    subjectBorderColors[error.subject],
+                    subjectBgColors[error.subject],
                     selectedIds.has(error.id) && 'ring-2 ring-primary'
                   )}
                   onClick={() => toggleSelect(error.id)}

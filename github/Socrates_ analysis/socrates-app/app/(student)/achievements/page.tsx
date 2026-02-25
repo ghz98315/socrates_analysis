@@ -119,7 +119,14 @@ export default function AchievementsPage() {
   }
 
   return (
-    <div className={cn('min-h-screen bg-background', themeClass)}>
+    <div className={cn('min-h-screen bg-gradient-to-br from-yellow-50 via-white to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-yellow-950/30', themeClass)}>
+      {/* Decorative background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 right-1/4 w-80 h-80 bg-yellow-200/40 dark:bg-yellow-900/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-amber-200/30 dark:bg-amber-900/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 right-1/4 w-72 h-72 bg-orange-200/20 dark:bg-orange-900/20 rounded-full blur-3xl" />
+      </div>
+
       {/* 页面标题 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
         <PageHeader

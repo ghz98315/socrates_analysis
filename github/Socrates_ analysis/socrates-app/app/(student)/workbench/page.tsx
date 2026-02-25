@@ -478,7 +478,14 @@ function WorkbenchPage() {
   }
 
   return (
-    <div className={cn("min-h-screen bg-background", themeClass)}>
+    <div className={cn("min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950", themeClass)}>
+      {/* Decorative background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/30 dark:bg-purple-900/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-blue-200/30 dark:bg-blue-900/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 right-1/3 w-72 h-72 bg-green-200/20 dark:bg-green-900/20 rounded-full blur-3xl" />
+      </div>
+
       {/* Parent indicator */}
       {isParent && selectedStudentName && (
         <div className="bg-primary/5 border-b border-primary/10">

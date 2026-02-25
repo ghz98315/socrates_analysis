@@ -204,7 +204,13 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className={cn('min-h-screen bg-background', themeClass)}>
+    <div className={cn('min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50 dark:from-slate-950 dark:via-slate-900 dark:to-gray-950', themeClass)}>
+      {/* Decorative background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gray-200/30 dark:bg-gray-900/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-slate-200/20 dark:bg-slate-900/20 rounded-full blur-3xl" />
+      </div>
+
       {/* 页面标题 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
         <PageHeader
