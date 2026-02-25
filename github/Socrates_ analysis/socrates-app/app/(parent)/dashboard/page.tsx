@@ -567,8 +567,8 @@ export default function DashboardPage() {
 
       {/* Add Student Modal */}
       {showAddStudentModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-          <Card className="w-full max-w-md border-border/50 shadow-xl animate-scale-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 animate-fade-in">
+          <Card className="w-full max-w-md border-border/50 shadow-xl animate-scale-in bg-white dark:bg-slate-900">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>添加学生</CardTitle>
@@ -658,8 +658,8 @@ export default function DashboardPage() {
 
       {/* Delete Student Confirmation Modal */}
       {showDeleteConfirm && studentToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-          <Card className="w-full max-w-md border-border/50 shadow-xl animate-scale-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 animate-fade-in">
+          <Card className="w-full max-w-md border-border/50 shadow-xl animate-scale-in bg-white dark:bg-slate-900">
             <CardHeader>
               <CardTitle className="text-red-500">确认删除</CardTitle>
             </CardHeader>

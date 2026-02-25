@@ -20,8 +20,7 @@ export const AVAILABLE_MODELS: AIModelConfig[] = [
     supports: ['chat'],
     features: ['对话', '问答', '苏格拉底引导'],
     pricing: { input: 0.001, output: 0.002 },
-    recommended: true,
-    enabled: true,
+    enabled: false, // 需要配置 API Key
   },
   {
     id: 'deepseek-reasoner',
@@ -35,7 +34,7 @@ export const AVAILABLE_MODELS: AIModelConfig[] = [
     supports: ['reasoning', 'chat'],
     features: ['深度推理', '数学计算', '物理解题'],
     pricing: { input: 0.002, output: 0.004 },
-    enabled: true,
+    enabled: false, // 需要配置 API Key
   },
 
   // ============ 通义千问 模型 ============
@@ -46,11 +45,12 @@ export const AVAILABLE_MODELS: AIModelConfig[] = [
     description: '阿里云通义千问，快速响应，适合日常对话',
     model_id: 'qwen-turbo',
     base_url: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-    api_key_env: 'AI_API_KEY_VISION',
+    api_key_env: 'DASHSCOPE_API_KEY',
     max_tokens: 4096,
     supports: ['chat'],
     features: ['对话', '中文优化', '快速响应'],
     pricing: { input: 0.002, output: 0.006 },
+    recommended: true,
     enabled: true,
   },
   {
@@ -60,11 +60,12 @@ export const AVAILABLE_MODELS: AIModelConfig[] = [
     description: '通义千问增强版，更强理解和生成能力',
     model_id: 'qwen-plus',
     base_url: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-    api_key_env: 'AI_API_KEY_VISION',
+    api_key_env: 'DASHSCOPE_API_KEY',
     max_tokens: 8192,
     supports: ['chat', 'reasoning'],
     features: ['对话', '推理', '长文本'],
     pricing: { input: 0.004, output: 0.012 },
+    recommended: true,
     enabled: true,
   },
   {
@@ -74,7 +75,7 @@ export const AVAILABLE_MODELS: AIModelConfig[] = [
     description: '通义千问视觉模型，支持图片理解',
     model_id: 'qwen-vl-plus',
     base_url: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-    api_key_env: 'AI_API_KEY_VISION',
+    api_key_env: 'DASHSCOPE_API_KEY',
     max_tokens: 4096,
     supports: ['vision'],
     features: ['图片理解', 'OCR', '数学公式识别'],

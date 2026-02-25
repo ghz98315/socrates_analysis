@@ -76,7 +76,7 @@ export function GlobalNav() {
   const isParent = profile?.role === 'parent';
   const isStudent = profile?.role === 'student';
   const navItems = isParent ? parentNavItems : studentNavItems;
-  const displayName = profile?.display_name || '用户';
+  const displayName = profile?.display_name || '同学';
 
   // 检查当前路径是否激活
   const isActive = (href: string) => {
@@ -130,18 +130,24 @@ export function GlobalNav() {
               mounted ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
             )}
           >
-            {/* 角色标签 */}
+            {/* 角色标签 - 学生显示名字，家长显示角色 */}
             <div
               className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-full",
-                "bg-muted/50 hover:bg-muted/80 transition-colors duration-300",
-                "cursor-default"
+                "bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 transition-colors duration-300",
+                "cursor-default border border-primary/20"
               )}
             >
-              <User className="w-4 h-4 text-muted-foreground" />
-              <span className="font-medium text-sm">{displayName}</span>
-              <span className="text-muted-foreground">·</span>
-              <span className="text-primary font-medium text-sm">
+              <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center">
+                <User className="w-4 h-4 text-primary" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-medium text-sm leading-tight">{displayName}</span>
+                {isStudent && (
+                  <span className="text-[10px] text-muted-foreground">同学</span>
+                )}
+              </div>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
                 {isParent ? '家长' : '学生'}
               </span>
             </div>
