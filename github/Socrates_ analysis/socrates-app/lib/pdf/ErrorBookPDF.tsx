@@ -9,13 +9,33 @@ import {
   Text,
   View,
   StyleSheet,
+  Font,
 } from '@react-pdf/renderer';
+
+// 注册中文字体
+Font.register({
+  family: 'NotoSansSC',
+  fonts: [
+    {
+      src: 'https://fonts.gstatic.com/s/notosanssc/v35/k3kXo84MPvpLmixcA63OEALhLOCT-xWtmGJX.woff2',
+      fontWeight: 400,
+    },
+    {
+      src: 'https://fonts.gstatic.com/s/notosanssc/v35/k3kXo84MPvpLmixcA63OEALhLOCT-xWtmGJX.woff2',
+      fontWeight: 500,
+    },
+    {
+      src: 'https://fonts.gstatic.com/s/notosanssc/v35/k3kXo84MPvpLmixcA63OEALhLOCT-xWtmGJX.woff2',
+      fontWeight: 700,
+    },
+  ],
+});
 
 // Create styles for error book
 const styles = StyleSheet.create({
   page: {
     padding: 40,
-    fontFamily: 'Helvetica',
+    fontFamily: 'NotoSansSC',
     fontSize: 11,
     lineHeight: 1.5,
   },

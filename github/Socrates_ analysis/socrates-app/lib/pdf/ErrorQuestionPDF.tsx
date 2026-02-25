@@ -10,13 +10,34 @@ import {
   View,
   StyleSheet,
   Image,
+  Font,
 } from '@react-pdf/renderer';
+
+// 注册中文字体 - 使用系统内置的 Noto Sans SC 或其他支持中文的字体
+// 注意：生产环境需要将字体文件放在 public 目录下
+Font.register({
+  family: 'NotoSansSC',
+  fonts: [
+    {
+      src: 'https://fonts.gstatic.com/s/notosanssc/v35/k3kXo84MPvpLmixcA63OEALhLOCT-xWtmGJX.woff2',
+      fontWeight: 400,
+    },
+    {
+      src: 'https://fonts.gstatic.com/s/notosanssc/v35/k3kXo84MPvpLmixcA63OEALhLOCT-xWtmGJX.woff2',
+      fontWeight: 500,
+    },
+    {
+      src: 'https://fonts.gstatic.com/s/notosanssc/v35/k3kXo84MPvpLmixcA63OEALhLOCT-xWtmGJX.woff2',
+      fontWeight: 700,
+    },
+  ],
+});
 
 // Create styles
 const styles = StyleSheet.create({
   page: {
     padding: 40,
-    fontFamily: 'Helvetica',
+    fontFamily: 'NotoSansSC',
     fontSize: 11,
     lineHeight: 1.5,
   },
