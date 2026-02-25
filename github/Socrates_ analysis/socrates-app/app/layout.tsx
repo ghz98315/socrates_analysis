@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/contexts/AuthContext";
 import { GlobalNav } from "@/components/GlobalNav";
 import { SyncManager } from "@/components/SyncManager";
+import { OfflineProvider } from "@/lib/offline/OfflineContext";
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -29,10 +30,12 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
         <AuthProvider>
-          <SyncManager>
-            <GlobalNav />
-            {children}
-          </SyncManager>
+          <OfflineProvider>
+            <SyncManager>
+              <GlobalNav />
+              {children}
+            </SyncManager>
+          </OfflineProvider>
         </AuthProvider>
       </body>
     </html>

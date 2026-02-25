@@ -23,6 +23,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { NotificationCenter } from '@/components/NotificationCenter';
 import { SyncStatusIndicator } from '@/components/SyncStatusIndicator';
+import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -147,6 +148,9 @@ export function GlobalNav() {
 
             {/* 通知中心 */}
             <NotificationCenter />
+
+            {/* 离线状态 */}
+            <OfflineIndicator compact />
 
             {/* 同步状态 */}
             <SyncStatusIndicator compact />
