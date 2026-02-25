@@ -22,10 +22,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'student_id is required' }, { status: 400 });
     }
 
-    // 1. 获取总体统计数据
+    // 1. 获取总体统计数据（包含 theme_used）
     const { data: errorSessions, error: sessionsError } = await supabase
       .from('error_sessions')
-      .select('id, status, subject, created_at, concept_tags')
+      .select('id, status, subject, created_at, concept_tags, theme_used')
       .eq('student_id', student_id)
       .order('created_at', { ascending: false });
 
@@ -37,6 +37,11 @@ export async function GET(req: NextRequest) {
     const totalErrors = errorSessions?.length || 0;
     const masteredCount = errorSessions?.filter(s => s.status === 'mastered').length || 0;
     const masteryRate = totalErrors > 0 ? Math.round((masteredCount / totalErrors) * 100 * 10) / 10 : 0;
+
+    // 按主题模式统计（Junior/Senior）
+    const juniorCount = errorSessions?.filter(s => s.theme_used === 'junior').length || 0;
+    const seniorCount = errorSessions?.filter(s => s.theme_used === 'senior').length || 0;
+    const unknownThemeCount = errorSessions?.filter(s => !s.theme_used).length || 0;
 
     // 2. 生成热力图数据（最近N天）
     const numDays = parseInt(days);
@@ -103,6 +108,12 @@ export async function GET(req: NextRequest) {
         mastery_rate: masteryRate,
         heatmap_data: heatmapData,
         weak_points: weakPoints,
+        // 新增：主题模式统计
+        theme_stats: {
+          junior: juniorCount,
+          senior: seniorCount,
+          unknown: unknownThemeCount,
+        },
       },
     });
   } catch (error) {

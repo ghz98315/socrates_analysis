@@ -17,17 +17,29 @@ export function createClient() {
         storage: {
           getItem: (key: string) => {
             if (typeof window === 'undefined') return null;
-            return document.cookie.match(new RegExp(`(^| )${key}=([^;]*)`))?.[2] || null;
+            const match = document.cookie.match(new RegExp(`(^| )${key}=([^;]*)`));
+            if (!match?.[2]) return null;
+            try {
+              return decodeURIComponent(match[2]);
+            } catch {
+              return match[2];
+            }
           },
           setItem: (key: string, value: string) => {
             if (typeof window === 'undefined') return;
-            // 设置 cookie 时添加 httpOnly 和 secure 标志
+            // 设置 cookie 时根据协议决定是否使用 secure 标志
+            // localhost 开发环境不使用 secure，生产环境使用
             const maxAge = 60 * 60 * 24 * 7; // 7 天
-            document.cookie = `${key}=${value}; max-age=${maxAge}; path=/; secure; samesite=lax`;
+            const isSecure = window.location.protocol === 'https:';
+            const secureFlag = isSecure ? 'secure;' : '';
+            const encodedValue = encodeURIComponent(value);
+            document.cookie = `${key}=${encodedValue}; max-age=${maxAge}; path=/; ${secureFlag} samesite=lax`;
           },
           removeItem: (key: string) => {
             if (typeof window === 'undefined') return;
-            document.cookie = `${key}=; max-age=-1; path=/`;
+            const isSecure = window.location.protocol === 'https:';
+            const secureFlag = isSecure ? 'secure;' : '';
+            document.cookie = `${key}=; max-age=-1; path=/; ${secureFlag} samesite=lax`;
           },
         },
       },

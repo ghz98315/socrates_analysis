@@ -19,6 +19,8 @@ export interface Database {
           display_name: string | null;
           avatar_url: string | null;
           xp_points: number | null;
+          phone: string | null;
+          parent_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -30,6 +32,8 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           xp_points?: number | null;
+          phone?: string | null;
+          parent_id?: string | null;
           created_at?: string;
         };
         Update: {
@@ -41,6 +45,8 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           xp_points?: number | null;
+          phone?: string | null;
+          parent_id?: string | null;
           created_at?: string;
         };
       };
@@ -49,30 +55,36 @@ export interface Database {
           id: string;
           student_id: string;
           subject: 'math' | 'physics' | 'chemistry';
-          ocr_text: string | null;
-          ocr_image_url: string | null;
-          concept_tags: string[] | null;
+          original_image_url: string | null;
+          extracted_text: string | null;
+          status: string | null;
           difficulty_rating: number | null;
+          concept_tags: string[] | null;
+          theme_used: 'junior' | 'senior' | null;
           created_at: string;
         };
         Insert: {
           id?: string;
           student_id: string;
           subject?: 'math' | 'physics' | 'chemistry';
-          ocr_text?: string | null;
-          ocr_image_url?: string | null;
-          concept_tags?: string[] | null;
+          original_image_url?: string | null;
+          extracted_text?: string | null;
+          status?: string | null;
           difficulty_rating?: number | null;
+          concept_tags?: string[] | null;
+          theme_used?: 'junior' | 'senior' | null;
           created_at?: string;
         };
         Update: {
           id?: string;
           student_id?: string;
           subject?: 'math' | 'physics' | 'chemistry';
-          ocr_text?: string | null;
-          ocr_image_url?: string | null;
-          concept_tags?: string[] | null;
+          original_image_url?: string | null;
+          extracted_text?: string | null;
+          status?: string | null;
           difficulty_rating?: number | null;
+          concept_tags?: string[] | null;
+          theme_used?: 'junior' | 'senior' | null;
           created_at?: string;
         };
       };

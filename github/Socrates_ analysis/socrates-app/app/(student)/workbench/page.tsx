@@ -326,13 +326,14 @@ function WorkbenchPage() {
           subject: 'math',
           original_image_url: imagePreview || null,
           extracted_text: text,
+          theme_used: profile?.theme_preference || 'junior', // 记录对话时使用的主题模式
         }),
       });
 
       if (response.ok) {
         const result = await response.json();
         chatSessionRef.current = result.data.session_id;
-        console.log('Error session created successfully:', result.data.session_id);
+        console.log('Error session created successfully:', result.data.session_id, 'theme:', result.data.theme_used);
       } else {
         const errorText = await response.text();
         console.error('Failed to create error session. Response:', errorText);

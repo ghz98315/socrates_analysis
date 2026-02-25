@@ -6,6 +6,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import {
   Users,
@@ -21,7 +22,8 @@ import {
   BarChart3,
   UserPlus,
   Sparkles,
-  BookOpen
+  BookOpen,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -68,6 +70,17 @@ function useScrollAnimation(threshold = 0.1) {
 
 export default function DashboardPage() {
   const { profile, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const [accessDenied, setAccessDenied] = useState(false);
+
+  // 权限检查：只有家长角色才能访问此页面
+  useEffect(() => {
+    if (!authLoading && profile) {
+      if (profile.role !== 'parent') {
+        setAccessDenied(true);
+      }
+    }
+  }, [authLoading, profile]);
 
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
   const [selectedStudentName, setSelectedStudentName] = useState<string>('');
@@ -688,6 +701,46 @@ export default function DashboardPage() {
                 >
                   确认删除
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Access Denied Modal */}
+      {accessDenied && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background p-4">
+          <Card className="w-full max-w-md border-border/50 shadow-xl bg-white dark:bg-slate-900">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-20 h-20 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                  <Lock className="w-10 h-10 text-orange-500" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">访问受限</h3>
+                  <p className="text-muted-foreground">
+                    家长控制台仅限家长账号访问。
+                    <br /><br />
+                    当前账号角色为「{profile?.role === 'student' ? '学生' : profile?.role}」，无法访问此页面。
+                    <br /><br />
+                    如需管理学生账号，请联系管理员注册家长账号。
+                  </p>
+                </div>
+                <div className="flex gap-3 w-full pt-4">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => router.push('/select-profile')}
+                  >
+                    切换角色
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    onClick={() => router.push('/workbench')}
+                  >
+                    去学习
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
