@@ -62,6 +62,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<OCRResponse>>
 3. 如果是数学题目，请保留数学符号和公式
 4. 如果有图片或图表，请简单描述
 5. 只输出识别到的文字内容，不要添加任何解释
+6. 空格就是普通空格，不要用$或其他符号表示空格
+7. 直接输出原始文字，不要添加任何格式化符号
 
 请直接输出识别结果：`,
               },
