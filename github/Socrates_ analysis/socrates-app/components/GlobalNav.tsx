@@ -48,6 +48,11 @@ export function GlobalNav() {
   const { profile, user, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+
+  // 预览页面和落地页不显示全局导航
+  if (pathname?.startsWith('/preview') || pathname?.startsWith('/landing')) {
+    return null;
+  }
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);

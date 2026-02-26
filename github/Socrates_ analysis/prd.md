@@ -4,9 +4,65 @@
 **Role**: Senior Full-Stack Engineer & Product Designer
 **Mission**: Build a Socratic error-analysis agent for children, using domestic AI models (DeepSeek + Qwen).
 
-**Current Version**: v0.99
-**Last Updated**: 2026-02-25
-**Status**: 99% Complete
+**Current Version**: v1.0.0
+**Last Updated**: 2026-02-26
+**Status**: ✅ Released
+
+---
+
+## v1.0.0 Major Updates (2026-02-26)
+
+### Architecture: Monorepo Migration
+
+从单一项目迁移到 **Turborepo Monorepo** 架构：
+
+```
+socra-platform/                    # Monorepo 根目录
+├── apps/
+│   ├── landing/                   # 落地页 → socra.cn
+│   └── socrates/                  # 苏格拉底 → socrates.socra.cn
+├── packages/
+│   ├── ui/                        # 共享 UI 组件
+│   ├── auth/                      # 共享认证模块
+│   ├── database/                  # 共享数据库工具
+│   └── config/                    # 共享配置
+├── pnpm-workspace.yaml
+└── turbo.json
+```
+
+### New: Landing Page
+
+- **风格**: 教育温馨风
+- **Slogan**: AI 引导学习，培养独立思考
+- **产品展示**: 3个已上线 + 7个即将上线
+- **域名**: https://socra.cn
+
+### OCR System: Cloud Migration
+
+- **云端 OCR**: 通义千问 VL (qwen-vl-max)
+- **移除**: Tesseract.js + Python OCR Server
+- **优势**: 无需本地服务器、支持复杂数学公式、国内访问稳定
+
+### Deployment Architecture
+
+```
+用户(国内) → Cloudflare CDN → Vercel (香港节点 hkg1)
+```
+
+### Domain Configuration
+
+| 域名 | 应用 | 状态 |
+|------|------|------|
+| socra.cn | apps/landing | ✅ |
+| socrates.socra.cn | apps/socrates | ✅ |
+| essay.socra.cn | 作文批改 (预留) | - |
+| planner.socra.cn | 学习规划 (预留) | - |
+
+### UI Updates
+
+- **Favicon**: 浏览器标签页显示 logo
+- **Navigation Logo**: 导航栏 logo 替换图标
+- **Login/Register Logo**: 登录注册页面 logo
 
 ---
 
@@ -14,14 +70,16 @@
 
 | Module | Status | Completion |
 |--------|--------|------------|
+| Monorepo Architecture | ✅ Complete | 100% |
+| Landing Page | ✅ Complete | 100% |
 | Authentication System | ✅ Complete | 100% |
-| Student Workbench | ✅ Complete | 95% |
-| Parent Dashboard | ✅ Complete | 90% |
-| Error Book | ✅ Complete | 90% |
-| Achievement System | 🟡 In Progress | 85% |
+| Student Workbench | ✅ Complete | 100% |
+| Parent Dashboard | ✅ Complete | 100% |
+| Error Book | ✅ Complete | 100% |
+| Achievement System | ✅ Complete | 100% |
 | P2 Advanced Features | ✅ Complete | 100% |
-| Backend API | ✅ Complete | 95% |
-| Database Schema | ✅ Complete | 95% |
+| Cloud OCR | ✅ Complete | 100% |
+| Deployment & CDN | ✅ Complete | 100% |
 
 ---
 
@@ -32,6 +90,7 @@
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4 + Shadcn/UI
 - **PDF**: @react-pdf/renderer
+- **Monorepo**: Turborepo + pnpm
 
 ### Backend
 - **Database**: Supabase (PostgreSQL, Auth, Storage)
@@ -40,22 +99,24 @@
   - DeepSeek
   - 豆包 (Doubao)
   - Custom OpenAI-compatible APIs
-- **OCR**: Tesseract.js + Python OCR Server
+- **OCR**: 通义千问 VL (Cloud)
 - **Offline Storage**: IndexedDB
 
 ### AI Models (Domestic)
 - **Logic/Chat**: DeepSeek-V3, 通义千问
-- **Vision/OCR**: Aliyun Qwen-VL-Max (via DashScope)
+- **Vision/OCR**: 通义千问 VL-Max (Cloud)
 - **Speech (TTS/STT)**: Web Speech API
 
 ### Deployment
 - **Platform**: Vercel
+- **CDN**: Cloudflare
+- **Domains**: socra.cn, socrates.socra.cn
 
 ---
 
 ## 2. Database Schema (Supabase)
 
-### Current Schema (v0.99)
+### Current Schema (v1.0.0)
 
 ```sql
 -- Enable UUID extension
@@ -272,7 +333,22 @@ export const AVAILABLE_MODELS = [
 
 ---
 
-## 8. Bug Fixes (v0.99)
+## 8. Bug Fixes
+
+### v1.0.0 (2026-02-26)
+
+| Issue | Fix | Date |
+|-------|-----|------|
+| OCR localhost:8000 not accessible | Migrate to cloud OCR (Qwen VL) | 2026-02-26 |
+| Tesseract.js CDN blocked in China | Use domestic cloud OCR API | 2026-02-26 |
+| OCR $ symbols for spaces | Update OCR prompt instructions | 2026-02-26 |
+| Vercel slow in China | Configure Cloudflare CDN | 2026-02-26 |
+| AI chat mock responses | Add DASHSCOPE_API_KEY to Vercel | 2026-02-26 |
+| Tailwind CSS v4 PostCSS error | Use @tailwindcss/postcss package | 2026-02-26 |
+| radix-ui import errors | Change to @radix-ui/react-* | 2026-02-26 |
+| Logo not showing | Add favicon + Image components | 2026-02-26 |
+
+### v0.99 (2026-02-25)
 
 | Issue | Fix | Date |
 |-------|-----|------|
@@ -297,6 +373,58 @@ export const AVAILABLE_MODELS = [
 
 ## 10. File Structure
 
+### Monorepo Structure (v1.0.0)
+
+```
+socra-platform/                    # Monorepo 根目录
+├── apps/
+│   ├── landing/                   # 落地页 (socra.cn)
+│   │   ├── app/
+│   │   │   ├── page.tsx           # 首页
+│   │   │   └── layout.tsx         # 根布局
+│   │   ├── public/
+│   │   │   └── logo.png           # Logo
+│   │   └── package.json
+│   │
+│   └── socrates/                  # 苏格拉底 (socrates.socra.cn)
+│       ├── app/
+│       │   ├── (auth)/            # Login, Register, Select-profile
+│       │   ├── (parent)/          # Dashboard
+│       │   ├── (student)/         # Workbench, Error-book, Achievements, Review, Settings
+│       │   ├── api/               # All API routes
+│       │   │   ├── ocr/           # Cloud OCR (Qwen VL)
+│       │   │   ├── chat/          # AI Chat API
+│       │   │   └── ...
+│       │   └── layout.tsx
+│       ├── components/            # React components
+│       │   ├── GlobalNav.tsx      # 导航栏 (含 logo)
+│       │   ├── ImageUploader.tsx
+│       │   ├── ChatMessage.tsx
+│       │   └── ...
+│       ├── lib/
+│       │   ├── ai-models/         # Multi-model AI service
+│       │   ├── contexts/          # React Context (Auth, Sync, Offline)
+│       │   ├── pdf/               # PDF export components
+│       │   ├── offline/           # Offline mode support
+│       │   ├── sync/              # Multi-device sync
+│       │   └── supabase/          # Database client & types
+│       ├── supabase/              # SQL migrations
+│       └── public/
+│           └── logo.png           # Logo
+│
+├── packages/
+│   ├── ui/                        # 共享 UI 组件 (预留)
+│   ├── auth/                      # 共享认证模块 (预留)
+│   ├── database/                  # 共享数据库工具 (预留)
+│   └── config/                    # 共享配置 (预留)
+│
+├── pnpm-workspace.yaml
+├── turbo.json
+└── package.json
+```
+
+### Legacy Structure (v0.99)
+
 ```
 socrates-app/
 ├── app/
@@ -314,7 +442,7 @@ socrates-app/
 │   ├── sync/            # Multi-device sync
 │   └── supabase/        # Database client & types
 ├── supabase/            # SQL migrations
-└── backend/             # Python OCR server
+└── backend/             # Python OCR server (已移除)
 ```
 
 ---
