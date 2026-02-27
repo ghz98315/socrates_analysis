@@ -2,12 +2,40 @@
 
 ## 下次开始从这里读取
 
-> 会话时间: 2026-02-26
-> Git提交: 已提交 (Monorepo 架构完成)
-> 项目版本: v1.0.0
+> 会话时间: 2026-02-27
+> Git提交: 已提交 (v1.0.1 Bug修复)
+> 项目版本: v1.0.1
 > 整体进度: 100%
 > 上线状态: 已上线
 > 域名状态: socra.cn + socrates.socra.cn ✅ 已配置
+
+---
+
+## 2026-02-27 Bug修复
+
+### 问题：新用户注册选择 Parent 角色失败
+
+**错误日志**:
+```
+PGRST116: Cannot coerce the result to a single JSON object
+The result contains 0 rows
+```
+
+**根本原因**:
+1. 新注册用户的 profile 记录可能不存在（触发器/手动创建失败）
+2. `updateProfile` 使用 `UPDATE` 而非 `UPSERT`
+3. CSP 阻止了 Supabase Realtime WebSocket 连接
+
+**修复内容**:
+
+| 文件 | 修改 |
+|------|------|
+| `AuthContext.tsx` | `update()` → `upsert()` 自动创建不存在的 profile |
+| `vercel.json` | 添加 `wss://*.supabase.co` 到 CSP connect-src |
+
+**提交**:
+- `d7d649e` - fix: Profile creation with upsert and CSP WebSocket support
+- `05d94de` - docs: Update PROGRESS.md to v1.0.1
 
 ---
 
@@ -188,4 +216,4 @@ cd apps/socrates && pnpm dev   # http://localhost:3000
 
 ---
 
-**最后更新**: 2026-02-26
+**最后更新**: 2026-02-27
