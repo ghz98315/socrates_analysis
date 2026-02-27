@@ -1,6 +1,6 @@
 # Project Socrates - 开发进度
 
-> 最后更新: 2026-02-26 (v1.0.0 功能完善)
+> 最后更新: 2026-02-27 (v1.0.1 Bug修复)
 
 ---
 
@@ -8,7 +8,7 @@
 
 **目标**: 构建一个苏格拉底式错题分析系统，帮助中小学生通过 AI 引导自主学习
 
-**当前版本**: v1.0.0
+**当前版本**: v1.0.1
 **技术栈**:
 - 前端: Next.js 16 + TypeScript + Tailwind CSS v4 + Shadcn/UI
 - 后端: Supabase (PostgreSQL, Auth, Storage)
@@ -23,9 +23,25 @@
 ████████████████████████  100%
 ```
 
-### 最新进展 (2026-02-26)
+### 最新进展 (2026-02-27)
 
-#### ✅ 本次会话完成
+#### ✅ Bug修复
+
+**1. 新用户选择Parent角色失败**
+- ✅ 修复 `updateProfile` 使用 `UPDATE` 导致 profile 不存在时报错
+- ✅ 改为 `UPSERT` 方式，不存在则自动创建 profile
+- ✅ 文件: `apps/socrates/lib/contexts/AuthContext.tsx`
+
+**2. CSP 阻止 WebSocket 连接**
+- ✅ 添加 `wss://*.supabase.co` 到 `connect-src`
+- ✅ 解决 Supabase Realtime 连接被阻止的问题
+- ✅ 文件: `apps/socrates/vercel.json`
+
+---
+
+### 历史进展 (2026-02-26)
+
+#### ✅ v1.0.0 功能完善
 
 **1. 导航逻辑修复**
 - ✅ Logo点击跳转到角色对应首页（学生→工作台，家长→仪表板）
@@ -170,12 +186,12 @@
 
 | 提交 | 描述 | 日期 |
 |-----|------|-----|
+| `d7d649e` | fix: Profile creation with upsert and CSP WebSocket support | 2026-02-27 |
+| `1462d2d` | fix: Allow new users to select Parent role on first login | 2026-02-27 |
+| `29b3900` | docs: Update PROGRESS.md to v1.0.0 with all completed features | 2026-02-27 |
 | `5a6e90f` | feat: Add AI conversation analysis for parents | 2026-02-26 |
 | `c84f951` | fix: Improve navigation logic and user experience | 2026-02-26 |
 | `95fb980` | feat: Add mastery tracking and review plan generation | 2026-02-26 |
-| `9206bd9` | fix: Improve error book and review navigation logic | 2026-02-26 |
-| `ed4c3df` | chore: trigger redeploy | 2026-02-26 |
-| `4d91647` | fix: Make UserLevel.title optional to fix TypeScript error | 2026-02-26 |
 
 ---
 
