@@ -1,6 +1,6 @@
 # Project Socrates - 开发进度
 
-> 最后更新: 2026-02-27 (v1.0.1 Bug修复)
+> 最后更新: 2026-02-27 (v1.1.0 社区功能)
 
 ---
 
@@ -8,7 +8,7 @@
 
 **目标**: 构建一个苏格拉底式错题分析系统，帮助中小学生通过 AI 引导自主学习
 
-**当前版本**: v1.0.1
+**当前版本**: v1.1.0
 **技术栈**:
 - 前端: Next.js 16 + TypeScript + Tailwind CSS v4 + Shadcn/UI
 - 后端: Supabase (PostgreSQL, Auth, Storage)
@@ -25,7 +25,45 @@
 
 ### 最新进展 (2026-02-27)
 
-#### ✅ Bug修复
+#### ✅ v1.1.0 社区功能（新增）
+
+**1. 社区数据库表**
+- ✅ `community_profiles` - 社区用户档案（昵称、头像emoji、积分、徽章）
+- ✅ `community_posts` - 社区帖子（5种类型：心得、求助、技巧、成就、错题分享）
+- ✅ `community_likes` - 点赞记录
+- ✅ `community_comments` - 评论（支持回复）
+- ✅ `community_favorites` - 收藏
+- ✅ RLS 安全策略
+- ✅ 自动触发器（点赞数、评论数、积分更新）
+
+**2. 社区 API 端点**
+- ✅ `/api/community/posts` - 帖子 CRUD
+- ✅ `/api/community/likes` - 点赞/取消点赞
+- ✅ `/api/community/comments` - 评论
+- ✅ `/api/community/profile` - 用户社区档案
+- ✅ `/api/community/featured` - 精华内容（落地页用）
+
+**3. 社区前端组件**
+- ✅ `PostCard` - 帖子卡片组件
+- ✅ `PostComposer` - 发帖组件
+- ✅ `CommentSection` - 评论区组件
+- ✅ 社区页面 `/community`
+
+**4. 落地页精华展示**
+- ✅ `FeaturedPostsCarousel` - 精华轮播组件
+- ✅ 自动轮播 + 示例数据
+
+**5. 隐私保护**
+- ✅ 可爱随机昵称系统（如"快乐小熊88"）
+- ✅ Emoji 头像（不使用真实头像）
+- ✅ 敏感词过滤（电话、微信、学校等）
+- ✅ 匿名发布选项
+
+---
+
+### 历史进展 (2026-02-27)
+
+#### ✅ v1.0.1 Bug修复
 
 **1. 新用户选择Parent角色失败**
 - ✅ 修复 `updateProfile` 使用 `UPDATE` 导致 profile 不存在时报错
@@ -89,7 +127,8 @@
 | 复习系统 | 100% | ✅ |
 | 报告系统 | 100% | ✅ |
 | 成就系统 | 100% | ✅ |
-| AI对话分析 | 100% | ✅ 新增 |
+| **社区系统** | 100% | ✅ 新增 |
+| AI对话分析 | 100% | ✅ |
 | 数据库设计 | 100% | ✅ |
 | AI 集成 | 100% | ✅ |
 | OCR 服务 | 100% | ✅ |
@@ -110,15 +149,26 @@
 - ✅ 学习报告
 - ✅ 成就系统
 - ✅ 设置（AI模型选择）
+- ✅ **社区分享（新增）**
+- ✅ 学习报告
+- ✅ 成就系统
+- ✅ 设置（AI模型选择）
 
 ### 家长端功能
 - ✅ 家长仪表板
 - ✅ 添加/删除学生
 - ✅ 查看学生学习数据
 - ✅ 查看错题详情
-- ✅ **AI对话分析**（新增）
-- ✅ **亲子沟通建议**（新增）
+- ✅ **AI对话分析**
+- ✅ **亲子沟通建议**
 - ✅ 继续辅导学生
+
+### 社区功能（新增）
+- ✅ 发布分享（5种类型）
+- ✅ 点赞和评论
+- ✅ 可爱昵称系统
+- ✅ 匿名发布选项
+- ✅ 落地页精华展示
 
 ---
 
@@ -138,8 +188,13 @@
 | `/api/students` | GET | 学生列表 |
 | `/api/students/add` | POST | 添加学生 |
 | `/api/students/[studentId]` | DELETE | 删除学生 |
-| `/api/analyze-conversation` | POST | **AI对话分析（新增）** |
+| `/api/analyze-conversation` | POST | AI对话分析 |
 | `/api/achievements` | GET/POST | 成就系统 |
+| `/api/community/posts` | GET/POST/DELETE | **社区帖子（新增）** |
+| `/api/community/likes` | POST | **点赞（新增）** |
+| `/api/community/comments` | GET/POST/DELETE | **评论（新增）** |
+| `/api/community/profile` | GET/PUT | **社区档案（新增）** |
+| `/api/community/featured` | GET | **精华内容（新增）** |
 
 ---
 
@@ -163,6 +218,7 @@
 | `/reports` | 学习报告 |
 | `/achievements` | 成就中心 |
 | `/settings` | 设置 |
+| `/community` | **学习社区（新增）** |
 
 ### 家长页面
 | 路由 | 功能 |
