@@ -1,6 +1,6 @@
 # Project Socrates - 开发进度
 
-> 最后更新: 2026-02-28 (v1.1.2 部署修复)
+> 最后更新: 2026-02-28 (v1.3.0 变式题系统)
 
 ---
 
@@ -8,7 +8,7 @@
 
 **目标**: 构建一个苏格拉底式错题分析系统，帮助中小学生通过 AI 引导自主学习
 
-**当前版本**: v1.2.0
+**当前版本**: v1.3.0
 **技术栈**:
 - 前端: Next.js 16 + TypeScript + Tailwind CSS v4 + Shadcn/UI
 - 后端: Supabase (PostgreSQL, Auth, Storage)
@@ -24,6 +24,30 @@
 ```
 
 ### 最新进展 (2026-02-28)
+
+#### ✅ v1.3.0 变式题系统 (新增)
+
+**1. 数据库表结构** (`add-variant-questions-table.sql`)
+- ✅ `variant_questions` 表 - 变式题目存储
+- ✅ `variant_practice_logs` 表 - 练习记录
+- ✅ RLS 安全策略
+- ✅ 自动状态更新触发器
+
+**2. API 完善** (`/api/variants`)
+- ✅ GET - 获取变式题目列表
+- ✅ POST - AI 生成变式题目
+- ✅ PATCH - 提交练习结果
+- ✅ 支持 DeepSeek / 通义千问
+
+**3. 前端集成**
+- ✅ VariantPractice 组件完善
+- ✅ 集成到错题详情页
+- ✅ 难度选择（简单/中等/困难）
+- ✅ 提示系统（逐步揭示）
+- ✅ 答案校验 + 解析展示
+
+**提交记录 (socra-platform)**
+- `30cb886` - feat: Complete variant questions system with database support
 
 #### ✅ v1.2.0 输入增强功能 (之前未记录)
 
@@ -325,11 +349,7 @@
 
 ### P0 - 高优先级 (待开发)
 
-1. **变式题生成系统**
-   - [ ] 基于原题生成相似题目
-   - [ ] AI 自动生成变式
-   - [ ] 举一反三练习模式
-   - [ ] 难度分级
+1. **~~变式题生成系统~~** ✅ 已完成 (v1.3.0)
 
 2. **家长通知系统**
    - [ ] 微信模板消息推送
