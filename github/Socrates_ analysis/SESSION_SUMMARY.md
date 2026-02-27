@@ -2,12 +2,45 @@
 
 ## 下次开始从这里读取
 
-> 会话时间: 2026-02-27
-> Git提交: 已提交 (v1.0.1 Bug修复)
-> 项目版本: v1.0.1
+> 会话时间: 2026-02-28
+> Git提交: 已提交 (v1.1.2 部署修复)
+> 项目版本: v1.1.2
 > 整体进度: 100%
 > 上线状态: 已上线
 > 域名状态: socra.cn + socrates.socra.cn ✅ 已配置
+
+---
+
+## 2026-02-28 部署修复
+
+### 问题：Vercel 构建失败 - TypeScript 类型错误
+
+**错误日志**:
+```
+Failed to compile.
+./app/api/profile/ensure/route.ts:81:19
+Type error: Argument of type 'Record<string, any>' is not assignable to parameter of type 'never'.
+```
+
+**根本原因**:
+- Supabase 客户端类型推断问题
+- TypeScript 严格模式下 `updates` 对象类型不匹配
+
+**修复内容**:
+
+| 文件 | 修改 |
+|------|------|
+| `apps/socrates/app/api/profile/ensure/route.ts` | 添加 `(admin as any)` 类型断言 |
+| `apps/socrates/app/api/students/route.ts` | 添加调试信息 |
+| `apps/socrates/lib/types/index.ts` | UserProfile 添加 phone 字段 |
+
+**提交 (socra-platform)**:
+- `a05be47` - fix: Add type assertion for Supabase admin client
+- `5e29a29` - fix: TypeScript error and add debugging to students API
+- `ff89bb1` - fix: Use API endpoint for profile creation to bypass RLS
+
+**提交 (Socrates_analysis)**:
+- `b546155` - docs: Update PROGRESS.md to v1.1.1 with community fixes
 
 ---
 
@@ -216,4 +249,4 @@ cd apps/socrates && pnpm dev   # http://localhost:3000
 
 ---
 
-**最后更新**: 2026-02-27
+**最后更新**: 2026-02-28

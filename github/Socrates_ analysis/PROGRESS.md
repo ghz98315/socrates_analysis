@@ -1,6 +1,6 @@
 # Project Socrates - 开发进度
 
-> 最后更新: 2026-02-27 (v1.1.1 社区功能修复)
+> 最后更新: 2026-02-28 (v1.1.2 部署修复)
 
 ---
 
@@ -8,7 +8,7 @@
 
 **目标**: 构建一个苏格拉底式错题分析系统，帮助中小学生通过 AI 引导自主学习
 
-**当前版本**: v1.1.1
+**当前版本**: v1.1.2
 **技术栈**:
 - 前端: Next.js 16 + TypeScript + Tailwind CSS v4 + Shadcn/UI
 - 后端: Supabase (PostgreSQL, Auth, Storage)
@@ -23,9 +23,27 @@
 ████████████████████████  100%
 ```
 
-### 最新进展 (2026-02-27)
+### 最新进展 (2026-02-28)
 
-#### ✅ v1.1.1 社区功能修复
+#### ✅ v1.1.2 部署修复 (socra-platform)
+
+**Bug修复**
+- ✅ 修复 TypeScript 类型推断错误 (`Argument of type 'Record<string, any>' is not assignable to parameter of type 'never'`)
+- ✅ 添加 Supabase admin 客户端类型断言 `(admin as any)`
+- ✅ 修复 students API 调试信息
+- ✅ 使用 API 端点创建 profile 以绕过 RLS
+- ✅ UserProfile 接口添加 phone 字段
+
+**提交记录 (socra-platform)**
+- `a05be47` - fix: Add type assertion for Supabase admin client
+- `5e29a29` - fix: TypeScript error and add debugging to students API
+- `ff89bb1` - fix: Use API endpoint for profile creation to bypass RLS
+- `c14f108` - fix: Add phone field to UserProfile interface
+- `09398d6` - fix: TypeScript type inference error in loadParentStudents
+
+---
+
+#### ✅ v1.1.1 社区功能修复 (2026-02-27)
 
 **Bug修复**
 - ✅ 修复 Supabase JOIN 查询问题（改为分开查询）
