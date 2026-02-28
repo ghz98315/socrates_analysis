@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-02-28 v1.5.1
+## 最新节点: 2026-02-28 v1.5.2
 
 ### 当前状态
-- **版本**: v1.5.1
+- **版本**: v1.5.2
 - **分支**: main (socra-platform)
-- **最后提交**: `b2f400f` - feat: Add OCR boundary control and inverse proportional function support
+- **最后提交**: `6239191` - fix: Add detailed logging for AI model calling debugging
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -29,25 +29,32 @@
 15. ✅ OCR识别范围界定（只识别题目文字，忽略界面元素和图形标记）
 16. ✅ 反比例函数曲线绘制（y=k/x）
 17. ✅ 函数方程条件提取
+18. ✅ 苏格拉底提示词增强（知识点引导策略）
+19. ✅ 几何条件传递到AI对话
+20. ✅ AI模型调用调试日志
 
 ### 待调试/优化
-- ⏳ 几何调整后实时传递到对话（用户拖动点后需要更新AI对话中的图形信息）
-- ⏳ PDF导出功能（按钮已禁用，待调试）
+- ⏳ AI模型调用验证（检查Vercel环境变量DASHSCOPE_API_KEY是否配置）
+- ⏳ 几何调整后实时传递到对话
+- ⏳ PDF导出功能
 - ⏳ 家长通知系统（微信模板消息）
 
 ### 关键文件位置
 ```
 socra-platform/apps/socrates/
 ├── app/api/
+│   ├── chat/route.ts             # AI对话API（苏格拉底提示词+调试日志）
 │   ├── ocr/route.ts              # OCR识别（含数学符号规范+识别范围界定）
 │   ├── geometry/route.ts         # 几何图形解析API（含函数曲线支持）
 │   └── variants/route.ts         # 变式题API
+├── lib/ai-models/
+│   ├── config.ts                 # AI模型配置（qwen-turbo/plus/vl）
+│   └── service.ts                # AI模型调用服务
 ├── components/
 │   ├── GeometryRenderer.tsx      # JSXGraph几何渲染（含反比例函数曲线）
 │   ├── OCRResult.tsx             # OCR结果+几何解析
 │   ├── VariantPractice.tsx       # 变式练习组件
-│   ├── MathSymbolPicker.tsx      # 数学符号选择器
-│   └── ImageAnnotator.tsx        # 图片标注工具
+│   └── MathSymbolPicker.tsx      # 数学符号选择器
 ├── types/jsxgraph.d.ts           # JSXGraph类型声明
 └── supabase/
     ├── add-variant-questions-table.sql
@@ -71,8 +78,8 @@ socra-platform/apps/socrates/
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.5.1
-最新提交：b2f400f
+当前版本：v1.5.2
+最新提交：6239191
 
 请确认已了解项目状态，我需要继续开发以下内容：
 [在此填写具体需求]
@@ -81,6 +88,39 @@ socra-platform/apps/socrates/
 ---
 
 ## 历史节点
+
+### 2026-02-28 苏格拉底提示词增强+AI调用调试 (v1.5.2)
+
+**开发内容**：
+1. 苏格拉底提示词全面增强
+   - 添加【知识引导策略】：引导学生回忆公式/定理
+   - 添加【渐进式引导流程】五步法：读题→知识点回忆→建立联系→执行计算→反思总结
+   - 小学生知识点库：运算、几何、应用题、分数百分数
+   - 初中生知识点库：代数、函数、几何定理（三角形/四边形/圆/比例）
+   - 提问技巧示例（好的问法 vs 不好的问法）
+
+2. 几何数据传递到AI对话
+   - Chat API传递完整几何条件（长度、角度、比例、函数等）
+   - 系统提示词中包含几何图形信息
+
+3. 自定义点功能修复
+   - 使用JSXGraph原生事件 `board.on('down')` 替代React onClick
+
+4. AI模型调用调试
+   - 添加详细日志：模型选择、API Key状态、响应状态
+   - 响应中返回 `modelUsed` 字段方便调试
+
+**Git提交**：
+- `6239191` - fix: Add detailed logging for AI model calling debugging
+- `655afab` - feat: Enhance Socratic prompt with knowledge point guidance
+- `90cc3ec` - fix: Enhance geometry data passing to AI chat and fix point adding
+- `53a47bf` - fix: Fix custom point adding using JSXGraph native events
+
+**待验证**：
+- Vercel环境变量 `DASHSCOPE_API_KEY` 是否配置
+- AI模型是否正常调用（查看Vercel Functions日志）
+
+---
 
 ### 2026-02-28 OCR优化+反比例函数支持 (v1.5.1)
 
@@ -104,10 +144,6 @@ socra-platform/apps/socrates/
 
 **Git提交**：
 - `b2f400f` - feat: Add OCR boundary control and inverse proportional function support
-
-**待验证**：
-- OCR是否不再识别多余内容
-- 反比例函数曲线是否正确绘制
 
 ---
 
@@ -138,11 +174,6 @@ socra-platform/apps/socrates/
 **Git提交**：
 - `6609db5` - feat: Implement 4 geometry and UI improvements
 
-**待验证**：
-- 自定义点功能是否正常工作
-- 几何图形保存后提取是否一致
-- 移动端布局是否合理
-
 ---
 
 ### 2026-02-28 几何条件提取+镜像修复 (v1.4.2)
@@ -150,24 +181,10 @@ socra-platform/apps/socrates/
 **开发内容**：
 - 修复几何图形Y轴镜像问题（明确坐标规则：上方点Y值大）
 - 添加全面的几何关系识别（垂直、平行、相交、相切、全等、相似等）
-- 添加条件自动提取功能：
-  - lengths: AB=6, BE=BC
-  - angles: ∠C=90°, ∠A=∠B
-  - ratios: AE:ED=1:2
-  - parallels: AB//CD
-  - perpendiculars: CF⊥BE
-  - midpoints: D是BC的中点
-  - tangents: AB与⊙O相切
-  - intersections: AC与BD相交于O
-- 在图板中显示已知条件（彩色标签）
-- 添加圆与切线完整示例
+- 添加条件自动提取功能
 
 **Git提交**：
 - `5e6f80c` - feat: Fix geometry mirror issue and add comprehensive conditions extraction
-
-**待验证**：
-- 几何图形是否不再镜像
-- 已知条件是否正确提取并显示
 
 ---
 
@@ -175,20 +192,11 @@ socra-platform/apps/socrates/
 
 **开发内容**：
 - 完全重写几何解析Prompt，确保100%匹配原题要求
-- 添加精确坐标计算规则（矩形、边上的点、中点、垂足）
-- 添加三点完整示例（矩形带辅助点、三角形带中线、直角三角形）
-- 添加输出检查清单
-- 增强点吸附到网格（0.5单位）
-- 直角自动识别并显示正方形标记
+- 添加精确坐标计算规则
 - 辅助线手动绘制功能（橙色虚线）
-- 移除重新开始按钮的旋转效果
 
 **Git提交**：
 - `fe3f413` - feat: Completely rewrite geometry parsing prompt for 100% accuracy
-
-**待验证**：
-- 几何图形是否100%匹配原题要求
-- 用户上传几何题目后的渲染精确度
 
 ---
 
@@ -197,18 +205,10 @@ socra-platform/apps/socrates/
 **开发内容**：
 - 创建 GeometryRenderer 组件（JSXGraph）
 - 创建 /api/geometry 解析API
-- 集成到 OCRResult 组件
 - 修复 SSR window 未定义错误
-- 添加几何关键词检测
 
 **Git提交**：
-- `1223d3b` - fix: Improve geometry recognition and rendering
-- `3207b19` - fix: Dynamic import JSXGraph to avoid SSR window error
 - `a38df8d` - feat: Add geometry auto-rendering with JSXGraph
-
-**待验证**：
-- 几何图形识别是否正常工作
-- 用户上传几何题目图片后的渲染效果
 
 ---
 
@@ -216,9 +216,7 @@ socra-platform/apps/socrates/
 
 **开发内容**：
 - 创建 variant_questions 和 variant_practice_logs 表
-- 完善 /api/variants API（GET/POST/PATCH）
-- 集成 VariantPractice 到错题详情页
-- 添加难度选择和提示系统
+- 完善 /api/variants API
 
 **Git提交**：
 - `30cb886` - feat: Complete variant questions system with database support
@@ -230,11 +228,8 @@ socra-platform/apps/socrates/
 **开发内容**：
 - 完善OCR prompt，添加初中数学符号输出规范
 - 禁止LaTeX格式输出
-- 分数使用斜线格式 (a/b)
-- 几何符号表完善
 
 **Git提交**：
-- `ad6078c` - fix: Revert fraction format to slash (a/b)
 - `0800442` - feat: Complete middle school math symbol guide for OCR
 
 ---
@@ -242,9 +237,9 @@ socra-platform/apps/socrates/
 ## 下一步开发方向
 
 ### P0 - 高优先级
-1. **几何图形功能测试** - 验证OCR+几何渲染是否正常工作
-2. **家长通知系统** - 微信模板消息推送
-3. **PDF导出优化** - 修复当前禁用的PDF按钮
+1. **验证AI模型调用** - 检查Vercel环境变量，确认大模型是否正常工作
+2. **几何图形功能测试** - 验证OCR+几何渲染是否正常工作
+3. **家长通知系统** - 微信模板消息推送
 
 ### P1 - 中优先级
 4. **社区功能完善** - 积分、徽章、排行榜
@@ -287,15 +282,17 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 
-# AI服务
-AI_API_KEY=              # 通义千问
-AI_API_KEY_VISION=       # 通义千问 VL (OCR)
-AI_API_KEY_LOGIC=        # DeepSeek (可选)
+# AI服务 - 通义千问（对话和OCR）
+DASHSCOPE_API_KEY=          # 通义千问 API Key（对话+OCR）
+AI_API_KEY_VISION=          # 通义千问 VL (OCR，可选)
+AI_API_KEY_LOGIC=           # DeepSeek (可选)
 
 # 站点配置
 NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 ```
 
+**重要**：确保 Vercel 中配置了 `DASHSCOPE_API_KEY`，否则对话会回退到 mock 模式。
+
 ---
 
-*文档最后更新: 2026-02-28 v1.5.1*
+*文档最后更新: 2026-02-28 v1.5.2*
