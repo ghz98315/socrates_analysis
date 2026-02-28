@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-02-28 v1.6.2
+## 最新节点: 2026-02-28 v1.6.3
 
 ### 当前状态
-- **版本**: v1.6.2
+- **版本**: v1.6.3
 - **分支**: main (socra-platform)
-- **最后提交**: 几何图形坐标系统修复（矩形顶点命名约定）
+- **最后提交**: 几何解析增强 + 添加点功能调试
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -38,45 +38,31 @@
 24. ✅ **前端适配完成**（传递新参数+对话名称显示）
 25. ✅ **科目/题型标签显示**（OCRResult 组件）
 26. ✅ **几何坐标系统修复**（矩形从左下角开始顺时针排列）
-
-### 新增文件结构
-```
-socra-platform/apps/socrates/
-├── lib/prompts/                    # 🆕 Prompt系统
-│   ├── types.ts                    # 类型定义
-│   ├── base.ts                     # 通用层（Layer 1）
-│   ├── builder.ts                  # Prompt构建器（三层合并）
-│   ├── index.ts                    # 导出入口
-│   └── subjects/                   # 科目层（Layer 2）
-│       ├── index.ts                # 科目配置导出
-│       ├── math.ts                 # 数学配置（已实现）
-│       ├── chinese.ts              # 语文配置（预留）
-│       ├── english.ts              # 英语配置（预留）
-│       └── generic.ts              # 通用模式配置
-├── app/api/
-│   ├── chat/route.ts               # AI对话API（重构，支持三层Prompt）
-│   ├── ocr/route.ts                # OCR识别（新增科目/题型识别）
-│   ├── geometry/route.ts           # 几何图形解析API
-│   └── variants/route.ts           # 变式题API
-├── lib/ai-models/
-│   ├── config.ts                   # AI模型配置
-│   └── service.ts                  # AI模型调用服务
-└── components/
-    ├── GeometryRenderer.tsx        # JSXGraph几何渲染
-    ├── OCRResult.tsx               # OCR结果+几何解析
-    └── ...
-```
+27. ✅ **JSON解析增强**（处理Math.sqrt()表达式）
+28. ✅ **坐标系三角形示例**（Rt△OAB类型）
 
 ### 待调试/优化
+- ⏳ 添加点功能调试中（已添加日志，待测试）
 - ⏳ 几何调整后实时传递到对话
 - ⏳ PDF导出功能
 - ⏳ 家长通知系统（微信模板消息）
-- ✅ 数据库迁移已完成（subscription_tier + OCR识别字段）
-- ✅ 几何坐标系统修复（矩形顶点命名约定）
 
 ---
 
 ## 历史节点
+
+### 2026-02-28 几何解析增强 (v1.6.3)
+
+**修复内容**：
+1. JSON解析增强：自动计算 Math.sqrt() 表达式
+2. 添加坐标系三角形示例（Rt△OAB类型）
+3. 添加点功能：增加调试日志，改进坐标获取
+
+**修改文件**：
+- `app/api/geometry/route.ts` - JSON解析增强 + 新示例
+- `components/GeometryRenderer.tsx` - 添加点事件调试
+
+---
 
 ### 2026-02-28 几何坐标系统修复 (v1.6.2)
 
@@ -84,15 +70,7 @@ socra-platform/apps/socrates/
 几何图形渲染后与原图方向不一致，矩形ABCD渲染后A出现在左上角，而原图A在左下角。
 
 **问题原因**：
-Geometry API 的 Prompt 中矩形顶点命名规则与初中数学课本习惯不一致：
-- Prompt 规定：A(左上) → B(右上) → C(右下) → D(左下)
-- 课本习惯：A(左下) → B(右下) → C(右上) → D(左上)
-
-**修复内容**：
-1. 更新 Geometry API Prompt 的坐标系统规则
-2. 明确矩形顶点命名约定：从左下角开始，顺时针排列
-3. 更新示例代码中的坐标值和标签位置
-4. 添加显眼的警告说明，强调严格按照课本约定
+Geometry API 的 Prompt 中矩形顶点命名规则与初中数学课本习惯不一致
 
 **修复后坐标规则**：
 ```
@@ -101,9 +79,6 @@ B = (w/2, -h/2)  右下角，Y值最小
 C = (w/2, h/2)   右上角，Y值最大
 D = (-w/2, h/2)  左上角，Y值最大
 ```
-
-**修改文件**：
-- `app/api/geometry/route.ts` - 更新 Prompt 规则和示例
 
 ---
 
