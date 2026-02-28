@@ -9,7 +9,7 @@
 ### 当前状态
 - **版本**: v1.5.1
 - **分支**: main (socra-platform)
-- **最后提交**: 待提交 - feat: OCR识别优化和反比例函数支持
+- **最后提交**: `b2f400f` - feat: Add OCR boundary control and inverse proportional function support
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -72,7 +72,7 @@ socra-platform/apps/socrates/
 - 文档目录：D:\github\Socrates_ analysis
 
 当前版本：v1.5.1
-最新提交：待提交
+最新提交：b2f400f
 
 请确认已了解项目状态，我需要继续开发以下内容：
 [在此填写具体需求]
@@ -103,7 +103,7 @@ socra-platform/apps/socrates/
    - 在已知条件区域显示函数方程
 
 **Git提交**：
-- 待提交
+- `b2f400f` - feat: Add OCR boundary control and inverse proportional function support
 
 **待验证**：
 - OCR是否不再识别多余内容
@@ -271,8 +271,7 @@ pnpm build
 # TypeScript检查
 npx tsc --noEmit
 
-# Git操作（使用代理7897）
-git config http.proxy http://127.0.0.1:7897
+# Git操作
 git push origin main
 ```
 
