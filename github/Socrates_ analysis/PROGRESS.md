@@ -60,6 +60,8 @@
 - ✅ 禁止LaTeX格式输出
 
 **提交记录 (socra-platform)**
+- `1223d3b` - fix: Improve geometry recognition and rendering
+- `3207b19` - fix: Dynamic import JSXGraph to avoid SSR window error
 - `a38df8d` - feat: Add geometry auto-rendering with JSXGraph
 - `ad6078c` - fix: Revert fraction format to slash (a/b)
 - `0800442` - feat: Complete middle school math symbol guide for OCR

@@ -4,9 +4,65 @@
 **Role**: Senior Full-Stack Engineer & Product Designer
 **Mission**: Build a Socratic error-analysis agent for children, using domestic AI models (DeepSeek + Qwen).
 
-**Current Version**: v1.0.0
-**Last Updated**: 2026-02-26
-**Status**: ✅ Released
+**Current Version**: v1.4.0
+**Last Updated**: 2026-02-28
+**Status**: ✅ Released & Iterating
+
+---
+
+## v1.4.0 Updates (2026-02-28)
+
+### 新功能：几何图形自动渲染
+
+使用 **JSXGraph** 库实现几何图形的自动绘制：
+
+```
+上传图片 → OCR识别 → 检测几何关键词 → AI解析图形结构 → JSXGraph渲染
+```
+
+**支持的图形类型**：
+- 三角形（等腰、等边、直角、一般）
+- 四边形（正方形、矩形、平行四边形、梯形、菱形）
+- 圆（圆心、半径、直径、切线）
+- 角度（∠、直角标记）
+- 组合图形
+
+**关键文件**：
+- `components/GeometryRenderer.tsx` - JSXGraph 渲染组件
+- `app/api/geometry/route.ts` - 几何图形解析 API
+- `types/jsxgraph.d.ts` - TypeScript 类型声明
+
+### 新功能：变式题系统 (v1.3.0)
+
+- AI 根据原题生成相似练习题
+- 难度选择（简单/中等/困难）
+- 提示系统（逐步揭示）
+- 答案校验 + 解析展示
+
+**关键文件**：
+- `supabase/add-variant-questions-table.sql` - 数据库表
+- `app/api/variants/route.ts` - API 端点
+- `components/VariantPractice.tsx` - 前端组件
+
+### 新功能：输入增强 (v1.2.0)
+
+**数学符号快捷输入**：
+- 10个符号分类：基础运算、比较、根号、幂次、下标、分数、希腊字母、几何、集合、箭头
+- 文件：`components/MathSymbolPicker.tsx`
+
+**图片标注画板**：
+- 5种工具：画笔、直线、箭头、文字、橡皮擦
+- 6种颜色、3种线宽
+- 文件：`components/ImageAnnotator.tsx`
+
+### OCR 符号输出规范
+
+完整的初中数学符号输出规范，禁止 LaTeX 格式：
+- 乘号：×（禁止 \times）
+- 除号：÷（禁止 \div）
+- 分数：a/b（禁止 \frac{}{}）
+- 根号：√（禁止 \sqrt{}）
+- 几何：∠△≌∽⊥∥（禁止 LaTeX）
 
 ---
 
@@ -77,6 +133,9 @@ socra-platform/                    # Monorepo 根目录
 | Parent Dashboard | ✅ Complete | 100% |
 | Error Book | ✅ Complete | 100% |
 | Achievement System | ✅ Complete | 100% |
+| Community System | ✅ Complete | 100% |
+| **Variant Questions** | ✅ Complete | 100% |
+| **Geometry Rendering** | ✅ Complete | 100% |
 | P2 Advanced Features | ✅ Complete | 100% |
 | Cloud OCR | ✅ Complete | 100% |
 | Deployment & CDN | ✅ Complete | 100% |
@@ -323,13 +382,16 @@ export const AVAILABLE_MODELS = [
 ## 7. Pending Features
 
 ### High Priority (Phase 3)
-- [ ] Parent AI conversation analysis
-- [ ] Review reminder system
-- [ ] Learning report generation
+- [x] ~~Parent AI conversation analysis~~ ✅ v1.0.0
+- [ ] Review reminder system (微信模板消息)
+- [ ] Learning report generation optimization
+- [ ] PDF export optimization
 
 ### Medium Priority (Phase 4)
 - [ ] Multi-subject expansion
-- [ ] Social features
+- [ ] Social features enhancement (积分、徽章、排行榜)
+- [ ] Performance optimization
+- [ ] PWA support
 
 ---
 
