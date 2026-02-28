@@ -9,7 +9,7 @@
 ### 当前状态
 - **版本**: v1.4.0
 - **分支**: main (socra-platform)
-- **最后提交**: `1223d3b` - fix: Improve geometry recognition and rendering
+- **最后提交**: `bb19274` - fix: Geometry API use correct environment variable
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -21,9 +21,10 @@
 7. ✅ AI对话分析（家长端）
 
 ### 待调试/优化
-- ⏳ 几何图形识别准确性需测试验证
+- ⏳ 几何图形识别准确性需测试验证（环境变量已修复）
 - ⏳ PDF导出功能（按钮已禁用，待调试）
 - ⏳ 家长通知系统（微信模板消息）
+- ⏳ study_sessions API 500错误（可能需要创建表）
 
 ### 关键文件位置
 ```
