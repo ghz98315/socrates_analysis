@@ -186,7 +186,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.0
+当前版本：v1.6.4
+最后更新：添加点功能修复 + OCR显示区域优化
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -443,4 +444,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-02-28 v1.6.1*
+*文档最后更新: 2026-02-28 v1.6.4*
