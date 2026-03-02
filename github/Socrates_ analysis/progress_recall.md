@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-02 v1.6.8
+## 最新节点: 2026-03-02 v1.6.9
 
 ### 当前状态
-- **版本**: v1.6.8
+- **版本**: v1.6.9
 - **分支**: main (socra-platform)
-- **最后提交**: 几何画板渲染修复 + 函数曲线控制优化
+- **最后提交**: 复习与成就系统逻辑修复
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -65,6 +65,10 @@
     - 修复线条丢失问题（调整渲染顺序：先点后线）
     - 禁用画板平移（防止意外移动）
     - 反比例函数控制点优化（O'移动曲线 + k调整形状）
+34. ✅ **复习与成就系统逻辑修复 v1.6.9**
+    - 添加连续学习天数更新逻辑（updateStreak函数）
+    - 修复复习完成率计算（从0%硬编码改为动态计算）
+    - 学习开始时自动触发连续学习成就检查
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -75,6 +79,43 @@
 ---
 
 ## 历史节点
+
+### 2026-03-02 复习与成就系统逻辑修复 (v1.6.9)
+
+**问题分析**：
+
+通过代码审查，1. **复习计划创建** - ✅ 已有逻辑（在 error-session/complete 中）
+2. **成就触发机制** - ✅ 已有逻辑（调用 /api/achievements POST）
+3. **连续学习天数** - ❌ 缺失更新逻辑
+4. **完成率计算** - ❌ 硬编码为 0%
+
+**修复内容**：
+
+**1. 添加连续学习天数更新逻辑**
+```typescript
+// study/session/route.ts
+async function updateStreak(userId: string) {
+  // 获取当前streak
+  // 计算日期差
+  // 更新streak（连续+1， 断了重置为1）
+  // 触发streak成就检查
+}
+```
+
+**2. 修复复习完成率计算**
+```typescript
+// review/page.tsx
+const completedCount = reviews.filter(r => r.reviewStage >= 5).length;
+const completionRate = reviews.length > 0
+  ? Math.round((completedCount / reviews.length) * 100)
+  : 0;
+```
+
+**修改文件**：
+- `app/api/study/session/route.ts` - 添加 updateStreak 函数
+- `app/(student)/review/page.tsx` - 修复完成率计算
+
+---
 
 ### 2026-03-02 几何画板渲染修复 + 函数曲线控制优化 (v1.6.8)
 
@@ -332,8 +373,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.8
-最后更新：几何画板渲染修复 + 函数曲线控制优化
+当前版本：v1.6.9
+最后更新：复习与成就系统逻辑修复（连续学习天数 + 完成率计算）
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -590,4 +631,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-02 v1.6.8*
+*文档最后更新: 2026-03-02 v1.6.9*
