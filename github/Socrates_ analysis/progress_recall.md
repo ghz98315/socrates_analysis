@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-02 v1.6.9
+## 最新节点: 2026-03-02 v1.6.10
 
 ### 当前状态
-- **版本**: v1.6.9
+- **版本**: v1.6.10
 - **分支**: main (socra-platform)
-- **最后提交**: 复习与成就系统逻辑修复
+- **最后提交**: 成就解锁触发修复（上传错题时触发成就检查）
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -69,6 +69,10 @@
     - 添加连续学习天数更新逻辑（updateStreak函数）
     - 修复复习完成率计算（从0%硬编码改为动态计算）
     - 学习开始时自动触发连续学习成就检查
+35. ✅ **成就解锁触发修复 v1.6.10**
+    - 修复错题上传时不触发成就检查的问题
+    - 在error-session创建成功后调用achievements API
+    - 传递error_uploaded action和错题总数
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -79,6 +83,51 @@
 ---
 
 ## 历史节点
+
+### 2026-03-02 成就解锁触发修复 (v1.6.10)
+
+**问题描述**：
+用户上传了多条错题，但"初学者"（上传第一道错题）等成就没有解锁。
+
+**问题原因**：
+`app/api/error-session/route.ts` 创建错题会话时没有调用 achievements API 触发成就检查。
+
+**修复内容**：
+
+在错题会话创建成功后，添加成就触发逻辑：
+```typescript
+// 获取该学生的错题总数，用于成就检查
+const { count: errorCount } = await supabase
+  .from('error_sessions')
+  .select('*', { count: 'exact', head: true })
+  .eq('student_id', student_id);
+
+// 触发成就检查 - 上传错题
+try {
+  await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/achievements`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id: student_id,
+      action: 'error_uploaded',
+      data: { count: errorCount || 1 },
+    }),
+  });
+} catch (e) {
+  console.error('Failed to check upload achievements:', e);
+}
+```
+
+**相关成就定义**：
+- `first_error` - 上传1道错题（初学者）
+- `error_collector_10` - 上传10道错题（错题收集家）
+- `error_collector_50` - 上传50道错题（错题达人）
+- `error_collector_100` - 上传100道错题（错题大师）
+
+**修改文件**：
+- `app/api/error-session/route.ts` - 添加成就触发逻辑
+
+---
 
 ### 2026-03-02 复习与成就系统逻辑修复 (v1.6.9)
 
@@ -373,8 +422,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.9
-最后更新：复习与成就系统逻辑修复（连续学习天数 + 完成率计算）
+当前版本：v1.6.10
+最后更新：成就解锁触发修复（上传错题时触发成就检查）
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -631,4 +680,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-02 v1.6.9*
+*文档最后更新: 2026-03-02 v1.6.10*
