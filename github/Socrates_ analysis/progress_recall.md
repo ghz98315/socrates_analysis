@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-02 v1.6.10
+## 最新节点: 2026-03-02 v1.6.11
 
 ### 当前状态
-- **版本**: v1.6.10
+- **版本**: v1.6.11
 - **分支**: main (socra-platform)
-- **最后提交**: 成就解锁触发修复（上传错题时触发成就检查）
+- **最后提交**: 错题本加载性能优化
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -73,6 +73,11 @@
     - 修复错题上传时不触发成就检查的问题
     - 在error-session创建成功后调用achievements API
     - 传递error_uploaded action和错题总数
+36. ✅ **错题本加载性能优化 v1.6.11**
+    - useMemo优化：filteredErrors、statusCounts避免重复计算
+    - useCallback优化：fetchErrors函数
+    - 搜索防抖：300ms延迟减少过滤操作
+    - 移除重复的状态计数计算
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -83,6 +88,56 @@
 ---
 
 ## 历史节点
+
+### 2026-03-02 错题本加载性能优化 (v1.6.11)
+
+**问题描述**：
+错题本页面加载速度较慢，尤其是数据量增大时。
+
+**问题原因**：
+1. filteredErrors 每次渲染都重新计算（过滤+排序）
+2. 状态计数在多处重复计算
+3. 搜索输入没有防抖，每次按键都触发过滤
+
+**优化内容**：
+
+**1. useMemo 缓存计算结果**
+```typescript
+// 过滤和排序结果缓存
+const filteredErrors = useMemo(() => {
+  return errors.filter(...).sort(...);
+}, [errors, debouncedSearch, selectedSubject, selectedStatus, sortBy]);
+
+// 状态计数缓存
+const statusCounts = useMemo(() => ({
+  total: errors.length,
+  analyzing: errors.filter(e => e.status === 'analyzing').length,
+  guidedLearning: errors.filter(e => e.status === 'guided_learning').length,
+  mastered: errors.filter(e => e.status === 'mastered').length,
+}), [errors]);
+```
+
+**2. useCallback 缓存函数**
+```typescript
+const fetchErrors = useCallback(async () => {
+  // ...
+}, [profile?.id]);
+```
+
+**3. 搜索防抖 (300ms)**
+```typescript
+useEffect(() => {
+  const timeout = setTimeout(() => {
+    setDebouncedSearch(searchQuery);
+  }, 300);
+  return () => clearTimeout(timeout);
+}, [searchQuery]);
+```
+
+**修改文件**：
+- `app/(student)/error-book/page.tsx`
+
+---
 
 ### 2026-03-02 成就解锁触发修复 (v1.6.10)
 
@@ -422,8 +477,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.10
-最后更新：成就解锁触发修复（上传错题时触发成就检查）
+当前版本：v1.6.11
+最后更新：错题本加载性能优化（useMemo + 防抖）
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -680,4 +735,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-02 v1.6.10*
+*文档最后更新: 2026-03-02 v1.6.11*
