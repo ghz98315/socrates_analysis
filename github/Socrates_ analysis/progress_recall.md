@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-02 v1.6.11
+## 最新节点: 2026-03-02 v1.6.13
 
 ### 当前状态
-- **版本**: v1.6.11
+- **版本**: v1.6.13
 - **分支**: main (socra-platform)
-- **最后提交**: 错题本加载性能优化
+- **最后提交**: 成就API调用URL修复
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -78,6 +78,10 @@
     - useCallback优化：fetchErrors函数
     - 搜索防抖：300ms延迟减少过滤操作
     - 移除重复的状态计数计算
+37. ✅ **成就API调用URL修复 v1.6.13**
+    - 修复服务端fetch需要绝对URL的问题
+    - 添加VERCEL_URL作为fallback
+    - 修复error-session、complete、study/session三个API
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -88,6 +92,37 @@
 ---
 
 ## 历史节点
+
+### 2026-03-02 成就API调用URL修复 (v1.6.13)
+
+**问题描述**：
+上传错题后成就没有解锁，Vercel日志显示：
+```
+Failed to parse URL from /api/achievements
+TypeError: Invalid URL
+code: 'ERR_INVALID_URL'
+```
+
+**问题原因**：
+服务端 `fetch()` 需要完整的绝对URL，但 `NEXT_PUBLIC_SITE_URL` 环境变量未设置，导致URL变成相对路径 `/api/achievements`。
+
+**修复内容**：
+```typescript
+// 修复前
+await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/achievements`, ...)
+
+// 修复后
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+await fetch(`${baseUrl}/api/achievements`, ...)
+```
+
+**修改文件**：
+- `app/api/error-session/route.ts` - 上传错题触发成就
+- `app/api/error-session/complete/route.ts` - 掌握错题触发成就
+- `app/api/study/session/route.ts` - 连续学习触发成就
+
+---
 
 ### 2026-03-02 错题本加载性能优化 (v1.6.11)
 
@@ -477,8 +512,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.11
-最后更新：错题本加载性能优化（useMemo + 防抖）
+当前版本：v1.6.13
+最后更新：成就API调用URL修复（服务端fetch需要绝对URL）
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -735,4 +770,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-02 v1.6.11*
+*文档最后更新: 2026-03-02 v1.6.13*
