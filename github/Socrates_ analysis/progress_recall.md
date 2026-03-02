@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-02 v1.6.14
+## 最新节点: 2026-03-02 v1.6.19
 
 ### 当前状态
-- **版本**: v1.6.14
+- **版本**: v1.6.19
 - **分支**: main (socra-platform)
-- **最后提交**: 成就系统基于数据库实际统计
+- **最后提交**: 复习列表缓存优化（Zustand Store）
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -89,6 +89,31 @@
     - review_completed：查询 is_completed=true 的数量
     - streak_updated：从 user_levels 获取 current_streak
     - 不再依赖传递的 count 参数，更可靠
+39. ✅ **学习计时器闭包问题修复 v1.6.15**
+    - 问题：isStudying 状态在定时器闭包中始终为初始值 false
+    - 解决：添加 isStudyingRef 同步状态变化
+    - 心跳正常工作，学习时长正确记录
+40. ✅ **成就同步API + 最终修复 v1.6.16**
+    - 新增 /api/achievements/sync 端点手动同步已有数据
+    - 添加详细调试日志排查问题
+    - 成就系统现在完全正常工作
+41. ✅ **成就统计计算修复 v1.6.17**
+    - 修复成就数量统计：过滤无效 achievement_id 并去重
+    - 修复 XP 显示为 0：重新计算总 XP 基于实际解锁成就
+    - 清理无效记录和重复记录
+    - 修改文件：achievements/route.ts, achievements/sync/route.ts
+42. ✅ **工作台添加待复习题目展示 v1.6.18**
+    - 在工作台底部展示已到期的复习题目（最多5个）
+    - 显示科目、标签、难度、复习进度
+    - 点击可跳转到复习页面
+    - 修改文件：workbench/page.tsx
+43. ✅ **复习列表缓存优化 v1.6.19**
+    - 新增 Zustand Store (`lib/stores/review-store.ts`)
+    - 5分钟缓存机制（使用 sessionStorage）
+    - 乐观更新：完成复习后立即更新 UI，无需等待数据库
+    - 页面可见性监听：从复习页面返回时自动刷新
+    - 避免重复 API 调用，性能大幅提升
+    - 修改文件：review/page.tsx, lib/stores/review-store.ts
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -99,6 +124,98 @@
 ---
 
 ## 历史节点
+
+### 2026-03-02 复习列表缓存优化 (v1.6.19)
+
+**问题描述**：
+复习列表加载时间过长，每次复习完返回还需要重新加载整个列表，用户体验较差。
+
+**问题原因**：
+1. 每次进入复习页面都重新请求数据库
+2. 完成复习后调用 `loadReviews()` 重新加载整个列表
+3. 没有数据缓存机制
+
+**解决方案**：
+
+**1. 创建 Zustand Store**
+```typescript
+// lib/stores/review-store.ts
+export const useReviewStore = create<ReviewStore>()(
+  persist(
+    (set, get) => ({
+      reviews: [],
+      loading: false,
+      lastFetched: null,
+
+      setReviews: (reviews) => set({
+        reviews,
+        lastFetched: Date.now(),
+      }),
+
+      shouldRefetch: () => {
+        const { lastFetched, loading } = get();
+        if (loading) return false;
+        if (!lastFetched) return true;
+        return Date.now() - lastFetched > CACHE_DURATION; // 5分钟
+      },
+
+      updateReviewStage: (reviewId, newStage) => set((state) => ({
+        reviews: state.reviews.map(r =>
+          r.id === reviewId ? { ...r, reviewStage: newStage } : r
+        )
+      })),
+    }),
+    {
+      name: 'socrates-review-cache',
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+);
+```
+
+**2. 乐观更新机制**
+```typescript
+// 完成复习时立即更新 UI，不等待数据库
+const handleCompleteReview = async (reviewId: string) => {
+  // 乐观更新 UI（立即反馈）
+  updateReviewStage(reviewId, nextStage);
+
+  // 后台更新数据库
+  const { error } = await supabase
+    .from('review_schedule')
+    .update({ review_stage: nextStage })
+    .eq('id', reviewId);
+
+  if (error) {
+    // 失败时回滚
+    await loadReviews(true);
+  }
+};
+```
+
+**3. 页面可见性监听**
+```typescript
+useEffect(() => {
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible' && profile?.id) {
+      loadReviews(true); // 强制刷新
+    }
+  };
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+}, [profile?.id, loadReviews]);
+```
+
+**性能提升**：
+- ✅ 5分钟内返回页面使用缓存数据，无需重新请求
+- ✅ 完成复习后即时 UI 反馈，无需等待
+- ✅ 页面切换更流畅
+
+**修改文件**：
+- `lib/stores/review-store.ts` (新建)
+- `app/(student)/review/page.tsx`
+
+---
 
 ### 2026-03-02 成就系统基于数据库实际统计 (v1.6.14)
 
@@ -140,6 +257,142 @@ async function getActualStats(userId: string, action: string) {
 - 添加详细日志便于调试
 
 **修改文件**：
+- `app/api/achievements/route.ts`
+
+---
+
+### 2026-03-02 成就统计计算修复 (v1.6.17)
+
+**问题描述**：
+1. 解锁成就数量显示不正确（统计显示3个，实际只有2个）
+2. 经验值显示为 0 XP
+
+**问题原因**：
+1. `user_achievements` 表可能包含无效的 achievement_id（不在 ACHIEVEMENTS 定义中）
+2. 可能有重复的成就记录
+3. `user_levels.total_xp` 与实际解锁成就的 XP 不一致
+
+**修复方案**：
+
+**1. GET API - 过滤和去重**
+```typescript
+// 过滤出有效的成就记录（achievement_id 存在于定义中）并去重
+const validAchievementIds = new Set(ACHIEVEMENTS.map(a => a.id));
+const uniqueUnlockedMap = new Map<string, UserAchievement>();
+for (const a of unlocked) {
+  if (validAchievementIds.has(a.achievement_id) && !uniqueUnlockedMap.has(a.achievement_id)) {
+    uniqueUnlockedMap.set(a.achievement_id, a);
+  }
+}
+const validUnlocked = Array.from(uniqueUnlockedMap.values());
+```
+
+**2. Sync API - 重新计算总 XP**
+```typescript
+// 计算正确的总 XP（基于所有有效成就）
+const calculatedTotalXp = allUnlocked.reduce((sum, a) => {
+  if (validAchievementIds.has(a.achievement_id)) {
+    const def = ACHIEVEMENTS.find(d => d.id === a.achievement_id);
+    return sum + (def?.points || 0);
+  }
+  return sum;
+}, 0);
+```
+
+**3. Sync API - 清理无效/重复记录**
+- 删除 achievement_id 不在定义中的记录
+- 删除重复记录，保留最早的一条
+
+**修改文件**：
+- `app/api/achievements/route.ts`
+- `app/api/achievements/sync/route.ts`
+
+---
+
+### 2026-03-02 学习计时器闭包问题修复 (v1.6.15)
+
+**问题描述**：
+学习界面上的计时器不工作，心跳没有发送，学习时长没有记录。
+
+**问题原因**：
+JavaScript 闭包问题 - `isStudying` 状态在定时器回调中被捕获为初始值 `false`，导致：
+```typescript
+// 问题代码
+useEffect(() => {
+  if (!isStudying) return; // 这里 isStudying 始终是 false
+
+  const interval = setInterval(() => {
+    if (isStudying) { // 这里也是 false
+      sendHeartbeat();
+    }
+  }, 30000);
+}, []);
+```
+
+**修复方案**：
+使用 `useRef` 保持对状态的实时引用：
+```typescript
+const isStudyingRef = useRef(false);
+
+// 在状态变化时同步到 ref
+useEffect(() => {
+  isStudyingRef.current = isStudying;
+}, [isStudying]);
+
+// 在定时器中使用 ref
+const interval = setInterval(() => {
+  if (isStudyingRef.current) {
+    sendHeartbeat();
+  }
+}, 30000);
+```
+
+**修改文件**：
+- `app/(student)/workbench/page.tsx`
+
+---
+
+### 2026-03-02 成就同步API + 最终修复 (v1.6.16)
+
+**问题描述**：
+用户已有 27 条错题数据，但成就没有解锁。需要手动同步历史数据。
+
+**解决方案**：
+
+**1. 新增同步 API**
+创建 `/api/achievements/sync` 端点：
+```typescript
+// POST /api/achievements/sync
+// 参数: { user_id: string }
+// 返回: { stats, newlyUnlocked, xpGained }
+```
+
+**2. 同步逻辑**
+- 查询用户实际统计数据（错题数、掌握数、复习数）
+- 检查应该解锁的成就
+- 插入新成就记录
+- 更新 XP
+
+**3. 调试日志**
+添加详细日志排查成就未解锁原因：
+```typescript
+console.log('[Achievements Sync] Checking:', achievement.id, {
+  alreadyUnlocked: unlockedIds.has(achievement.id),
+  requirement: achievement.requirement,
+  errorCount
+});
+```
+
+**最终状态**：
+- ✅ 成就系统完全正常工作
+- ✅ 上传错题触发成就检查
+- ✅ 掌握错题触发成就检查
+- ✅ 学习计时器正常工作
+- ✅ 心跳正常发送
+- ✅ 学习时长正确记录
+
+**修改文件**：
+- `app/api/achievements/sync/route.ts` (新建)
 - `app/api/achievements/route.ts`
 
 ---
@@ -563,8 +816,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.14
-最后更新：成就系统基于数据库实际统计（更可靠）
+当前版本：v1.6.19
+最后更新：复习列表缓存优化（Zustand Store）
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -821,4 +1074,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-02 v1.6.14*
+*文档最后更新: 2026-03-02 v1.6.19*
