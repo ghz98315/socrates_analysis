@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-02 v1.6.13
+## 最新节点: 2026-03-02 v1.6.14
 
 ### 当前状态
-- **版本**: v1.6.13
+- **版本**: v1.6.14
 - **分支**: main (socra-platform)
-- **最后提交**: 成就API调用URL修复
+- **最后提交**: 成就系统基于数据库实际统计
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -82,6 +82,13 @@
     - 修复服务端fetch需要绝对URL的问题
     - 添加VERCEL_URL作为fallback
     - 修复error-session、complete、study/session三个API
+38. ✅ **成就系统基于数据库实际统计 v1.6.14**
+    - 新增 getActualStats() 从数据库查询实际数量
+    - error_uploaded：查询 error_sessions 表总数
+    - error_mastered：查询 status='mastered' 的数量
+    - review_completed：查询 is_completed=true 的数量
+    - streak_updated：从 user_levels 获取 current_streak
+    - 不再依赖传递的 count 参数，更可靠
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -92,6 +99,50 @@
 ---
 
 ## 历史节点
+
+### 2026-03-02 成就系统基于数据库实际统计 (v1.6.14)
+
+**问题描述**：
+成就解锁依赖 API 调用时传递的 `count` 参数，而不是从数据库查询实际数量，可能导致成就无法正确解锁。
+
+**修复方案**：
+新增 `getActualStats()` 函数，从数据库查询实际统计数据：
+
+```typescript
+async function getActualStats(userId: string, action: string) {
+  switch (action) {
+    case 'error_uploaded':
+      // 查询 error_sessions 表的总数
+      const { count } = await supabase
+        .from('error_sessions')
+        .select('*', { count: 'exact', head: true })
+        .eq('student_id', userId);
+      return { count };
+
+    case 'error_mastered':
+      // 查询 status='mastered' 的数量
+      // ...
+
+    case 'review_completed':
+      // 查询 is_completed=true 的数量
+      // ...
+
+    case 'streak_updated':
+      // 从 user_levels 获取 current_streak
+      // ...
+  }
+}
+```
+
+**优势**：
+- 基于数据库实际数据，更可靠
+- 不依赖 API 调用时传递的参数
+- 添加详细日志便于调试
+
+**修改文件**：
+- `app/api/achievements/route.ts`
+
+---
 
 ### 2026-03-02 成就API调用URL修复 (v1.6.13)
 
@@ -512,8 +563,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.13
-最后更新：成就API调用URL修复（服务端fetch需要绝对URL）
+当前版本：v1.6.14
+最后更新：成就系统基于数据库实际统计（更可靠）
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -770,4 +821,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-02 v1.6.13*
+*文档最后更新: 2026-03-02 v1.6.14*
