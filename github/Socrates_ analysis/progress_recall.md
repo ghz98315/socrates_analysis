@@ -11,6 +11,139 @@
 - **分支**: main (socra-platform)
 - **最后提交**: 复习页面难度重评功能
 
+### 下一阶段规划 (v1.7.x)
+
+#### 新功能模块
+
+**1. 作文修改页面 (Essay Revision)**
+- 功能需求：
+  - 上传/输入作文
+  - AI 批改（语法、结构、内容、文采）
+  - 修改建议和重写
+  - 历史版本对比
+
+- 数据库表设计：
+```sql
+-- essays 作文表
+CREATE TABLE essays (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_id UUID REFERENCES profiles(id),
+  title VARCHAR(200),
+  content TEXT,
+  essay_type VARCHAR(50), -- 'narrative'/'expository'/'argumentative'
+  subject VARCHAR(50), -- 'chinese'/'english'
+  word_count INTEGER,
+  status VARCHAR(50) DEFAULT 'draft',
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- essay_feedbacks 作文反馈表
+CREATE TABLE essay_feedbacks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  essay_id UUID REFERENCES essays(id),
+  feedback_type VARCHAR(50),
+  score INTEGER,
+  suggestions JSONB,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- essay_revisions 作文修订表
+CREATE TABLE essay_revisions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  essay_id UUID REFERENCES essays(id),
+  revision_number INTEGER,
+  content TEXT,
+  ai_summary TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+**2. 时间规划页面 (Time Planner)**
+- 功能需求：
+  - 创建学习计划
+  - 分配时间段
+  - 番茄钟计时
+  - 学习进度跟踪
+
+- 数据库表设计：
+```sql
+-- study_plans 学习计划表
+CREATE TABLE study_plans (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_id UUID REFERENCES profiles(id),
+  title VARCHAR(200),
+  description TEXT,
+  plan_date DATE,
+  total_duration INTEGER,
+  completed_duration INTEGER DEFAULT 0,
+  status VARCHAR(50) DEFAULT 'planned',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- plan_tasks 计划任务表
+CREATE TABLE plan_tasks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  plan_id UUID REFERENCES study_plans(id),
+  task_name VARCHAR(200),
+  subject VARCHAR(50),
+  estimated_minutes INTEGER,
+  actual_minutes INTEGER DEFAULT 0,
+  order_index INTEGER,
+  status VARCHAR(50) DEFAULT 'pending',
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP
+);
+
+-- focus_sessions 专注会话表（番茄钟）
+CREATE TABLE focus_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_id UUID REFERENCES profiles(id),
+  task_id UUID REFERENCES plan_tasks(id),
+  duration_minutes INTEGER,
+  started_at TIMESTAMP,
+  ended_at TIMESTAMP,
+  completed BOOLEAN DEFAULT FALSE
+);
+```
+
+#### 共同页面调整
+
+**1. 登录页面** - 无需大改
+- 当前架构已支持学生/家长角色
+- 可选优化：添加"记住我"、第三方登录
+
+**2. 创建统一布局组件**
+```typescript
+// components/StudentLayout.tsx
+export function StudentLayout({ children, title, description, icon }) {
+  // 统一的页面布局、背景装饰、主题支持
+}
+```
+
+**3. 导航更新**
+```typescript
+const studentNavItems = [
+  { href: '/workbench', icon: BookOpen, label: '学习' },
+  { href: '/error-book', icon: Bookmark, label: '错题本' },
+  { href: '/review', icon: FileText, label: '复习' },
+  { href: '/essay', icon: PenTool, label: '作文' },      // 新增
+  { href: '/planner', icon: Calendar, label: '规划' },   // 新增
+  { href: '/achievements', icon: Trophy, label: '成就' },
+];
+```
+
+#### 实施顺序
+
+| 阶段 | 任务 | 优先级 | 状态 |
+|------|------|--------|------|
+| Phase 1 | 创建数据库表 | 🔴 高 | ⏳ 待开始 |
+| Phase 2 | 创建统一布局组件 | 🟡 中 | ⏳ 待开始 |
+| Phase 3 | 更新导航菜单 | 🟡 中 | ⏳ 待开始 |
+| Phase 4 | 实现作文页面 | 🔴 高 | ⏳ 待开始 |
+| Phase 5 | 实现时间规划页面 | 🔴 高 | ⏳ 待开始 |
+| Phase 6 | 登录页面优化 | 🟢 低 | ⏳ 待开始 |
+
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
 2. ✅ 几何精确解析Prompt (100%匹配原题)
@@ -921,7 +1054,8 @@ const response = await fetch('/api/chat', {
 - 文档目录：D:\github\Socrates_ analysis
 
 当前版本：v1.6.28
-最后更新：复习页面难度重评功能
+最后更新：规划作文修改+时间规划新功能
+下一版本：v1.7.x (作文修改 + 时间规划模块)
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
