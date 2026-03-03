@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-02 v1.6.21
+## 最新节点: 2026-03-03 v1.6.24
 
 ### 当前状态
-- **版本**: v1.6.21
+- **版本**: v1.6.24
 - **分支**: main (socra-platform)
-- **最后提交**: 登出重定向修复
+- **最后提交**: 成就解锁闪光效果
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -126,6 +126,17 @@
     - 工作台页面添加未登录自动重定向逻辑
     - 显示"正在跳转到登录页"提示
     - 修改文件：AuthContext.tsx, GlobalNav.tsx, workbench/page.tsx
+46. ✅ **成就 XP 同步 upsert 修复 v1.6.22**
+    - 修复 `duplicate key value violates unique constraint` 错误
+    - 所有 `user_levels` 的 upsert 添加 `onConflict: 'user_id'`
+    - 修改文件：api/achievements/route.ts, api/achievements/sync/route.ts
+47. ✅ **已解锁成就闪光效果 v1.6.24**
+    - 添加闪光扫过动画（shimmer sweep）
+    - 悬停时呼吸感效果（breathing effect）
+    - 图标周围闪光粒子动画
+    - 边框发光效果
+    - 渐变积分标签
+    - 修改文件：achievements/page.tsx, globals.css
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -881,7 +892,7 @@ const response = await fetch('/api/chat', {
 - 文档目录：D:\github\Socrates_ analysis
 
 当前版本：v1.6.21
-最后更新：登出重定向修复
+最后更新：已解锁成就闪光效果
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
