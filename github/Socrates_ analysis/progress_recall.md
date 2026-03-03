@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-03 v1.6.24
+## 最新节点: 2026-03-03 v1.6.26
 
 ### 当前状态
-- **版本**: v1.6.24
+- **版本**: v1.6.26
 - **分支**: main (socra-platform)
-- **最后提交**: 成就解锁闪光效果
+- **最后提交**: 双维度难度评估系统
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -137,6 +137,20 @@
     - 边框发光效果
     - 渐变积分标签
     - 修改文件：achievements/page.tsx, globals.css
+48. ✅ **已解锁成就持续光效 v1.6.25**
+    - 旋转光晕边框动画
+    - 浮动光线循环划过
+    - 更深的颜色区分已解锁/未解锁
+    - 持续闪烁粒子效果
+    - 修改文件：achievements/page.tsx, globals.css
+49. ✅ **双维度难度评估系统 v1.6.26**
+    - AI 评估 (60%) + 学生自评 (40%)
+    - DifficultyRatingModal 弹窗组件
+    - StarRating 支持半星显示
+    - InteractiveStarRating 交互式评分
+    - /api/error-session/difficulty API
+    - 错题本使用新星级组件显示最终难度
+    - 修改文件：DifficultyRating.tsx, route.ts, types.ts, error-book/page.tsx
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -891,8 +905,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.21
-最后更新：已解锁成就闪光效果
+当前版本：v1.6.26
+最后更新：双维度难度评估系统
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -1149,4 +1163,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-02 v1.6.21*
+*文档最后更新: 2026-03-03 v1.6.26*
