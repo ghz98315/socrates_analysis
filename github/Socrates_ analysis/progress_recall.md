@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-02 v1.6.20
+## 最新节点: 2026-03-02 v1.6.21
 
 ### 当前状态
-- **版本**: v1.6.20
+- **版本**: v1.6.21
 - **分支**: main (socra-platform)
-- **最后提交**: 成就系统 XP 自动同步修复
+- **最后提交**: 登出重定向修复
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -120,6 +120,12 @@
     - 添加详细日志记录无效/重复成就记录
     - 确保经验值和积分始终一致
     - 修改文件：api/achievements/route.ts
+45. ✅ **登出重定向修复 v1.6.21**
+    - 修复登出后停留在工作台页面的问题
+    - AuthContext 使用 `window.location.href` 确保重定向
+    - 工作台页面添加未登录自动重定向逻辑
+    - 显示"正在跳转到登录页"提示
+    - 修改文件：AuthContext.tsx, GlobalNav.tsx, workbench/page.tsx
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -874,8 +880,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.20
-最后更新：成就系统 XP 自动同步修复
+当前版本：v1.6.21
+最后更新：登出重定向修复
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -1132,4 +1138,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-02 v1.6.20*
+*文档最后更新: 2026-03-02 v1.6.21*
