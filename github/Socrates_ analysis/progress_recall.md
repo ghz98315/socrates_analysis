@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-02 v1.6.19
+## 最新节点: 2026-03-02 v1.6.20
 
 ### 当前状态
-- **版本**: v1.6.19
+- **版本**: v1.6.20
 - **分支**: main (socra-platform)
-- **最后提交**: 复习列表缓存优化（Zustand Store）
+- **最后提交**: 成就系统 XP 自动同步修复
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -114,6 +114,12 @@
     - 页面可见性监听：从复习页面返回时自动刷新
     - 避免重复 API 调用，性能大幅提升
     - 修改文件：review/page.tsx, lib/stores/review-store.ts
+44. ✅ **成就系统 XP 自动同步 v1.6.20**
+    - 自动检测 `user_levels.total_xp` 与实际成就积分是否一致
+    - 如不一致，自动同步更新数据库
+    - 添加详细日志记录无效/重复成就记录
+    - 确保经验值和积分始终一致
+    - 修改文件：api/achievements/route.ts
 
 ### 待调试/优化
 - ⏳ 几何调整后实时传递到对话
@@ -124,6 +130,58 @@
 ---
 
 ## 历史节点
+
+### 2026-03-02 成就系统 XP 自动同步 (v1.6.20)
+
+**问题描述**：
+成就页面显示不一致：
+- 经验值显示 0 XP（来自 `user_levels.total_xp`）
+- 积分显示 55 XP（从实际解锁成就计算）
+- 成就统计显示 3/19，但实际只显示 2 个
+
+**问题原因**：
+1. `user_levels.total_xp` 与实际解锁成就的积分不同步
+2. 可能存在无效或重复的成就记录
+
+**解决方案**：
+
+**1. GET API 自动同步 XP**
+```typescript
+// 检查 user_levels.total_xp 是否与实际成就积分一致
+const storedTotalXp = level?.total_xp || 0;
+if (storedTotalXp !== earnedPoints) {
+  // 自动同步：更新 user_levels.total_xp 为正确值
+  await supabase
+    .from('user_levels')
+    .upsert({
+      user_id,
+      total_xp: earnedPoints,
+      level: newLevelConfig.level,
+      // ...
+    });
+}
+```
+
+**2. 详细日志记录**
+```typescript
+// 记录无效/重复记录
+console.log('[Achievements GET] Data cleanup details:', {
+  invalidCount: invalidRecords.length,
+  invalidIds: invalidRecords.map(a => a.achievement_id),
+  duplicateCount: duplicateRecords.length,
+  duplicateIds: [...new Set(duplicateRecords.map(a => a.achievement_id))]
+});
+```
+
+**修复效果**：
+- ✅ 经验值和积分始终一致
+- ✅ 自动修复历史数据不一致问题
+- ✅ 详细日志便于排查问题
+
+**修改文件**：
+- `app/api/achievements/route.ts`
+
+---
 
 ### 2026-03-02 复习列表缓存优化 (v1.6.19)
 
@@ -816,8 +874,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.19
-最后更新：复习列表缓存优化（Zustand Store）
+当前版本：v1.6.20
+最后更新：成就系统 XP 自动同步修复
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -1074,4 +1132,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-02 v1.6.19*
+*文档最后更新: 2026-03-02 v1.6.20*
