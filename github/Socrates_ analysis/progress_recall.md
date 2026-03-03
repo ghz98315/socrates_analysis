@@ -4,58 +4,144 @@
 
 ---
 
-## 最新节点: 2026-03-03 v1.6.28
+## 最新节点: 2026-03-03 v1.6.29
 
 ### 当前状态
-- **版本**: v1.6.28
+- **版本**: v1.6.29
 - **分支**: main (socra-platform)
-- **最后提交**: 复习页面难度重评功能
+- **最后提交**: 产品架构规划更新
 
-### 下一阶段规划 (v1.7.x)
+### 产品架构决策 (v1.7.x)
 
-#### 新功能模块
+#### 架构方案：独立部署 + 用户共享
 
-**1. 作文修改页面 (Essay Revision)**
-- 功能需求：
-  - 上传/输入作文
-  - AI 批改（语法、结构、内容、文采）
-  - 修改建议和重写
-  - 历史版本对比
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Landing Page (共享)                          │
+│                   https://socra.cn                               │
+├─────────────────────────────────────────────────────────────────┤
+│                              │                                   │
+│        ┌─────────────────────┴─────────────────────┐            │
+│        ▼                                           ▼            │
+│  ┌─────────────────┐                    ┌─────────────────┐     │
+│  │  Socrates 错题本 │                    │  Essay 作文批改  │     │
+│  │ socrates.socra.cn│                    │ essay.socra.cn  │     │
+│  ├─────────────────┤                    ├─────────────────┤     │
+│  │ - 错题上传       │                    │ - 作文图片上传   │     │
+│  │ - AI对话学习     │                    │ - AI批改评分     │     │
+│  │ - 复习计划       │                    │ - 闪光点挖掘     │     │
+│  │ - 成就系统       │                    │ - 魔法修改       │     │
+│  │ - 社区功能       │                    │ - 金句百宝箱     │     │
+│  └────────┬────────┘                    └────────┬────────┘     │
+│           │                                      │              │
+│           └──────────────┬───────────────────────┘              │
+│                          ▼                                      │
+│               ┌─────────────────────┐                           │
+│               │   Supabase Auth     │                           │
+│               │   (共享用户系统)     │                           │
+│               └─────────────────────┘                           │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-- 数据库表设计：
+#### 现有作文批改项目分析
+
+**项目地址**: https://github.com/ghz98315/ai_essay_reviewer.git
+
+**技术栈**:
+| 项目 | 实现 |
+|------|------|
+| 框架 | React 19 + Vite + TypeScript |
+| 样式 | Tailwind CSS |
+| AI模型 | 阿里云通义千问 Qwen-VL-Max |
+| 部署 | Cloudflare Pages |
+| 认证 | localStorage (API Key) |
+
+**已实现功能**:
+1. **图片上传** - 拖拽、拍照、相册多图上传
+2. **年级选择** - 小学1-6年级 + 初中1-3年级
+3. **AI批改四大模块**:
+   - ✨ 闪光点 (3条) - 深度挖掘文章亮点
+   - 🪄 魔法修改 (4条) - 原句→升级版→解密，标注修辞手法
+   - 💎 金句百宝箱 (4条) - 优秀句子+赏析
+   - 👩‍🏫 老师总评 - 温暖抱抱/成长小贴士/未来寄语
+4. **年级差异化Prompt**:
+   - 低年级(1-3): 温柔启蒙，句子扩写
+   - 高年级(4-6): 幽默风趣，修辞润色
+   - 初中(7-9): 文学导师，深度解析
+
+**核心文件结构**:
+```
+ai_essay_reviewer/
+├── App.tsx               # 主应用（状态机：IDLE→ANALYZING→RESULT→ERROR）
+├── components/
+│   ├── FileUpload.tsx    # 文件上传+年级选择
+│   ├── AnalysisResult.tsx # 结果展示（双栏布局）
+│   └── LoadingView.tsx   # 加载动画
+├── services/
+│   └── geminiService.ts  # AI API（通义千问VL）
+└── types.ts              # 类型定义
+```
+
+#### 集成方案
+
+**1. 用户认证共享**
+- 使用 Supabase Auth 统一认证
+- Essay 项目添加 Supabase Client
+- 通过 JWT Token 验证用户身份
+
+**2. 数据同步 API**
+```typescript
+// Socrates 平台提供 API
+POST /api/external/essay-sync
+{
+  user_id: string,      // Supabase Auth user_id
+  essay_data: {
+    title: string,
+    content: string,
+    analysis: EssayAnalysis,
+    grade: string
+  }
+}
+```
+
+**3. Landing Page 更新**
+- 产品矩阵展示三个入口
+- 已有代码支持（LandingPage.tsx）
+
+#### 实施步骤
+
+| 步骤 | 任务 | 优先级 | 状态 |
+|------|------|--------|------|
+| 1 | Essay项目添加Supabase认证 | 🔴 高 | ⏳ 待开始 |
+| 2 | 创建数据同步API | 🔴 高 | ⏳ 待开始 |
+| 3 | 添加作文历史记录功能 | 🟡 中 | ⏳ 待开始 |
+| 4 | Landing Page链接更新 | 🟢 低 | ⏳ 待开始 |
+| 5 | 时间规划页面开发 | 🟡 中 | ⏳ 待开始 |
+
+#### 数据库表设计（作文同步）
+
 ```sql
--- essays 作文表
+-- essays 作文表 (Socrates平台)
 CREATE TABLE essays (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID REFERENCES profiles(id),
   title VARCHAR(200),
   content TEXT,
-  essay_type VARCHAR(50), -- 'narrative'/'expository'/'argumentative'
-  subject VARCHAR(50), -- 'chinese'/'english'
-  word_count INTEGER,
-  status VARCHAR(50) DEFAULT 'draft',
+  images JSONB,              -- 图片URL数组
+  grade VARCHAR(50),         -- 年级
+  analysis JSONB,            -- AI分析结果
+  source VARCHAR(50) DEFAULT 'essay_app', -- 来源应用
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- essay_feedbacks 作文反馈表
-CREATE TABLE essay_feedbacks (
+-- essay_history 作文历史表
+CREATE TABLE essay_history (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  essay_id UUID REFERENCES essays(id),
-  feedback_type VARCHAR(50),
-  score INTEGER,
-  suggestions JSONB,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- essay_revisions 作文修订表
-CREATE TABLE essay_revisions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  essay_id UUID REFERENCES essays(id),
-  revision_number INTEGER,
-  content TEXT,
-  ai_summary TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
+  student_id UUID REFERENCES profiles(id),
+  essay_count INTEGER DEFAULT 0,
+  last_essay_at TIMESTAMP,
+  total_words INTEGER DEFAULT 0
 );
 ```
 
@@ -1053,9 +1139,9 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.28
-最后更新：规划作文修改+时间规划新功能
-下一版本：v1.7.x (作文修改 + 时间规划模块)
+当前版本：v1.6.29
+最后更新：产品架构决策 - 独立部署+用户共享
+下一版本：v1.7.x (作文批改集成 + 时间规划模块)
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -1312,4 +1398,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-03 v1.6.28*
+*文档最后更新: 2026-03-03 v1.6.29*
