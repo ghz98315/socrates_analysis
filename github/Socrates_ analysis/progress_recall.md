@@ -4,12 +4,12 @@
 
 ---
 
-## 最新节点: 2026-03-03 v1.6.26
+## 最新节点: 2026-03-03 v1.6.28
 
 ### 当前状态
-- **版本**: v1.6.26
+- **版本**: v1.6.28
 - **分支**: main (socra-platform)
-- **最后提交**: 双维度难度评估系统
+- **最后提交**: 复习页面难度重评功能
 
 ### 已完成功能
 1. ✅ 几何图形自动渲染 (JSXGraph)
@@ -147,6 +147,21 @@
     - AI 评估 (60%) + 学生自评 (40%)
     - DifficultyRatingModal 弹窗组件
     - StarRating 支持半星显示
+    - InteractiveStarRating 交互式评分
+    - /api/error-session/difficulty API
+    - 错题本使用新星级组件显示最终难度
+    - 修改文件：DifficultyRating.tsx, route.ts, types.ts, error-book/page.tsx
+50. ✅ **工作台难度评分集成 v1.6.27**
+    - 点击"已掌握"后弹出难度评分弹窗
+    - 调用 /api/error-session/difficulty 提交评分
+    - 支持跳过评分
+    - 修改文件：workbench/page.tsx
+51. ✅ **复习页面难度重评 v1.6.28**
+    - 复习检查步骤显示难度评价区域
+    - 显示 AI 评估 + 学生评价 + 最终难度
+    - 支持重新评价难度
+    - 提交后更新本地状态
+    - 修改文件：review/session/[id]/page.tsx
     - InteractiveStarRating 交互式评分
     - /api/error-session/difficulty API
     - 错题本使用新星级组件显示最终难度
@@ -905,8 +920,8 @@ const response = await fetch('/api/chat', {
 - 主项目：D:\github\Socrates_ analysis\socra-platform\apps\socrates
 - 文档目录：D:\github\Socrates_ analysis
 
-当前版本：v1.6.26
-最后更新：双维度难度评估系统
+当前版本：v1.6.28
+最后更新：复习页面难度重评功能
 Prompt架构：三层架构（通用层+科目层+动态层）
 
 请确认已了解项目状态，我需要继续开发以下内容：
@@ -1163,4 +1178,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-03 v1.6.26*
+*文档最后更新: 2026-03-03 v1.6.28*
