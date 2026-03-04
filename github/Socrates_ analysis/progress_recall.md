@@ -40,7 +40,7 @@
 | 产品 | 文档 | 当前版本 | 状态 |
 |------|------|----------|------|
 | **Socrates 错题本** | [progress_socrates.md](./progress_socrates.md) | v1.6.29 | 🟢 运行中 |
-| **Essay 作文批改** | [progress_essay.md](./progress_essay.md) | v1.0.0 | 🟡 待集成认证 |
+| **Essay 作文批改** | [progress_essay.md](./progress_essay.md) | v1.2.0 | 🟢 历史完成 |
 
 ---
 
@@ -53,8 +53,8 @@
 
 ### Essay (作文批改)
 - ✅ 批改功能完成
-- ⏳ Supabase认证集成
-- ⏳ 数据持久化
+- ✅ Supabase认证集成
+- ✅ 数据持久化（历史记录）
 - ⏳ 与Socrates同步
 
 ---
@@ -71,7 +71,7 @@
 |------|----------|-------|
 | 框架 | Next.js 15 | Vite + React |
 | 部署 | Vercel | Cloudflare Pages |
-| 仓库 | socra-platform | ai_essay_reviewer |
+| 仓库 | socra-platform (monorepo) |
 
 ---
 
@@ -87,9 +87,12 @@
    - D:\github\Socrates_ analysis\progress_socrates.md (错题本平台)
    - D:\github\Socrates_ analysis\progress_essay.md (作文批改)
 
-项目目录：
-- Socrates: D:\github\Socrates_ analysis\socra-platform\apps\socrates
-- Essay: D:\github\Socrates_ analysis\ai_essay_reviewer
+项目目录 (统一 monorepo):
+- 主仓库: D:\github\Socrates_ analysis\socra-platform
+- Socrates: socra-platform/apps/socrates
+- Essay: socra-platform/apps/essay
+- Landing: socra-platform/apps/landing
+- 共享包: socra-platform/packages
 - 文档: D:\github\Socrates_ analysis\
 
 请确认已了解项目状态，我需要继续开发：
@@ -108,4 +111,4 @@
 
 ---
 
-*文档最后更新: 2026-03-03*
+*文档最后更新: 2026-03-04*

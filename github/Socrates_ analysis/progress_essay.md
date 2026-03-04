@@ -4,13 +4,13 @@
 
 ---
 
-## 最新节点: 2026-03-03 v1.0.0
+## 最新节点: 2026-03-03 v1.2.0
 
 ### 当前状态
-- **版本**: v1.0.0
-- **仓库**: https://github.com/ghz98315/ai_essay_reviewer.git
+- **版本**: v1.2.0
+- **仓库**: 已迁移到 socra-platform monorepo
 - **部署地址**: https://essay.socra.cn
-- **本地路径**: D:\github\Socrates_ analysis\ai_essay_reviewer
+- **本地路径**: D:\github\Socrates_ analysis\socra-platform\apps\essay
 
 ### 核心功能
 
@@ -42,15 +42,40 @@
 8. ✅ 双栏结果展示
 9. ✅ 图片画廊浏览
 
-### 待开发功能
+### 历史版本
+
+### v1.2.0 - 数据持久化 (2026-03-03)
+- ✅ 创建 essays 数据库表
+- ✅ 创建 essay-history 服务
+- ✅ 创建 EssayHistory 组件
+- ✅ 批改完成后自动保存
+- ✅ 历史记录查看/删除
+
+### v1.1.1 - 用户认证 (2026-03-03)
+- ✅ 创建 AuthModal 登录/注册组件
+- ✅ 集成 @socra/shared/auth 认证模块
+- ✅ 支持邮箱密码登录/注册
+- ✅ 注册邮箱验证提示
+- ✅ 修复 TypeScript 类型定义
+
+### v1.1.0 - Monorepo 迁移 (2026-03-03)
+- ✅ 迁移到 socra-platform monorepo
+- ✅ 创建 @socra/shared 共享包
+- ✅ 集成 Supabase 认证
+- ✅ 调整目录结构
+
+### v1.0.0 - 初始版本 (2026-03-03)
+- ✅ 核心批改功能完成
+- ✅ 年级差异化 Prompt
+- ✅ 多图片上传支持
 
 | 优先级 | 功能 | 状态 |
 |--------|------|------|
-| 🔴 高 | Supabase认证集成 | ⏳ 待开始 |
-| 🔴 高 | 用户登录/注册 | ⏳ 待开始 |
-| 🔴 高 | 作文历史记录 | ⏳ 待开始 |
+| 🔴 高 | Supabase认证集成 | ✅ 已完成 |
+| 🔴 高 | 用户登录/注册 | ✅ 已完成 |
+| 🔴 高 | 作文历史记录 | ✅ 已完成 |
 | 🟡 中 | 数据同步到Socrates | ⏳ 待开始 |
-| 🟡 中 | 批改历史查看 | ⏳ 待开始 |
+| 🟡 中 | 批改历史查看 | ✅ 已完成 |
 | 🟢 低 | 英文作文支持 | ⏳ 待开始 |
 
 ### 技术栈
@@ -69,16 +94,16 @@
 
 ## 开发计划
 
-### Phase 1: 用户认证 (v1.1.0)
+### Phase 1: 用户认证 (v1.1.1) ✅ 完成
 
 **目标**: 集成 Supabase 认证，共享 Socrates 用户系统
 
 **任务清单**:
-- [ ] 安装 @supabase/supabase-js
-- [ ] 创建 Supabase Client 配置
-- [ ] 添加登录/注册页面
-- [ ] 替换 API Key localStorage 为用户认证
-- [ ] 添加用户状态管理
+- [x] 安装 @supabase/supabase-js
+- [x] 创建 Supabase Client 配置
+- [x] 添加登录/注册页面 (AuthModal 组件)
+- [x] 添加用户状态管理
+- [x] 集成 @socra/shared/auth 模块
 
 **代码变更**:
 ```typescript
@@ -91,7 +116,7 @@ export const supabase = createClient(
 )
 ```
 
-### Phase 2: 数据持久化 (v1.2.0)
+### Phase 2: 数据持久化 (v1.2.0) ✅ 完成
 
 **目标**: 保存作文批改历史
 
@@ -100,21 +125,23 @@ export const supabase = createClient(
 -- essays 作文表
 CREATE TABLE essays (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  student_id UUID REFERENCES profiles(id),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  profile_id UUID REFERENCES profiles(id),
   title VARCHAR(200),
-  content TEXT,
+  content TEXT NOT NULL,
+  grade VARCHAR(50) NOT NULL,
   images JSONB,
-  grade VARCHAR(50),
   analysis JSONB,
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
 **任务清单**:
-- [ ] 创建 essays 表
-- [ ] 批改完成后保存到数据库
-- [ ] 添加历史记录页面
-- [ ] 支持查看历史批改结果
+- [x] 创建 essays 表 (supabase/migrations/20260303_essay_tables.sql)
+- [x] 批改完成后保存到数据库 (lib/essay-history.ts)
+- [x] 添加历史记录页面 (components/EssayHistory.tsx)
+- [x] 支持查看历史批改结果
 
 ### Phase 3: 数据同步 (v1.3.0)
 
@@ -227,4 +254,4 @@ VITE_SUPABASE_ANON_KEY=
 
 ---
 
-*文档最后更新: 2026-03-03 v1.0.0*
+*文档最后更新: 2026-03-03 v1.2.0*
