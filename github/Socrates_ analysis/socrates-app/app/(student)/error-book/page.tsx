@@ -219,12 +219,12 @@ export default function ErrorBookPage() {
   const themeClass = profile?.theme_preference === 'junior' ? 'theme-junior' : 'theme-senior';
 
   return (
-    <div className={cn('min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-slate-950 dark:via-slate-900 dark:to-orange-950/30', themeClass)}>
+    <div className={cn('min-h-screen bg-gradient-to-br from-warm-50 via-white to-warm-100', themeClass)}>
       {/* Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-orange-200/30 dark:bg-orange-900/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-red-200/20 dark:bg-red-900/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 left-1/3 w-72 h-72 bg-yellow-200/20 dark:bg-yellow-900/20 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-warm-200/40 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-warm-300/30 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 left-1/3 w-72 h-72 bg-warm-100/30 rounded-full blur-3xl" />
       </div>
 
       {/* Page Header */}
@@ -233,7 +233,7 @@ export default function ErrorBookPage() {
           title="错题本"
           description="管理和复习你的错题记录"
           icon={BookOpen}
-          iconColor="text-orange-500"
+          iconColor="text-warm-500"
           actions={
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="gap-1">

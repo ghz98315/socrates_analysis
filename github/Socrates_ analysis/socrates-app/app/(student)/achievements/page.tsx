@@ -119,12 +119,12 @@ export default function AchievementsPage() {
   }
 
   return (
-    <div className={cn('min-h-screen bg-gradient-to-br from-yellow-50 via-white to-amber-50 dark:from-slate-950 dark:via-slate-900 dark:to-yellow-950/30', themeClass)}>
+    <div className={cn('min-h-screen bg-gradient-to-br from-warm-50 via-white to-warm-100', themeClass)}>
       {/* Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 right-1/4 w-80 h-80 bg-yellow-200/40 dark:bg-yellow-900/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-amber-200/30 dark:bg-amber-900/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 right-1/4 w-72 h-72 bg-orange-200/20 dark:bg-orange-900/20 rounded-full blur-3xl" />
+        <div className="absolute -top-40 right-1/4 w-80 h-80 bg-warm-200/40 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-warm-300/30 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 right-1/4 w-72 h-72 bg-warm-200/20 rounded-full blur-3xl" />
       </div>
 
       {/* 页面标题 */}
@@ -133,7 +133,7 @@ export default function AchievementsPage() {
           title="成就中心"
           description="查看你的学习成就和等级进度"
           icon={Trophy}
-          iconColor="text-yellow-500"
+          iconColor="text-warm-500"
         />
       </div>
 
@@ -141,10 +141,10 @@ export default function AchievementsPage() {
         {/* 等级和统计卡片 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* 等级卡片 - 带环形进度 */}
-          <Card className="border-border/50 md:col-span-2 bg-gradient-to-br from-yellow-50/50 via-white to-orange-50/50 dark:from-yellow-950/20 dark:via-slate-900 dark:to-orange-950/20 overflow-hidden relative">
+          <Card className="border-warm-200/50 md:col-span-2 bg-gradient-to-br from-warm-50/50 via-white to-warm-100/50 overflow-hidden relative">
             {/* 装饰光晕 */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-orange-400/20 rounded-full blur-3xl" />
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-warm-400/20 rounded-full blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-warm-300/20 rounded-full blur-3xl" />
 
             <CardContent className="p-6 relative">
               <div className="flex items-center gap-6">
@@ -182,37 +182,37 @@ export default function AchievementsPage() {
                   </svg>
                   {/* 中心等级图标 */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/30 animate-[pulse-glow_2s_ease-in-out_infinite]">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-warm-400 to-warm-500 flex items-center justify-center shadow-lg shadow-warm-500/30">
                       <Crown className="w-8 h-8 text-white" />
                     </div>
                   </div>
                   {/* 等级数字 */}
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-card border-2 border-yellow-500 rounded-full">
-                    <span className="text-sm font-bold text-yellow-500">Lv.{level?.level || 1}</span>
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-white border-2 border-warm-500 rounded-full">
+                    <span className="text-sm font-bold text-warm-500">Lv.{level?.level || 1}</span>
                   </div>
                 </div>
 
                 {/* 等级信息 */}
                 <div className="flex-1">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-500 bg-clip-text text-transparent">
+                  <h2 className="text-2xl font-bold text-warm-600">
                     {level?.title || '初学者'}
                   </h2>
-                  <p className="text-muted-foreground text-sm mb-3">
-                    经验值: <span className="text-yellow-600 font-medium">{level?.total_xp || 0}</span> XP
+                  <p className="text-warm-500 text-sm mb-3">
+                    经验值: <span className="text-warm-600 font-medium">{level?.total_xp || 0}</span> XP
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">升级进度</span>
-                      <span className="font-medium text-yellow-600">{Math.round(level?.progress || 0)}%</span>
+                      <span className="text-warm-500">升级进度</span>
+                      <span className="font-medium text-warm-600">{Math.round(level?.progress || 0)}%</span>
                     </div>
-                    <div className="h-3 bg-muted/50 rounded-full overflow-hidden">
+                    <div className="h-3 bg-warm-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 rounded-full transition-all duration-1000"
+                        className="h-full bg-gradient-to-r from-warm-400 via-warm-400 to-warm-500 rounded-full transition-all duration-1000"
                         style={{ width: `${level?.progress || 0}%` }}
                       />
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      距离下一级还需 <span className="text-orange-500 font-medium">{((level?.next || 0) - (level?.total_xp || 0))}</span> XP
+                    <p className="text-xs text-warm-500">
+                      距离下一级还需 <span className="text-warm-600 font-medium">{((level?.next || 0) - (level?.total_xp || 0))}</span> XP
                     </p>
                   </div>
                 </div>
