@@ -248,12 +248,12 @@ export default function DashboardPage() {
   }, [selectedStudent, loadStudyTimeStats]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950/30">
+    <div className="min-h-screen bg-gradient-to-br from-warm-50 via-white to-warm-100 dark:from-warm-950 dark:via-slate-900 dark:to-warm-900/30">
       {/* Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/30 dark:bg-blue-900/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-indigo-200/20 dark:bg-indigo-900/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 right-1/3 w-72 h-72 bg-cyan-200/20 dark:bg-cyan-900/20 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-warm-200/40 dark:bg-warm-800/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-warm-300/30 dark:bg-warm-700/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 right-1/3 w-72 h-72 bg-warm-100/30 dark:bg-warm-800/20 rounded-full blur-3xl" />
       </div>
 
       {/* 页面标题卡片 */}
@@ -262,7 +262,7 @@ export default function DashboardPage() {
           title={selectedStudent ? `${selectedStudentName} 的学习报告` : '家长中心'}
           description={selectedStudent ? '查看详细学习数据和进度' : '管理学生账户，查看学习进度'}
           icon={Home}
-          iconColor="text-blue-500"
+          iconColor="text-warm-500"
           actions={
             <div className="flex items-center gap-2">
               {selectedStudent && (
@@ -369,7 +369,7 @@ export default function DashboardPage() {
               <Card className="border-border/50 transition-all duration-300 hover:shadow-lg">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <Clock className="w-5 h-5 text-blue-500" />
+                    <Clock className="w-5 h-5 text-warm-500" />
                     学习时长统计
                   </CardTitle>
                 </CardHeader>
@@ -527,16 +527,16 @@ export default function DashboardPage() {
               <Card className="border-border/50 transition-all duration-300 hover:shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-orange-500" />
+                    <Sparkles className="w-5 h-5 text-warm-500" />
                     最近活动
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {[
-                      { icon: BarChart3, color: 'text-blue-500', bg: 'bg-blue-100', name: '小明', action: '完成了数学题学习', time: '2 小时前' },
+                      { icon: BarChart3, color: 'text-warm-500', bg: 'bg-warm-100', name: '小明', action: '完成了数学题学习', time: '2 小时前' },
                       { icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-100', name: '小红', action: '完成了化学方程式复习', time: '1 小时前' },
-                      { icon: Award, color: 'text-purple-500', bg: 'bg-purple-100', name: '小刚', action: '获得了学习达人徽章', time: '3 小时前' },
+                      { icon: Award, color: 'text-warm-600', bg: 'bg-warm-200', name: '小刚', action: '获得了学习达人徽章', time: '3 小时前' },
                     ].map((activity, index) => (
                       <div
                         key={index}
