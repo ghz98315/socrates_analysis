@@ -167,12 +167,12 @@ export function OCRResult({ initialText, onTextChange, onConfirm, imageData }: O
       <CardContent className="p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-500" />
+            <Sparkles className="w-5 h-5 text-warm-500" />
             题目识别
           </h3>
           <div className="flex items-center gap-2">
             {cloudOCRAvailable === true && (
-              <span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium flex items-center gap-1">
+              <span className="text-xs px-2 py-1 rounded-full bg-warm-100 dark:bg-warm-900/30 text-warm-600 dark:text-warm-400 font-medium flex items-center gap-1">
                 <Cloud className="w-3 h-3" />
                 AI识别
               </span>

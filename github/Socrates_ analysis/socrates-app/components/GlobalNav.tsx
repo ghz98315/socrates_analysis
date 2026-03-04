@@ -31,16 +31,16 @@ import { cn } from '@/lib/utils';
 
 // 导航项配置
 const parentNavItems = [
-  { href: '/dashboard', icon: Home, label: '仪表盘', shortLabel: '首页', color: 'text-blue-500' },
+  { href: '/dashboard', icon: Home, label: '仪表盘', shortLabel: '首页', color: 'text-warm-500' },
   { href: '/workbench', icon: BookOpen, label: '学习', shortLabel: '工作', color: 'text-green-500' },
-  { href: '/review', icon: FileText, label: '复习', shortLabel: '计划', color: 'text-orange-500' },
-  { href: '/reports', icon: BarChart3, label: '报告', shortLabel: '查看', color: 'text-purple-500' },
+  { href: '/review', icon: FileText, label: '复习', shortLabel: '计划', color: 'text-warm-600' },
+  { href: '/reports', icon: BarChart3, label: '报告', shortLabel: '查看', color: 'text-warm-400' },
 ];
 
 const studentNavItems = [
   { href: '/workbench', icon: BookOpen, label: '学习', shortLabel: '工作', color: 'text-green-500' },
   { href: '/error-book', icon: Bookmark, label: '错题本', shortLabel: '本子', color: 'text-red-500' },
-  { href: '/review', icon: FileText, label: '复习', shortLabel: '计划', color: 'text-orange-500' },
+  { href: '/review', icon: FileText, label: '复习', shortLabel: '计划', color: 'text-warm-600' },
   { href: '/achievements', icon: Trophy, label: '成就', shortLabel: '荣誉', color: 'text-yellow-500' },
 ];
 
