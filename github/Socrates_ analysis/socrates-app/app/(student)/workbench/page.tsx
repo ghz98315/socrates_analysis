@@ -479,12 +479,12 @@ function WorkbenchPage() {
   }
 
   return (
-    <div className={cn("min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950", themeClass)}>
+    <div className={cn("min-h-screen bg-gradient-to-br from-warm-50 via-white to-warm-100", themeClass)}>
       {/* Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-200/30 dark:bg-purple-900/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-blue-200/30 dark:bg-blue-900/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 right-1/3 w-72 h-72 bg-green-200/20 dark:bg-green-900/20 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-warm-200/40 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-warm-300/30 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 right-1/3 w-72 h-72 bg-warm-100/30 rounded-full blur-3xl" />
       </div>
 
       {/* Parent indicator */}
@@ -523,7 +523,7 @@ function WorkbenchPage() {
             title="学习工作台"
             description={profile?.theme_preference === 'junior' ? '小学版 · AI引导学习' : '中学版 · AI推理分析'}
             icon={BookOpen}
-            iconColor="text-green-500"
+            iconColor="text-warm-500"
             actions={
               <div className="flex items-center gap-3">
                 {/* Study Session Timer */}

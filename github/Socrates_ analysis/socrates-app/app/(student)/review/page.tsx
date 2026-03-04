@@ -205,7 +205,7 @@ export default function ReviewPage() {
 
   return (
     <div className={cn(
-      "min-h-screen bg-background",
+      "min-h-screen bg-gradient-to-br from-warm-50 via-white to-warm-100",
       profile?.theme_preference === 'junior' ? 'theme-junior' : 'theme-senior'
     )}>
       {/* 页面标题卡片 */}
@@ -214,7 +214,7 @@ export default function ReviewPage() {
           title="复习计划"
           description="基于艾宾浩斯遗忘曲线的智能复习安排"
           icon={FileText}
-          iconColor="text-orange-500"
+          iconColor="text-warm-500"
           actions={
             <Button
               variant="outline"
