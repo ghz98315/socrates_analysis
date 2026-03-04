@@ -46,8 +46,16 @@
 
 ## 当前开发重点
 
+### 2026-03-04 更新
+- ✅ 统一项目到 socra-platform monorepo
+- ✅ 全站暖色调主题更新（Socrates + Essay + Landing）
+- ✅ 修复 Essay 登录模块（使用本地 supabase client）
+- ✅ 修复 Vercel 部署配置（outputDirectory 路径问题）
+- ⏳ Vercel 部署测试（等待网络问题恢复）
+
 ### Socrates (错题本平台)
 - ✅ 核心功能完成
+- ✅ 暖色调主题更新
 - ⏳ 时间规划页面开发
 - ⏳ 外部API集成（接收Essay数据）
 
@@ -55,6 +63,8 @@
 - ✅ 批改功能完成
 - ✅ Supabase认证集成
 - ✅ 数据持久化（历史记录）
+- ✅ 暖色调主题更新
+- ✅ 登录模块修复
 - ⏳ 与Socrates同步
 
 ---
@@ -108,6 +118,40 @@
 | [prd.md](./prd.md) | 产品需求文档 |
 | [DEPLOYMENT.md](./DEPLOYMENT.md) | 部署指南 |
 | [mathpromote.md](./mathpromote.md) | Prompt设计参考 |
+
+---
+
+---
+
+## Vercel 部署配置说明
+
+### 根本问题
+pnpm 工作空间需要在 monorepo 根目录运行 install，所以 Vercel Dashboard 的 **Root Directory 必须留空**。
+
+### 正确配置
+
+```
+Vercel Dashboard 设置：
+┌─────────────────────────────────────────────┐
+│ Root Directory: 留空（必须！）                │
+│ Framework: 自动检测                          │
+└─────────────────────────────────────────────┘
+
+vercel.json 配置（已在各 app 中配置）：
+┌─────────────────────────────────────────────┐
+│ buildCommand: pnpm --filter=@socra/xxx build│
+│ installCommand: pnpm install                │
+│ outputDirectory: apps/xxx/.next 或 dist     │
+└─────────────────────────────────────────────┘
+```
+
+### 三个项目的 Vercel 配置
+
+| 项目 | Vercel 项目名 | outputDirectory |
+|------|--------------|-----------------|
+| Socrates | socra-socrates | apps/socrates/.next |
+| Essay | socra-platform-essay | apps/essay/dist |
+| Landing | socra-landing | apps/landing/.next |
 
 ---
 

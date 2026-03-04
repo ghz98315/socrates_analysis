@@ -4,13 +4,22 @@
 
 ---
 
-## 最新节点: 2026-03-03 v1.2.0
+## 最新节点: 2026-03-04 v1.2.1
 
 ### 当前状态
-- **版本**: v1.2.0
-- **仓库**: 已迁移到 socra-platform monorepo
+- **版本**: v1.2.1
+- **仓库**: socra-platform monorepo
 - **部署地址**: https://essay.socra.cn
 - **本地路径**: D:\github\Socrates_ analysis\socra-platform\apps\essay
+
+### v1.2.1 - 暖色调主题 + 登录修复 (2026-03-04)
+- ✅ 全站暖色调主题更新（橙色系）
+- ✅ 修复 AuthModal 登录模块
+  - 问题：@socra/shared/auth 无法读取环境变量
+  - 解决：改用本地 lib/supabase.ts 客户端
+- ✅ 修复 Vercel 部署配置
+  - 问题：outputDirectory 路径不正确
+  - 解决：从 `.next` 改为 `apps/essay/dist`
 
 ### 核心功能
 
@@ -254,4 +263,4 @@ VITE_SUPABASE_ANON_KEY=
 
 ---
 
-*文档最后更新: 2026-03-03 v1.2.0*
+*文档最后更新: 2026-03-04 v1.2.1*
