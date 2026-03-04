@@ -39,32 +39,49 @@
 
 | 产品 | 文档 | 当前版本 | 状态 |
 |------|------|----------|------|
-| **Socrates 错题本** | [progress_socrates.md](./progress_socrates.md) | v1.6.29 | 🟢 运行中 |
-| **Essay 作文批改** | [progress_essay.md](./progress_essay.md) | v1.2.0 | 🟢 历史完成 |
+| **Socrates 错题本** | [progress_socrates.md](./progress_socrates.md) | v1.7.0 | 🟢 运行中 |
+| **Essay 作文批改** | [progress_essay.md](./progress_essay.md) | v1.3.0 | 🟢 历史完成 |
 
 ---
 
 ## 当前开发重点
 
-### 2026-03-04 更新
-- ✅ 统一项目到 socra-platform monorepo
-- ✅ 全站暖色调主题更新（Socrates + Essay + Landing）
-- ✅ 修复 Essay 登录模块（使用本地 supabase client）
-- ✅ 修复 Vercel 部署配置（outputDirectory 路径问题）
-- ⏳ Vercel 部署测试（等待网络问题恢复）
+### 2026-03-05 更新
+- ✅ 全局导航栏暖色主题统一
+- ✅ 登录/注册页面 Logo 更新（使用 logo.png）
+- ✅ 添加社区导航链接
+- ✅ 家长端功能完善
+  - 学习建议组件（LearningSuggestions）
+  - 家长复核组件更新（ParentReview）
+  - Dashboard 集成新组件
+- ✅ Essay 模块增强
+  - API 重试机制（指数退避）
+  - 历史记录搜索/分页
+  - PDF 导出功能
+- ✅ 复习页面优化
+  - 数据加载时序修复
+  - 刷新功能
+  - 动态统计显示
+- ✅ 功能完整性确认
+  - 成就系统 ✅
+  - 报告系统 ✅
+  - 社区功能 ✅
 
 ### Socrates (错题本平台)
 - ✅ 核心功能完成
 - ✅ 暖色调主题更新
-- ⏳ 时间规划页面开发
-- ⏳ 外部API集成（接收Essay数据）
+- ✅ 家长端 Dashboard 完善
+- ⏳ 社区功能开发
+- ⏳ 成就系统前端
 
 ### Essay (作文批改)
 - ✅ 批改功能完成
 - ✅ Supabase认证集成
 - ✅ 数据持久化（历史记录）
 - ✅ 暖色调主题更新
-- ✅ 登录模块修复
+- ✅ API 重试机制
+- ✅ 搜索/分页功能
+- ✅ PDF 导出
 - ⏳ 与Socrates同步
 
 ---
@@ -155,4 +172,4 @@ vercel.json 配置（已在各 app 中配置）：
 
 ---
 
-*文档最后更新: 2026-03-04*
+*文档最后更新: 2026-03-05*
