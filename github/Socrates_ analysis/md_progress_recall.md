@@ -39,8 +39,8 @@
 
 | 产品 | 文档 | 当前版本 | 状态 |
 |------|------|----------|------|
-| **Socrates 错题本** | [progress_socrates.md](./progress_socrates.md) | v1.7.0 | 🟢 运行中 |
-| **Essay 作文批改** | [progress_essay.md](./progress_essay.md) | v1.3.0 | 🟢 历史完成 |
+| **Socrates 错题本** | [md_progress_socrates.md](./md_progress_socrates.md) | v1.7.4 | 🟢 运行中 |
+| **Essay 作文批改** | [md_progress_essay.md](./md_progress_essay.md) | v1.3.1 | 🟢 运行中 |
 
 ---
 
@@ -132,10 +132,10 @@
 ```
 我是 Socra 平台的开发者。请阅读以下文件了解项目当前状态：
 
-1. 读取 D:\github\Socrates_ analysis\progress_recall.md 了解项目总览
+1. 读取 D:\github\Socrates_ analysis\md_progress_recall.md 了解项目总览
 2. 根据需要阅读：
-   - D:\github\Socrates_ analysis\progress_socrates.md (错题本平台)
-   - D:\github\Socrates_ analysis\progress_essay.md (作文批改)
+   - D:\github\Socrates_ analysis\md_progress_socrates.md (错题本平台)
+   - D:\github\Socrates_ analysis\md_progress_essay.md (作文批改)
 
 项目目录 (统一 monorepo):
 - 主仓库: D:\github\Socrates_ analysis\socra-platform
