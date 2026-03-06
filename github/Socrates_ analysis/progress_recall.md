@@ -46,6 +46,29 @@
 
 ## 当前开发重点
 
+### 2026-03-06 更新
+- ✅ **Workbench 页面布局重构**
+  - 从浮动面板改为左右分栏布局
+  - 左侧面板 (420px): 题目识别区域，可垂直滚动
+  - 右侧面板: 聊天区域，自适应宽度
+  - 响应式设计：移动端/平板自动切换为上下堆叠
+- ✅ **Vercel 部署问题修复**
+  - 问题：Monorepo 项目 Vercel 无法识别 Next.js 版本
+  - 原因：Vercel 在根目录找不到 package.json 中的 next 依赖
+  - 解决：在 Vercel Dashboard 中设置正确的 Root Directory
+    - socra-socrates → `apps/socrates`
+    - socra-landing → `apps/landing`
+    - socra-essay → `apps/essay`
+  - 更新 vercel.json 配置以兼容 monorepo
+- ✅ **TypeScript 类型错误修复**
+  - planner/page.tsx: 添加 `as const` 类型断言
+  - planner/page.tsx: Supabase 操作添加 `as any` 绕过严格类型检查
+  - OCRResult.tsx: 添加 `onOCRSuccess` 属性定义
+- ✅ **部署状态**
+  - socra-socrates: ✅ 成功
+  - socra-landing: ✅ 成功
+  - socra-essay: ✅ 成功
+
 ### 2026-03-05 更新
 - ✅ 全局导航栏暖色主题统一
 - ✅ 登录/注册页面 Logo 更新（使用 logo.png）
