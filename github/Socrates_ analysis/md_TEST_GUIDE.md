@@ -1,46 +1,39 @@
 # Socra 平台 - 功能测试指南
 
 > 应用地址: https://socrates.socra.cn
-> 营销页面: https://socra.cn
+> 营销页面: https://socra.cn (需单独部署)
 > 最后更新: 2026-03-10
 
 ---
 
-## 零、Landing Page 测试 (socra.cn)
+## 域名架构
 
-### 0.1 Landing Page (socra.cn)
-
-**入口方式:**
-- 直接访问: https://socra.cn
-
-**测试项目:**
-
-| 测试项 | 操作步骤 | 预期结果 |
-|--------|----------|----------|
-| 页面加载 | 访问 socra.cn | 显示产品介绍和定价区域 |
-| 产品卡片 | 滚动到产品区域 | 显示三款产品（AI辅导/作文批改/学习规划） |
-| 定价区域 | 滚动到定价区域 | 显示三档会员（免费/Pro/年度） |
-| 定价导航 | 点击导航栏"定价" | 跳转到 #pricing 区域 |
-| Pro订阅按钮 | 点击"立即订阅" | 跳转到 socrates.socra.cn/subscription |
-| 免费注册 | 点击"免费注册" | 跳转到 socrates.socra.cn/register |
-| 开始使用 | 点击"开始使用" | 跳转到 socrates.socra.cn |
+| 域名 | 用途 | 说明 |
+|------|------|------|
+| **socra.cn** | Landing Page | 营销站，需单独部署 |
+| **socrates.socra.cn** | 应用 | 登录/注册/学习功能 |
 
 ---
 
-## 零点五、应用入口测试 (socrates.socra.cn)
+## 零、订阅入口测试
 
-### 0.5.1 应用首页
+### 0.1 直接访问订阅页面（最简单）
 
-**入口方式:**
-- 直接访问: https://socrates.socra.cn
+| 测试项 | URL | 预期结果 |
+|--------|-----|----------|
+| 订阅页面 | https://socrates.socra.cn/subscription | 显示三档套餐 |
+| 支付页面 | https://socrates.socra.cn/payment | 显示支付选项 |
+| 支付成功 | https://socrates.socra.cn/payment/success | 显示成功动画 |
 
-**测试项目:**
+### 0.2 Dashboard Pro 学科入口
 
-| 测试项 | 操作步骤 | 预期结果 |
-|--------|----------|----------|
-| 首页重定向 | 访问 socrates.socra.cn | 自动重定向到 /login |
-| 登录页面 | 查看 /login | 显示登录表单 |
-| 返回首页 | 点击"返回首页" | 跳转到 /landing 或 socra.cn |
+**测试步骤:**
+1. 登录 https://socrates.socra.cn
+2. 进入 Dashboard (/dashboard)
+3. 找到物理或化学学科（显示 Pro 标签）
+4. 点击 Pro 学科
+5. 显示「开通 Pro」按钮
+6. 点击跳转到 /subscription
 
 ---
 
