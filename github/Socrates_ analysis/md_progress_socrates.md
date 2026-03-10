@@ -4,15 +4,39 @@
 
 ---
 
-## 最新节点: 2026-03-10 v1.7.10
+## 最新节点: 2026-03-10 v1.7.12
 
 ### 当前状态
-- **版本**: v1.7.10
+- **版本**: v1.7.12
 - **分支**: main (socra-platform)
 - **部署地址**: https://socrates.socra.cn
-- **最后更新**: 英语学科 AI Prompt 配置
+- **最后更新**: Vercel 部署问题全面修复
 
-- **版本**: v1.7.10
+### v1.7.12 - Vercel 部署修复 (2026-03-10)
+
+**Bug 修复**
+- ✅ 修复路由冲突 `(parent)/dashboard` 与 `(student)/dashboard`
+  - 删除重复的家长端 Dashboard 页面
+- ✅ 添加缺失依赖 `canvas-confetti`
+  - 支付成功页庆祝动画依赖
+  - 添加 `@types/canvas-confetti` 类型定义
+- ✅ 修复 Supabase TypeScript 类型错误
+  - 添加类型断言解决 `family_groups` 表类型问题
+  - 修复 `family/page.tsx` 中的 Supabase 调用
+
+### v1.7.11 - 代码修复 (2026-03-10)
+
+**Bug 修复**
+- ✅ 修复 `payment/success/page.tsx` 语法错误
+  - 修复 import 语句缺失逗号
+  - 添加缺失的变量定义 (proBenefits, standardBenefits)
+  - 修复 useEffect 语法结构
+  - 修复 JSX 语法错误
+- ✅ 修复 `family/page.tsx` 语法错误
+  - 添加缺失的 useEffect import
+  - 添加缺失的状态变量定义
+  - 修复函数调用位置错误
+  - 添加 supabase client import
 
 **学生 Dashboard 页面**
 - ✅ Dashboard 首页 `/dashboard`
@@ -263,7 +287,7 @@
 | | 学科切换支持 | ✅ |
 | **学科AI** | 数学 Prompt 配置 | ✅ |
 | | 语文 Prompt 配置 | ✅ |
-| | 英语 Prompt 配置 | 🟡 基础版 |
+| | 英语 Prompt 配置 | ✅ |
 | **复习系统** | 艾宾浩斯5阶段复习 | ✅ |
 | | 双维度难度评估 | ✅ |
 | **时间规划** | 任务管理 | ✅ |
@@ -301,7 +325,6 @@
 | 优先级 | 功能 | 状态 |
 |--------|------|------|
 | 🟡 中 | 微信通知系统 | ⏳ 待开始 |
-| 🟡 中 | 语文/英语Prompt完善 | ⏳ 待开始 |
 | 🟢 低 | 英语口语练习 | ⏳ 规划中 |
 | 🟢 低 | 更多科目支持 | ⏳ 规划中 |
 
@@ -345,4 +368,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-10 v1.7.10*
+*文档最后更新: 2026-03-10 v1.7.12*
