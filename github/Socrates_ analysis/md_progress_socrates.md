@@ -4,15 +4,15 @@
 
 ---
 
-## 最新节点: 2026-03-09 v1.7.9
+## 最新节点: 2026-03-10 v1.7.10
 
 ### 当前状态
-- **版本**: v1.7.9
+- **版本**: v1.7.10
 - **分支**: main (socra-platform)
 - **部署地址**: https://socrates.socra.cn
-- **最后更新**: Dashboard + 语文学科配置 (Phase 5 开始)
+- **最后更新**: 英语学科 AI Prompt 配置
 
-### v1.7.9 - Dashboard 首页 + 语文学科 (2026-03-09)
+- **版本**: v1.7.10
 
 **学生 Dashboard 页面**
 - ✅ Dashboard 首页 `/dashboard`
