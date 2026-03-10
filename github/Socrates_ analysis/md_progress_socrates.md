@@ -345,4 +345,4 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-09 v1.7.9*
+*文档最后更新: 2026-03-10 v1.7.10*
