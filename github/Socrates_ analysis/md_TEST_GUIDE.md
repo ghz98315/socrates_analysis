@@ -1,28 +1,46 @@
 # Socra 平台 - 功能测试指南
 
-> 部署地址: https://socrates.socra.cn
+> 应用地址: https://socrates.socra.cn
+> 营销页面: https://socra.cn
 > 最后更新: 2026-03-10
 
 ---
 
-## 零、Landing Page 测试 (首页入口)
+## 零、Landing Page 测试 (socra.cn)
 
-### 0.1 Landing Page `/` 或 `/landing`
+### 0.1 Landing Page (socra.cn)
 
 **入口方式:**
-- 直接访问: https://socrates.socra.cn 或 https://socrates.socra.cn/landing
+- 直接访问: https://socra.cn
 
 **测试项目:**
 
 | 测试项 | 操作步骤 | 预期结果 |
 |--------|----------|----------|
-| 页面加载 | 访问首页 | 显示产品介绍和定价区域 |
+| 页面加载 | 访问 socra.cn | 显示产品介绍和定价区域 |
 | 产品卡片 | 滚动到产品区域 | 显示三款产品（AI辅导/作文批改/学习规划） |
 | 定价区域 | 滚动到定价区域 | 显示三档会员（免费/Pro/年度） |
 | 定价导航 | 点击导航栏"定价" | 跳转到 #pricing 区域 |
-| Pro订阅按钮 | 点击"立即订阅" | 跳转到 /subscription 页面 |
-| 免费注册 | 点击"免费注册" | 跳转到 /register 页面 |
-| 套餐对比 | 查看三档价格 | 月度¥29.9/季度¥79.9/年度¥239.9 |
+| Pro订阅按钮 | 点击"立即订阅" | 跳转到 socrates.socra.cn/subscription |
+| 免费注册 | 点击"免费注册" | 跳转到 socrates.socra.cn/register |
+| 开始使用 | 点击"开始使用" | 跳转到 socrates.socra.cn |
+
+---
+
+## 零点五、应用入口测试 (socrates.socra.cn)
+
+### 0.5.1 应用首页
+
+**入口方式:**
+- 直接访问: https://socrates.socra.cn
+
+**测试项目:**
+
+| 测试项 | 操作步骤 | 预期结果 |
+|--------|----------|----------|
+| 首页重定向 | 访问 socrates.socra.cn | 自动重定向到 /login |
+| 登录页面 | 查看 /login | 显示登录表单 |
+| 返回首页 | 点击"返回首页" | 跳转到 /landing 或 socra.cn |
 
 ---
 
