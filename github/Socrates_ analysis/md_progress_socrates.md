@@ -4,30 +4,149 @@
 
 ---
 
-## 最新节点: 2026-03-10 v1.7.13
+## 最新节点: 2026-03-10 v1.7.18
 
 ### 当前状态
-- **版本**: v1.7.13
+- **版本**: v1.7.18
 - **分支**: main (socra-platform)
 - **部署地址**: https://socrates.socra.cn
-- **最后更新**: Landing Page 添加订阅入口
+- **最后更新**: Phase 2.5 家长增强完成
 
-### v1.7.13 - Landing Page 订阅入口 (2026-03-10)
+### v1.7.17 - Phase 2 用户增长完成 (2026-03-10)
 
-**Landing Page 更新**
-- ✅ 添加定价/订阅区域到所有三种风格 (StyleA/B/C)
-  - Standard 免费套餐
-  - Pro 季度会员 ¥79.9/季 (热门推荐)
-  - 年度会员 ¥239.9/年
-- ✅ 导航栏添加"定价"链接
-- ✅ 订阅按钮链接到 /subscription 页面
-- ✅ 移动端菜单支持定价导航
-- ✅ 套餐对比展示 (月度/季度/年度)
+**Phase 2: 用户增长 ✅ 已完成**
 
-**测试文档更新**
-- ✅ md_TEST_GUIDE.md 添加 Landing Page 测试章节
+**新增文件**
+- ✅ `app/api/share/poster/route.ts` - 分享海报配置 API
+  - GET: 获取海报配置数据
+  - POST: 记录分享行为并发放奖励
+- ✅ `app/api/wechat/signature/route.ts` - 微信 JS-SDK 签名 API
+- ✅ `components/share/SharePoster.tsx` - 分享海报组件 (Canvas)
+- ✅ `lib/wechat-share.ts` - 微信分享工具函数
 
-### v1.7.12 - Vercel 部署修复 (2026-03-10)
+**功能特性**
+- 分享海报生成 (Canvas)
+  - 邀请海报 / 成就海报 / 学习打卡海报
+  - 渐变背景 + 统计数据展示
+  - 下载保存 / 复制链接
+- 微信 JS-SDK 集成
+  - 签名认证
+  - 朋友圈/好友分享
+  - 原生分享 API 支持
+- 分享奖励机制
+  - 微信分享 +2 积分
+  - 朋友圈分享 +3 积分
+  - 每日最多 3 次奖励
+
+**已有功能确认**
+- ✅ 邀请 API `/api/invite` (已存在)
+- ✅ 邀请页面 `/invite` (已存在)
+- ✅ 邀请码展示组件 (已存在)
+- ✅ 邀请记录列表组件 (已存在)
+
+### v1.7.16 - Phase 1.5 学习诊断完成 (2026-03-10)
+
+**Phase 1.5: 学习诊断 ✅ 已完成**
+
+**新增文件**
+- ✅ `supabase/migrations/20260310_learning_style.sql` - 学习风格测试表
+  - 注意: 知识图谱表已存在于 `20260309_knowledge_graph.sql`
+  - knowledge_nodes 表 (知识节点)
+  - user_knowledge_mastery 表 (用户掌握度)
+  - learning_style_questions 表 (学习风格测试题)
+  - learning_style_assessments 表 (测评记录)
+- ✅ `app/api/learning-style/route.ts` - 学习风格测试 API
+  - GET: 获取测试题目/用户结果
+  - POST: 提交答案并计算得分
+- ✅ `app/(student)/style-test/page.tsx` - 学习风格测试页面
+
+**功能特性**
+- VARK 学习风格模型 (视觉/听觉/动觉/读写)
+- 16 道测试题目
+- 自动计算各维度得分
+- 主要/次要学习风格识别
+- 个性化学习建议生成
+- 得分可视化展示
+
+**已有功能确认**
+- ✅ 知识图谱页面 `/knowledge` (已存在)
+- ✅ 知识图谱 API `/api/knowledge` (已存在)
+
+### v1.7.18 - Phase 2.5 家长增强 (2026-03-10)
+
+**Phase 2.5: 家长增强 ✅ 已完成**
+
+**新增文件**
+- ✅ `supabase/migrations/20260310_parent_enhancements.sql`
+  - reward_distributions 表 (奖励发放)
+  - weekly_report_configs 表 (周报配置)
+  - weekly_reports 表 (周报记录)
+  - distribute_reward() 函数
+  - generate_weekly_report() 函数
+- ✅ `app/api/family/dashboard/route.ts` - 多子女 Dashboard API
+- ✅ `app/api/weekly-reports/route.ts` - 周报生成 API
+
+**已有功能确认**
+- ✅ 家庭管理 API `/api/family` (已存在)
+- ✅ 家庭管理页面 `/(parent)/family` (已存在)
+- ✅ 任务布置 API `/api/parent-tasks` (已存在)
+- ✅ 任务管理页面 `/(parent)/tasks` (已存在)
+- ✅ 青少年管控页面 `/(parent)/controls` (已存在)
+- ✅ 子女选择组件 `components/family/ChildSelector.tsx` (已存在)
+- ✅ 多子女概览组件 `components/family/MultiChildOverview.tsx` (已存在)
+
+### v1.7.14 - 合规基础完成 (2026-03-10)
+
+**Phase 0: 合规基础 ✅ 已完成**
+
+### v1.7.14 - 合规基础完成 (2026-03-10)
+
+**Phase 0: 合规基础 ✅ 已完成**
+
+**新增文件**
+- ✅ `hooks/useUsageTracker.ts` - 使用时长追踪 Hook
+- ✅ `app/api/usage/route.ts` - 使用时长记录 API
+- ✅ `lib/teen-mode-middleware.ts` - 青少年模式检查中间件
+- ✅ `components/compliance/RestReminder.tsx` - 休息提醒弹窗组件
+- ✅ `app/(student)/layout.tsx` - 学生端布局 (集成青少年模式)
+
+**更新文件**
+- ✅ `app/(student)/settings/page.tsx` - 添加青少年模式状态卡片
+
+**功能特性**
+- 青少年模式状态显示
+- 今日学习时长统计
+- 剩余时间提示
+- 进度条展示
+- 休息提醒弹窗
+- 强制休息倒计时
+- 超时/非时段拦截
+
+### v1.7.15 - Phase 1 基础设施完成 (2026-03-10)
+
+**Phase 1: 基础设施 ✅ 100% 完成**
+
+**已完成功能:**
+- ✅ 数据库迁移文件 `supabase/migrations/20260310_invite_system_only.sql`
+  - socra_points 表 (用户积分)
+  - point_transactions 表 (积分流水)
+  - invite_codes 表 (邀请码)
+  - invite_records 表 (邀请记录)
+- ✅ 积分 API (GET/POST /api/points)
+  - 积分交易记录 API (GET /api/points/transactions)
+- ✅ 邀请 API (GET/POST/PUT /api/invite)
+- ✅ 积分等级徽章组件 `components/points/PointsBadge.tsx`
+- ✅ 底部状态栏组件 `components/student/BottomStatusBar.tsx`
+- ✅ 邀请页面 `app/(student)/invite/page.tsx`
+- ✅ 邀请组件 `components/invite/InviteCodeDisplay.tsx`, `InviteRecordsList.tsx`
+- ✅ usePoints Hook `hooks/usePoints.ts`
+
+**待完成功能:**
+- ⬜ 统一学习报告 API
+- ⬜ 积分消费功能
+- ⬜ 积分过期机制
+- ⬜ 积分排行榜
+    - 邀请数据可视化
 
 **Bug 修复**
 - ✅ 修复路由冲突 `(parent)/dashboard` 与 `(student)/dashboard`
@@ -104,6 +223,29 @@
   - 作文开头指导
   - 文言文词语解释
   - 议论文找论点
+
+**Phase 1: 基础设施 ✅ 100% 完成 (2026-03-10)**
+
+- ✅ 数据库迁移 `20260310_points_and_invite.sql`
+  - socra_points 表 (积分余额、等级、连续天数)
+  - point_transactions 表 (积分流水)
+  - invite_codes 表 (邀请码)
+  - invite_records 表 (邀请记录)
+- ✅ 积分 API `/api/points`
+  - 积分交易记录 API `/api/points/transactions`
+- ✅ 邀请 API `/api/invite`
+- ✅ 积分等级徽章组件 `components/points/PointsBadge.tsx`
+- ✅ 底部状态栏组件 `components/student/BottomStatusBar.tsx`
+- ✅ 邀请页面 `app/(student)/invite`
+- ✅ 邀请组件 `components/invite/`
+- ✅ usePoints Hook `hooks/usePoints.ts`
+
+**待完成:**
+- ⬜ 统一学习报告 API
+- ⬜ 积分消费功能
+- ⬜ 积分过期机制
+- ⬜ 积分排行榜
+- ⬜ 邀请数据可视化
 
 ### v1.7.8 - 通知系统 (2026-03-09)
 
@@ -383,4 +525,37 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-*文档最后更新: 2026-03-10 v1.7.12*
+### v1.7.18 - Phase 2.5 家长增强 (2026-03-10)
+
+**Phase 2.5: 家长增强 ✅ 已完成**
+
+**新增文件**
+- ✅ `supabase/migrations/20260310_parent_enhancements.sql`
+  - reward_distributions 表 (奖励发放)
+  - weekly_report_configs 表 (周报配置)
+  - weekly_reports 表 (周报记录)
+  - distribute_reward() 函数
+  - generate_weekly_report() 函数
+- ✅ `app/api/family/dashboard/route.ts` - 多子女 Dashboard API
+- ✅ `app/api/weekly-reports/route.ts` - 周报生成 API
+
+**已有功能确认**
+- ✅ 家庭管理 API `/api/family` (已存在)
+- ✅ 家庭管理页面 `/(parent)/family` (已存在)
+- ✅ 任务布置 API `/api/parent-tasks` (已存在)
+- ✅ 任务管理页面 `/(parent)/tasks` (已存在)
+- ✅ 青少年管控页面 `/(parent)/controls` (已存在)
+- ✅ 子女选择组件 `components/family/ChildSelector.tsx` (已存在)
+- ✅ 多子女概览组件 `components/family/MultiChildOverview.tsx` (已存在)
+
+**Phase 2.5 功能**
+| 功能 | 状态 |
+|------|------|
+| 多子女 Dashboard 视图 | ✅ API 完成 |
+| 周报生成 | ✅ API 完成 |
+| 奖励发放 | ✅ 数据库函数完成 |
+| 任务完成回调 | ✅ 逻辑已存在 |
+
+---
+
+*文档最后更新: 2026-03-10 v1.7.18*
