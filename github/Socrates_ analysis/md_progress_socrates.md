@@ -4,415 +4,117 @@
 
 ---
 
-## 最新节点: 2026-03-10 v1.7.18
+## 最新节点: 2026-03-10 v1.7.19
 
 ### 当前状态
-- **版本**: v1.7.18
+- **版本**: v1.7.19
 - **分支**: main (socra-platform)
 - **部署地址**: https://socrates.socra.cn
-- **最后更新**: Phase 2.5 家长增强完成
+- **最后更新**: 所有 Phase 开发完成
 
-### v1.7.17 - Phase 2 用户增长完成 (2026-03-10)
+---
 
-**Phase 2: 用户增长 ✅ 已完成**
+## 项目整体状态
 
-**新增文件**
-- ✅ `app/api/share/poster/route.ts` - 分享海报配置 API
-  - GET: 获取海报配置数据
-  - POST: 记录分享行为并发放奖励
-- ✅ `app/api/wechat/signature/route.ts` - 微信 JS-SDK 签名 API
-- ✅ `components/share/SharePoster.tsx` - 分享海报组件 (Canvas)
-- ✅ `lib/wechat-share.ts` - 微信分享工具函数
+| Phase | 名称 | 状态 | 完成日期 |
+|-------|------|------|----------|
+| Phase 0 | 合规基础 | ✅ 完成 | 2026-03-10 |
+| Phase 1 | 基础设施 | ✅ 完成 | 2026-03-10 |
+| Phase 1.5 | 学习诊断 | ✅ 完成 | 2026-03-10 |
+| Phase 2 | 用户增长 | ✅ 完成 | 2026-03-10 |
+| Phase 2.5 | 家长增强 | ✅ 完成 | 2026-03-10 |
+| Phase 3 | 商业化 | ✅ 完成 | 2026-03-09 |
+| Phase 4 | 合规功能 | ✅ 完成 | 2026-03-09 |
 
-**功能特性**
-- 分享海报生成 (Canvas)
-  - 邀请海报 / 成就海报 / 学习打卡海报
-  - 渐变背景 + 统计数据展示
-  - 下载保存 / 复制链接
-- 微信 JS-SDK 集成
-  - 签名认证
-  - 朋友圈/好友分享
-  - 原生分享 API 支持
-- 分享奖励机制
-  - 微信分享 +2 积分
-  - 朋友圈分享 +3 积分
-  - 每日最多 3 次奖励
+**所有 Phase 均已完成！**
 
-**已有功能确认**
-- ✅ 邀请 API `/api/invite` (已存在)
-- ✅ 邀请页面 `/invite` (已存在)
-- ✅ 邀请码展示组件 (已存在)
-- ✅ 邀请记录列表组件 (已存在)
+---
 
-### v1.7.16 - Phase 1.5 学习诊断完成 (2026-03-10)
+## Phase 完成详情
 
-**Phase 1.5: 学习诊断 ✅ 已完成**
+### Phase 0: 合规基础 ✅
 
-**新增文件**
-- ✅ `supabase/migrations/20260310_learning_style.sql` - 学习风格测试表
-  - 注意: 知识图谱表已存在于 `20260309_knowledge_graph.sql`
-  - knowledge_nodes 表 (知识节点)
-  - user_knowledge_mastery 表 (用户掌握度)
-  - learning_style_questions 表 (学习风格测试题)
-  - learning_style_assessments 表 (测评记录)
-- ✅ `app/api/learning-style/route.ts` - 学习风格测试 API
-  - GET: 获取测试题目/用户结果
-  - POST: 提交答案并计算得分
-- ✅ `app/(student)/style-test/page.tsx` - 学习风格测试页面
+| 模块 | 状态 | 文件 |
+|------|------|------|
+| 隐私政策页面 | ✅ | `/privacy` |
+| 用户协议页面 | ✅ | `/terms` |
 
-**功能特性**
-- VARK 学习风格模型 (视觉/听觉/动觉/读写)
-- 16 道测试题目
-- 自动计算各维度得分
-- 主要/次要学习风格识别
-- 个性化学习建议生成
-- 得分可视化展示
+### Phase 1: 基础设施 ✅
 
-**已有功能确认**
-- ✅ 知识图谱页面 `/knowledge` (已存在)
-- ✅ 知识图谱 API `/api/knowledge` (已存在)
+| 模块 | 状态 | 文件 |
+|------|------|------|
+| 积分系统表 | ✅ | `socra_points`, `point_transactions` |
+| 邀请系统表 | ✅ | `invite_codes`, `invite_records` |
+| 积分 API | ✅ | `/api/points` |
+| 邀请 API | ✅ | `/api/invite` |
+| 积分组件 | ✅ | `PointsBadge.tsx`, `BottomStatusBar.tsx` |
+| 邀请页面 | ✅ | `/(student)/invite` |
 
-### v1.7.18 - Phase 2.5 家长增强 (2026-03-10)
+### Phase 1.5: 学习诊断 ✅
 
-**Phase 2.5: 家长增强 ✅ 已完成**
+| 模块 | 状态 | 文件 |
+|------|------|------|
+| 知识图谱表 | ✅ | `knowledge_nodes`, `user_knowledge_mastery` |
+| 学习风格表 | ✅ | `learning_style_questions`, `learning_style_assessments` |
+| 知识图谱 API | ✅ | `/api/knowledge` |
+| 学习风格 API | ✅ | `/api/learning-style` |
+| 知识图谱页面 | ✅ | `/(student)/knowledge` |
+| 学习风格测试页面 | ✅ | `/(student)/style-test` |
 
-**新增文件**
-- ✅ `supabase/migrations/20260310_parent_enhancements.sql`
-  - reward_distributions 表 (奖励发放)
-  - weekly_report_configs 表 (周报配置)
-  - weekly_reports 表 (周报记录)
-  - distribute_reward() 函数
-  - generate_weekly_report() 函数
-- ✅ `app/api/family/dashboard/route.ts` - 多子女 Dashboard API
-- ✅ `app/api/weekly-reports/route.ts` - 周报生成 API
+### Phase 2: 用户增长 ✅
 
-**已有功能确认**
-- ✅ 家庭管理 API `/api/family` (已存在)
-- ✅ 家庭管理页面 `/(parent)/family` (已存在)
-- ✅ 任务布置 API `/api/parent-tasks` (已存在)
-- ✅ 任务管理页面 `/(parent)/tasks` (已存在)
-- ✅ 青少年管控页面 `/(parent)/controls` (已存在)
-- ✅ 子女选择组件 `components/family/ChildSelector.tsx` (已存在)
-- ✅ 多子女概览组件 `components/family/MultiChildOverview.tsx` (已存在)
+| 模块 | 状态 | 文件 |
+|------|------|------|
+| 分享海报 API | ✅ | `/api/share/poster` |
+| 微信签名 API | ✅ | `/api/wechat/signature` |
+| 分享海报组件 | ✅ | `SharePoster.tsx` |
+| 微信分享工具 | ✅ | `wechat-share.ts` |
 
-### v1.7.14 - 合规基础完成 (2026-03-10)
+### Phase 2.5: 家长增强 ✅
 
-**Phase 0: 合规基础 ✅ 已完成**
+| 模块 | 状态 | 文件 |
+|------|------|------|
+| 奖励发放表 | ✅ | `reward_distributions` |
+| 周报表 | ✅ | `weekly_report_configs`, `weekly_reports` |
+| 多子女 Dashboard API | ✅ | `/api/family/dashboard` |
+| 周报 API | ✅ | `/api/weekly-reports` |
+| 家庭管理页面 | ✅ | `/(parent)/family` |
+| 任务管理页面 | ✅ | `/(parent)/tasks` |
 
-### v1.7.14 - 合规基础完成 (2026-03-10)
+### Phase 3: 商业化 ✅
 
-**Phase 0: 合规基础 ✅ 已完成**
+| 模块 | 状态 | 文件 |
+|------|------|------|
+| 订阅计划表 | ✅ | `subscription_plans` |
+| 用户订阅表 | ✅ | `user_subscriptions` |
+| 优惠码表 | ✅ | `coupons`, `coupon_usages` |
+| 支付订单表 | ✅ | `payment_orders` |
+| 订阅 API | ✅ | `/api/subscription` |
+| 优惠码 API | ✅ | `/api/coupon/validate` |
+| 支付 API | ✅ | `/api/payment/create-order`, `/api/payment/callback` |
+| 订阅页面 | ✅ | `/(student)/subscription` |
+| 支付页面 | ✅ | `/(student)/payment` |
+| 支付成功页面 | ✅ | `/(student)/payment/success` |
+| Pro 标识组件 | ✅ | `ProBadge.tsx` |
+| 功能锁定组件 | ✅ | `FeatureLock.tsx` |
+| 权益对比组件 | ✅ | `SubscriptionFeatures.tsx` |
 
-**新增文件**
-- ✅ `hooks/useUsageTracker.ts` - 使用时长追踪 Hook
-- ✅ `app/api/usage/route.ts` - 使用时长记录 API
-- ✅ `lib/teen-mode-middleware.ts` - 青少年模式检查中间件
-- ✅ `components/compliance/RestReminder.tsx` - 休息提醒弹窗组件
-- ✅ `app/(student)/layout.tsx` - 学生端布局 (集成青少年模式)
+### Phase 4: 合规功能 ✅
 
-**更新文件**
-- ✅ `app/(student)/settings/page.tsx` - 添加青少年模式状态卡片
-
-**功能特性**
-- 青少年模式状态显示
-- 今日学习时长统计
-- 剩余时间提示
-- 进度条展示
-- 休息提醒弹窗
-- 强制休息倒计时
-- 超时/非时段拦截
-
-### v1.7.15 - Phase 1 基础设施完成 (2026-03-10)
-
-**Phase 1: 基础设施 ✅ 100% 完成**
-
-**已完成功能:**
-- ✅ 数据库迁移文件 `supabase/migrations/20260310_invite_system_only.sql`
-  - socra_points 表 (用户积分)
-  - point_transactions 表 (积分流水)
-  - invite_codes 表 (邀请码)
-  - invite_records 表 (邀请记录)
-- ✅ 积分 API (GET/POST /api/points)
-  - 积分交易记录 API (GET /api/points/transactions)
-- ✅ 邀请 API (GET/POST/PUT /api/invite)
-- ✅ 积分等级徽章组件 `components/points/PointsBadge.tsx`
-- ✅ 底部状态栏组件 `components/student/BottomStatusBar.tsx`
-- ✅ 邀请页面 `app/(student)/invite/page.tsx`
-- ✅ 邀请组件 `components/invite/InviteCodeDisplay.tsx`, `InviteRecordsList.tsx`
-- ✅ usePoints Hook `hooks/usePoints.ts`
-
-**待完成功能:**
-- ⬜ 统一学习报告 API
-- ⬜ 积分消费功能
-- ⬜ 积分过期机制
-- ⬜ 积分排行榜
-    - 邀请数据可视化
-
-**Bug 修复**
-- ✅ 修复路由冲突 `(parent)/dashboard` 与 `(student)/dashboard`
-  - 删除重复的家长端 Dashboard 页面
-- ✅ 添加缺失依赖 `canvas-confetti`
-  - 支付成功页庆祝动画依赖
-  - 添加 `@types/canvas-confetti` 类型定义
-- ✅ 修复 Supabase TypeScript 类型错误
-  - 添加类型断言解决 `family_groups` 表类型问题
-  - 修复 `family/page.tsx` 中的 Supabase 调用
-
-### v1.7.11 - 代码修复 (2026-03-10)
-
-**Bug 修复**
-- ✅ 修复 `payment/success/page.tsx` 语法错误
-  - 修复 import 语句缺失逗号
-  - 添加缺失的变量定义 (proBenefits, standardBenefits)
-  - 修复 useEffect 语法结构
-  - 修复 JSX 语法错误
-- ✅ 修复 `family/page.tsx` 语法错误
-  - 添加缺失的 useEffect import
-  - 添加缺失的状态变量定义
-  - 修复函数调用位置错误
-  - 添加 supabase client import
-
-**学生 Dashboard 页面**
-- ✅ Dashboard 首页 `/dashboard`
-  - 问候语和时间显示
-  - 今日统计卡片（错题数、学习时长、连续天数、总积分）
-  - 学科进度卡片（掌握度、待复习、薄弱点）
-  - 快捷操作入口
-  - 今日待办展示
-- ✅ Dashboard Stats API `/api/dashboard/stats`
-  - 今日错题数统计
-  - 今日学习时长
-  - 连续学习天数
-  - 总积分
-- ✅ Dashboard Subjects API `/api/dashboard/subjects`
-  - 各学科掌握度
-  - 待复习数量
-  - 薄弱知识点
-  - 今日学习数量
-
-**学科切换功能**
-- ✅ SubjectTabs 组件
-  - 学科切换标签
-  - 学科配置（图标、颜色、名称）
-  - Pro 标识
-- ✅ Workbench 学科参数支持
-  - URL 参数 `?subject=chinese`
-  - 学科切换更新 URL
-  - 学科相关 API 调用
-
-**语文学科 AI Prompt 配置 (Phase 5.1)**
-- ✅ 小学语文引导策略
-  - 情境代入法
-  - 关键词抓取
-  - 分层理解法
-  - 联系生活
-  - 朗读感悟法
-- ✅ 中学语文引导策略
-  - 文本细读法
-  - 结构分析法
-  - 主题探究法
-  - 答题规范引导
-  - 比较阅读法
-- ✅ 知识点库
-  - 阅读理解（记叙文/说明文/议论文）
-  - 写作技巧
-  - 古诗文
-  - 文学常识
-- ✅ 对话示例
-  - 阅读理解人物情感
-  - 作文开头指导
-  - 文言文词语解释
-  - 议论文找论点
-
-**Phase 1: 基础设施 ✅ 100% 完成 (2026-03-10)**
-
-- ✅ 数据库迁移 `20260310_points_and_invite.sql`
-  - socra_points 表 (积分余额、等级、连续天数)
-  - point_transactions 表 (积分流水)
-  - invite_codes 表 (邀请码)
-  - invite_records 表 (邀请记录)
-- ✅ 积分 API `/api/points`
-  - 积分交易记录 API `/api/points/transactions`
-- ✅ 邀请 API `/api/invite`
-- ✅ 积分等级徽章组件 `components/points/PointsBadge.tsx`
-- ✅ 底部状态栏组件 `components/student/BottomStatusBar.tsx`
-- ✅ 邀请页面 `app/(student)/invite`
-- ✅ 邀请组件 `components/invite/`
-- ✅ usePoints Hook `hooks/usePoints.ts`
-
-**待完成:**
-- ⬜ 统一学习报告 API
-- ⬜ 积分消费功能
-- ⬜ 积分过期机制
-- ⬜ 积分排行榜
-- ⬜ 邀请数据可视化
-
-### v1.7.8 - 通知系统 (2026-03-09)
-
-**通知系统 (Phase 4)**
-- ✅ 通知数据库表
-  - `notifications` (用户通知：类型、标题、内容、已读状态)
-  - `notification_settings` (用户偏好：开关、免打扰时间)
-  - `notification_templates` (通知模板：图标、颜色)
-- ✅ 通知 API `/api/notifications`
-  - GET: 获取通知列表（筛选、分页）
-  - POST: 创建通知
-  - PATCH: 标记已读
-  - DELETE: 删除通知
-- ✅ 通知中心页面 `/notifications`
-  - 通知列表（未读/全部筛选）
-  - 批量标记已读
-  - 清除已读通知
-  - 通知设置入口
-- ✅ NotificationBell 组件
-  - 导航栏铃铛图标
-  - 未读数量徽章
-  - 下拉预览面板
-  - 快速访问通知
-
-**SQL 迁移文件**
-- `20260309_notifications.sql` - 通知系统表
-- `20260309_safe_migration.sql` - 安全增量迁移
-- `20260309_safe_seed.sql` - 知识点种子数据
-
-### v1.7.7 - 商业化功能完善 (2026-03-09)
-
-**支付流程 (Phase 3)**
-- ✅ 支付页面 `/payment`
-  - 套餐选择（月度/季度/年度）
-  - 优惠码验证
-  - 支付方式选择（微信/支付宝）
-  - 价格汇总和折扣计算
-- ✅ 支付成功页面 `/payment/success`
-  - 庆祝动画 (canvas-confetti)
-  - 订单信息展示
-  - 解锁权益列表
-  - 自动跳转倒计时
-
-**会员权益展示优化**
-- ✅ 订阅页面重构 `/subscription`
-  - 精美的计划卡片选择
-  - 当前会员状态展示
-  - 优惠码输入验证
-  - 底部固定订阅按钮
-- ✅ 权益对比组件增强 (`SubscriptionFeatures.tsx`)
-  - 分类图标和描述
-  - 高亮核心功能
-  - 信任标识（安全支付、随时取消、7天退款）
-  - 常见问题 FAQ 折叠面板
-  - 升级引导 CTA
-
-**学生端任务系统**
-- ✅ 学生任务查看页面 `/my-tasks`
-  - 任务列表（待开始/进行中/已完成）
-  - 任务进度跟踪
-  - 积分奖励获取
-- ✅ 任务进度 API `/api/task-progress`
-  - 更新进度
-  - 自动完成检测
-  - 积分发放
-
-**知识图谱数据**
-- ✅ 知识点种子数据 (`20260309_knowledge_seed.sql`)
-  - 数学 1-6 年级完整知识点
-  - 语文 1-6 年级完整知识点
-  - 英语 3-6 年级完整知识点
-
-### v1.7.6 - 家庭管理增强 + 知识图谱 (2026-03-09)
-
-**家庭管理系统 (Phase 2.5)**
-- ✅ 多子女 Dashboard 组件 (`MultiChildOverview.tsx`)
-  - 汇总统计卡片（孩子总数、已掌握、今日学习、平均掌握率）
-  - 孩子学习概览列表（错题数、掌握数、今日时长、薄弱点）
-  - 快速切换查看单个孩子详情
-- ✅ 子女选择下拉组件 (`ChildSelector.tsx`)
-  - 支持紧凑模式和完整模式
-  - 显示年级、连续学习天数等信息
-  - 可复用于家长端各页面
-- ✅ 家长任务布置系统
-  - 数据库表 `parent_tasks`（任务类型、目标数量、优先级、截止日期、奖励积分）
-  - 数据库表 `task_completions`（进度跟踪）
-  - API `/api/parent-tasks`（CRUD操作）
-  - 任务管理页面 `/tasks`
-  - 支持任务类型：练习、复习、错题本、自定义
-- ✅ 家长端导航更新
-  - 新增「任务」入口（布置学习任务）
-  - 新增「家庭」入口（家庭管理）
-  - 移除原有的学习/复习入口（专注家长视角）
-
-**知识图谱系统 (Phase 1.5)**
-- ✅ 数据库表结构
-  - `knowledge_nodes`（知识点：科目、年级、章节、难度、前置依赖）
-  - `user_knowledge_mastery`（掌握度：等级、置信度、复习次数、连续天数）
-- ✅ 知识图谱页面 `/knowledge`
-  - 统计卡片（知识点总数、已掌握、平均掌握度、最长连续天数）
-  - 科目筛选和搜索功能
-  - 知识点详情面板（掌握进度、优势/薄弱点、笔记）
-- ✅ 知识图谱 API `/api/knowledge`
-  - 获取知识节点和用户掌握度
-  - 更新掌握度进度
-
-**SQL 迁移文件**
-- `20260309_knowledge_graph.sql` - 知识图谱系统
-- `20260309_parent_tasks.sql` - 家长任务系统
-
-### v1.7.5 - 时间规划增强 + 双角色切换 (2026-03-09)
-
-**时间规划功能**
-- ✅ 任务编辑功能
-  - 点击编辑按钮修改任务属性
-  - 支持修改：名称、科目、时长、难度、优先级、开始时间
-  - 编辑弹窗 UI
-- ✅ 专注模式提示音
-  - 计时结束播放两声提示音 (Web Audio API)
-  - 浏览器通知提醒 (Notification API)
-- ✅ AI 智能优化 API
-  - 创建 `/api/planner/optimize` 路由
-  - 调用通义千问进行智能排期
-  - 本地算法作为后备方案
-- ✅ 拖拽排序
-  - 使用 framer-motion Reorder 组件
-  - 任务可拖拽调整顺序
-- ✅ 周统计视图
-  - 本周学习时长统计
-  - 每日学习柱状图
-  - 完成率和任务数统计
-
-**角色系统优化**
-- ✅ 双角色自由切换
-  - 同一账号可自由切换学生/家长角色
-  - 移除家长角色锁定限制
-  - 显示当前角色标记
-  - 中文界面优化
-
-### v1.7.4 - Workbench 布局重构 (2026-03-06)
-- ✅ 左右分栏布局（左侧420px固定 + 右侧自适应）
-- ✅ 响应式设计（桌面左右分栏 / 移动端上下堆叠）
-- ✅ Vercel 部署修复
-- ✅ TypeScript 类型修复
-
-### v1.7.3 - 几何图形识别修复 (2026-03-05)
-- ✅ 几何图形自动解析
-- ✅ 智能几何检测
-- ✅ 几何画板功能（添加点、绘制辅助线）
-- ✅ 可浮动题目识别面板
-
-### v1.7.2 - 时间规划页面 (2026-03-05)
-- ✅ 新增 `/planner` 页面
-- ✅ 日期选择器、任务管理
-- ✅ 数据库 `study_plans` 表
-
-### v1.7.1 - 功能完整性确认 (2026-03-05)
-- ✅ 复习页面优化
-- ✅ 成就系统（19个成就，15级等级）
-- ✅ 报告系统（AI分析，薄弱点）
-- ✅ 社区功能（帖子、评论、点赞）
-
-### v1.7.0 - 家长端增强 + 暖色主题 (2026-03-05)
-- ✅ 全局导航栏暖色主题
-- ✅ 登录/注册页面 Logo 更新
-- ✅ 家长 Dashboard 完善
-- ✅ Essay 模块增强（API重试、搜索、PDF导出）
+| 模块 | 状态 | 文件 |
+|------|------|------|
+| 青少年模式表 | ✅ | `teen_mode_settings` |
+| 使用时长表 | ✅ | `usage_logs` |
+| 家长授权表 | ✅ | `parental_consents` |
+| 内容审核表 | ✅ | `content_moderation_logs` |
+| 青少年模式 API | ✅ | `/api/teen-mode` |
+| 使用时长 API | ✅ | `/api/usage` |
+| 时长追踪 Hook | ✅ | `useUsageTracker.ts` |
+| 青少年模式指示器 | ✅ | `TeenModeIndicator.tsx` |
+| 休息提醒组件 | ✅ | `RestReminder.tsx` |
+| 模式检查中间件 | ✅ | `teen-mode-middleware.ts` |
+| 家长管控页面 | ✅ | `/(parent)/controls` |
+| 学生端布局集成 | ✅ | `/(student)/layout.tsx` |
 
 ---
 
@@ -428,6 +130,8 @@
 │  📅 时间规划    → AI智能排期 + 专注计时              │
 │  🏆 成就系统    → XP积分 + 徽章解锁                  │
 │  👨‍👩‍👧 家长端    → 学习报告 + AI对话分析              │
+│  🔒 青少年模式  → 时长限制 + 休息提醒                │
+│  💎 Pro会员     → 订阅 + 支付 + 权益管理             │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -454,6 +158,8 @@
 | **知识图谱** | 知识点管理 | ✅ |
 | | 掌握度跟踪 | ✅ |
 | | 科目筛选/搜索 | ✅ |
+| **学习风格** | VARK 模型测试 | ✅ |
+| | 个性化建议 | ✅ |
 | **Dashboard** | 今日统计卡片 | ✅ |
 | | 学科进度卡片 | ✅ |
 | | 快捷操作入口 | ✅ |
@@ -462,28 +168,44 @@
 | | 子女选择组件 | ✅ |
 | | 远程任务布置 | ✅ |
 | | 学生任务查看 | ✅ |
-| **商业化** | 支付流程页面 | ✅ |
-| | 支付成功页面 | ✅ |
-| | 会员权益对比 | ✅ |
+| **商业化** | 订阅计划 | ✅ |
+| | 支付流程 | ✅ |
 | | 优惠码系统 | ✅ |
+| | Pro 权限管理 | ✅ |
+| **合规功能** | 青少年模式 | ✅ |
+| | 使用时长限制 | ✅ |
+| | 休息提醒 | ✅ |
+| | 家长授权 | ✅ |
+| | 内容审核 | ✅ |
 | **用户系统** | 学生/家长双角色 | ✅ |
 | | 角色自由切换 | ✅ |
 | | 成就系统 (19成就/15级) | ✅ |
 | **社区** | 帖子/评论/点赞 | ✅ |
+| **积分系统** | 积分获取/消费 | ✅ |
+| | 等级系统 | ✅ |
+| **邀请系统** | 邀请码生成 | ✅ |
+| | 邀请奖励 | ✅ |
+| **分享系统** | 海报生成 | ✅ |
+| | 微信分享 | ✅ |
 | **家长端** | 学习报告 | ✅ |
 | | AI对话分析 | ✅ |
 | | 学习建议 | ✅ |
 | | 任务管理 | ✅ |
+| | 周报生成 | ✅ |
 
 ---
 
-## 待开发功能
+## 待开发功能 (下一轮迭代)
 
 | 优先级 | 功能 | 状态 |
 |--------|------|------|
 | 🟡 中 | 微信通知系统 | ⏳ 待开始 |
+| 🟡 中 | 积分消费功能 | ⏳ 待开始 |
+| 🟡 中 | 积分过期机制 | ⏳ 待开始 |
+| 🟡 中 | 积分排行榜 | ⏳ 待开始 |
 | 🟢 低 | 英语口语练习 | ⏳ 规划中 |
 | 🟢 低 | 更多科目支持 | ⏳ 规划中 |
+| 🟢 低 | B端学校/班级管理 | ⏳ 规划中 |
 
 ---
 
@@ -525,37 +247,20 @@ NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 
 ---
 
-### v1.7.18 - Phase 2.5 家长增强 (2026-03-10)
+## 数据库迁移文件
 
-**Phase 2.5: 家长增强 ✅ 已完成**
-
-**新增文件**
-- ✅ `supabase/migrations/20260310_parent_enhancements.sql`
-  - reward_distributions 表 (奖励发放)
-  - weekly_report_configs 表 (周报配置)
-  - weekly_reports 表 (周报记录)
-  - distribute_reward() 函数
-  - generate_weekly_report() 函数
-- ✅ `app/api/family/dashboard/route.ts` - 多子女 Dashboard API
-- ✅ `app/api/weekly-reports/route.ts` - 周报生成 API
-
-**已有功能确认**
-- ✅ 家庭管理 API `/api/family` (已存在)
-- ✅ 家庭管理页面 `/(parent)/family` (已存在)
-- ✅ 任务布置 API `/api/parent-tasks` (已存在)
-- ✅ 任务管理页面 `/(parent)/tasks` (已存在)
-- ✅ 青少年管控页面 `/(parent)/controls` (已存在)
-- ✅ 子女选择组件 `components/family/ChildSelector.tsx` (已存在)
-- ✅ 多子女概览组件 `components/family/MultiChildOverview.tsx` (已存在)
-
-**Phase 2.5 功能**
-| 功能 | 状态 |
-|------|------|
-| 多子女 Dashboard 视图 | ✅ API 完成 |
-| 周报生成 | ✅ API 完成 |
-| 奖励发放 | ✅ 数据库函数完成 |
-| 任务完成回调 | ✅ 逻辑已存在 |
+| 文件 | 用途 | 状态 |
+|------|------|------|
+| `20260309_teen_mode.sql` | 青少年模式 + 使用时长 | ✅ |
+| `20260309_notifications.sql` | 通知系统 | ✅ |
+| `20260309_knowledge_graph.sql` | 知识图谱 | ✅ |
+| `20260309_parent_tasks.sql` | 家长任务 | ✅ |
+| `20260309_subscriptions_system.sql` | 订阅系统 | ✅ |
+| `20260310_learning_style.sql` | 学习风格测试 | ✅ |
+| `20260310_invite_system_only.sql` | 邀请系统 | ✅ |
+| `20260310_parent_enhancements.sql` | 家长增强 | ✅ |
 
 ---
 
-*文档最后更新: 2026-03-10 v1.7.18*
+*文档最后更新: 2026-03-10 v1.7.19*
+*所有 Phase 开发完成*
