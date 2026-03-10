@@ -22,13 +22,16 @@
 │  │ • AI苏格拉底对话    │              │ • AI批改评分        │   │
 │  │ • 几何图形渲染      │              │ • 闪光点挖掘        │   │
 │  │ • 复习计划管理      │              │ • 魔法修改建议      │   │
-│  │ • 成就系统          │              │ • 金句百宝箱        │   │
+│  │ • 时间规划+专注计时 │              │ • 金句百宝箱        │   │
+│  │ • 成就系统          │              │ • PDF导出           │   │
+│  │ • 家长端报告        │              │                     │   │
 │  └─────────────────────┘              └─────────────────────┘   │
 │                              │                                   │
 │                              ▼                                   │
 │                   ┌─────────────────────┐                       │
 │                   │   Supabase Auth     │                       │
 │                   │   (共享用户系统)     │                       │
+│                   │  同一账号双角色切换   │                       │
 │                   └─────────────────────┘                       │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -39,88 +42,81 @@
 
 | 产品 | 文档 | 当前版本 | 状态 |
 |------|------|----------|------|
-| **Socrates 错题本** | [md_progress_socrates.md](./md_progress_socrates.md) | v1.7.4 | 🟢 运行中 |
+| **Socrates 错题本** | [md_progress_socrates.md](./md_progress_socrates.md) | v1.7.5 | 🟢 运行中 |
 | **Essay 作文批改** | [md_progress_essay.md](./md_progress_essay.md) | v1.3.1 | 🟢 运行中 |
 
 ---
 
 ## 当前开发重点
 
-### 2026-03-06 更新
-- ✅ **Workbench 页面布局重构**
-  - 从浮动面板改为左右分栏布局
-  - 左侧面板 (420px): 题目识别区域，可垂直滚动
-  - 右侧面板: 聊天区域，自适应宽度
-  - 响应式设计：移动端/平板自动切换为上下堆叠
-- ✅ **Vercel 部署问题修复**
-  - 问题：Monorepo 项目 Vercel 无法识别 Next.js 版本
-  - 原因：Vercel 在根目录找不到 package.json 中的 next 依赖
-  - 解决：在 Vercel Dashboard 中设置正确的 Root Directory
-    - socra-socrates → `apps/socrates`
-    - socra-landing → `apps/landing`
-    - socra-essay → `apps/essay`
-  - 更新 vercel.json 配置以兼容 monorepo
-- ✅ **TypeScript 类型错误修复**
-  - planner/page.tsx: 添加 `as const` 类型断言
-  - planner/page.tsx: Supabase 操作添加 `as any` 绕过严格类型检查
-  - OCRResult.tsx: 添加 `onOCRSuccess` 属性定义
-- ✅ **部署状态**
-  - socra-socrates: ✅ 成功
-  - socra-landing: ✅ 成功
-  - socra-essay: ✅ 成功
+### 2026-03-09 更新 (v1.7.5)
+- ✅ **时间规划功能增强**
+  - 任务编辑功能
+  - 专注模式提示音 + 浏览器通知
+  - AI智能优化API
+  - 拖拽排序
+  - 周统计视图
+- ✅ **双角色自由切换**
+  - 同一账号可自由切换学生/家长角色
+  - 移除家长角色锁定限制
+- ✅ **Landing Page 链接修复**
+  - 学习规划链接: `socrates.socra.cn/planner`
 
-### 2026-03-05 更新
+### 2026-03-06 更新 (v1.7.4)
+- ✅ Workbench 页面左右分栏布局
+- ✅ Vercel 部署问题修复
+- ✅ TypeScript 类型错误修复
+
+### 2026-03-05 更新 (v1.7.0-1.7.3)
 - ✅ 全局导航栏暖色主题统一
-- ✅ 登录/注册页面 Logo 更新（使用 logo.png）
-- ✅ 添加社区导航链接
-- ✅ 家长端功能完善
-  - 学习建议组件（LearningSuggestions）
-  - 家长复核组件更新（ParentReview）
-  - Dashboard 集成新组件
-- ✅ Essay 模块增强
-  - API 重试机制（指数退避）
-  - 历史记录搜索/分页
-  - PDF 导出功能
-- ✅ 复习页面优化
-  - 数据加载时序修复
-  - 刷新功能
-  - 动态统计显示
-- ✅ 功能完整性确认
-  - 成就系统 ✅
-  - 报告系统 ✅
-  - 社区功能 ✅
+- ✅ 登录/注册页面 Logo 更新
+- ✅ 家长端 Dashboard 完善
+- ✅ 时间规划页面 (`/planner`)
+- ✅ 几何图形识别修复
+- ✅ Essay 模块增强（API重试、搜索、PDF导出）
+
+---
+
+## 功能完成度
 
 ### Socrates (错题本平台)
-- ✅ 核心功能完成
-- ✅ 暖色调主题更新
-- ✅ 家长端 Dashboard 完善
-- ⏳ 社区功能开发
-- ⏳ 成就系统前端
+
+| 模块 | 功能 | 状态 |
+|------|------|------|
+| **错题学习** | OCR识别 + 几何渲染 | ✅ 完成 |
+| **AI对话** | 苏格拉底式引导 | ✅ 完成 |
+| **复习系统** | 艾宾浩斯 + 难度评估 | ✅ 完成 |
+| **时间规划** | 任务管理 + 专注计时 | ✅ 完成 |
+| **成就系统** | XP积分 + 徽章 | ✅ 完成 |
+| **家长端** | 报告 + 分析 | ✅ 完成 |
+| **社区** | 帖子 + 评论 | ✅ 完成 |
+| **角色系统** | 双角色自由切换 | ✅ 完成 |
 
 ### Essay (作文批改)
-- ✅ 批改功能完成
-- ✅ Supabase认证集成
-- ✅ 数据持久化（历史记录）
-- ✅ 暖色调主题更新
-- ✅ API 重试机制
-- ✅ 搜索/分页功能
-- ✅ PDF 导出
-- ⏳ 与Socrates同步
+
+| 模块 | 功能 | 状态 |
+|------|------|------|
+| **批改** | AI评分 + 分析 | ✅ 完成 |
+| **用户** | Supabase认证 | ✅ 完成 |
+| **历史** | 搜索 + 分页 | ✅ 完成 |
+| **导出** | PDF报告 | ✅ 完成 |
+| **同步** | 数据同步到Socrates | ⏳ 待开发 |
 
 ---
 
 ## 技术架构
 
 ### 共享组件
-- **认证**: Supabase Auth
+- **认证**: Supabase Auth (同一账号双角色)
 - **数据库**: Supabase PostgreSQL
 - **AI服务**: 阿里云通义千问
+- **部署**: Vercel
 
 ### 独立组件
 | 组件 | Socrates | Essay |
 |------|----------|-------|
 | 框架 | Next.js 15 | Vite + React |
-| 部署 | Vercel | Cloudflare Pages |
+| 部署 | Vercel | Vercel |
 | 仓库 | socra-platform (monorepo) |
 
 ---
@@ -161,38 +157,4 @@
 
 ---
 
----
-
-## Vercel 部署配置说明
-
-### 根本问题
-pnpm 工作空间需要在 monorepo 根目录运行 install，所以 Vercel Dashboard 的 **Root Directory 必须留空**。
-
-### 正确配置
-
-```
-Vercel Dashboard 设置：
-┌─────────────────────────────────────────────┐
-│ Root Directory: 留空（必须！）                │
-│ Framework: 自动检测                          │
-└─────────────────────────────────────────────┘
-
-vercel.json 配置（已在各 app 中配置）：
-┌─────────────────────────────────────────────┐
-│ buildCommand: pnpm --filter=@socra/xxx build│
-│ installCommand: pnpm install                │
-│ outputDirectory: apps/xxx/.next 或 dist     │
-└─────────────────────────────────────────────┘
-```
-
-### 三个项目的 Vercel 配置
-
-| 项目 | Vercel 项目名 | outputDirectory |
-|------|--------------|-----------------|
-| Socrates | socra-socrates | apps/socrates/.next |
-| Essay | socra-platform-essay | apps/essay/dist |
-| Landing | socra-landing | apps/landing/.next |
-
----
-
-*文档最后更新: 2026-03-05*
+*文档最后更新: 2026-03-09*
