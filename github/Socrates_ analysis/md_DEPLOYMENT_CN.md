@@ -1,7 +1,7 @@
-# Project Socrates - 国内部署优化方案
+# Project Socrates - 国内部署指南
 
-> 版本: v2.1
-> 更新日期: 2026-03-03
+> 版本: v2.2
+> 更新日期: 2026-03-11
 > 域名: socra.cn
 > 状态: ✅ 已部署完成
 
@@ -19,15 +19,83 @@
 |------|------|------|
 | socra.cn | apps/landing (落地页) | ✅ |
 | socrates.socra.cn | apps/socrates (苏格拉底) | ✅ |
-| essay.socra.cn | apps/essay (作文批改) | ⏳ 待部署 |
+| essay.socra.cn | apps/essay (作文批改) | ✅ |
 
-### Vercel 项目
+---
 
-| 项目 | Root Directory | 域名 |
-|------|----------------|------|
-| socra-landing | apps/landing | socra.cn |
-| socra-socrates | apps/socrates | socrates.socra.cn |
-| socra-essay | apps/essay | essay.socra.cn |
+## Vercel 项目配置
+
+### 项目列表
+
+| 项目名 | Root Directory | 域名 | 状态 |
+|--------|----------------|------|------|
+| socra-landing | apps/landing | socra.cn | ✅ 已部署 |
+| socra-socrates | apps/socrates | socrates.socra.cn | ✅ 已部署 |
+| socra-platform-essay | apps/essay | essay.socra.cn | ✅ 已部署 |
+
+### .vercel/project.json 配置
+
+**apps/landing/.vercel/project.json**
+```json
+{
+  "projectId": "prj_c3so0fHNZadINqHHZadINqH",
+  "orgId": "team_oGAI73uHlj5rSJavgqQ1mANw",
+  "projectName": "socra-landing"
+}
+```
+
+**apps/socrates/.vercel/project.json**
+```json
+{
+  "projectId": "prj_01RxzRX1wioYrnyV2JAdjMmZSDzg",
+  "orgId": "team_oGAI73uHlj5rSJavgqQ1mANw",
+  "projectName": "socra-socrates"
+}
+```
+
+**apps/essay/.vercel/project.json**
+```json
+{
+  "projectId": "prj_30eHoHt8CCkzaLZDQ0IHgVZ5x8K2",
+  "orgId": "team_oGAI73uHlj5rSJavgqQ1mANw",
+  "projectName": "socra-platform-essay"
+}
+```
+
+---
+
+## 部署方式
+
+### 方式 1: Vercel CLI 部署 (推荐)
+
+从各个应用目录分别部署：
+
+```bash
+# 部署 Landing 页面
+cd socra-platform/apps/landing
+npx vercel --prod
+
+# 部署 Socrates 主应用
+cd socra-platform/apps/socrates
+npx vercel --prod
+
+# 部署 Essay 作文批改
+cd socra-platform/apps/essay
+npx vercel --prod
+```
+
+### 方式 2: Vercel Dashboard 手动触发
+
+1. 登录 [Vercel Dashboard](https://vercel.com/login)
+2. 选择对应项目
+3. 点击 **Deployments** 标签
+4. 点击 **Redeploy** 按钮
+
+### 方式 3: Git Push 自动触发
+
+Vercel 会自动监听 GitHub 仓库的 main 分支：
+- 推送到 `socra-platform` 仓库后
+- Vercel 会自动检测并部署所有三个项目
 
 ---
 
@@ -37,94 +105,62 @@
 socra-platform/                    # GitHub 仓库
 ├── apps/
 │   ├── landing/                   # 落地页 → socra.cn
-│   └── socrates/                  # 苏格拉底 → socrates.socra.cn
+│   │   ├── .vercel/               # Vercel 配置
+│   │   ├── app/                   # Next.js App Router
+│   │   └── package.json
+│   ├── socrates/                  # 苏格拉底 → socrates.socra.cn
+│   │   ├── .vercel/               # Vercel 配置
+│   │   ├── app/                   # Next.js App Router
+│   │   │   ├── (student)/         # 学生端路由
+│   │   │   ├── (parent)/          # 家长端路由
+│   │   │   └── api/               # API 路由
+│   │   └── package.json
+│   └── essay/                     # 作文批改 → essay.socra.cn
+│       ├── .vercel/               # Vercel 配置
+│       ├── app/                   # Next.js App Router
+│       └── package.json
 ├── packages/
 │   ├── ui/                        # 共享 UI 组件
-│   ├── auth/                      # 共享认证模块
-│   ├── database/                  # 共享数据库工具
+│   ├── auth/                      # 认证逻辑
+│   ├── database/                  # 数据库配置
 │   └── config/                    # 共享配置
-├── pnpm-workspace.yaml
-└── turbo.json
+├── supabase/
+│   └── migrations/                # 数据库迁移文件
+├── package.json                   # 根 package.json
+├── pnpm-workspace.yaml           # pnpm workspace 配置
+└── turbo.json                     # Turborepo 配置
 ```
-
----
-
-## Cloudflare DNS 配置
-
-| 类型 | 名称 | 内容 | 代理状态 |
-|------|------|------|----------|
-| A | @ | 76.76.21.21 | ✅ 已代理 |
-| CNAME | www | cname.vercel-dns.com | ✅ 已代理 |
-| CNAME | socrates | cname.vercel-dns.com | ✅ 已代理 |
-| CNAME | essay | cname.vercel-dns.com | ✅ 已代理 (预留) |
-| CNAME | planner | cname.vercel-dns.com | ✅ 已代理 (预留) |
 
 ---
 
 ## 环境变量配置
 
-### socrates 应用
+### Socrates 应用 (apps/socrates)
 
-在 Vercel Dashboard → Settings → Environment Variables 添加：
-
-```
-NEXT_PUBLIC_SUPABASE_URL=https://avwknvhdewommwealsrd.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-DASHSCOPE_API_KEY=sk-3230b3ee3b0449058366c5c3131381c8
-```
-
-### essay 应用
-
-在 Vercel Dashboard → Settings → Environment Variables 添加：
+在 Vercel Dashboard 中配置以下环境变量：
 
 ```
-VITE_SUPABASE_URL=https://avwknvhdewommwealsrd.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-VITE_DASHSCOPE_API_KEY=sk-3230b3ee3b0449058366c5c3131381c8
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+DASHSCOPE_API_KEY=
+NEXT_PUBLIC_SITE_URL=https://socrates.socra.cn
 ```
 
----
+### Landing 应用 (apps/landing)
 
-## Essay 部署步骤
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
 
-### 1. 在 Vercel 创建新项目
+### Essay 应用 (apps/essay)
 
-1. 访问 https://vercel.com/new
-2. 选择 `socra-platform` 仓库
-3. 配置如下：
-
-| 配置项 | 值 |
-|--------|-----|
-| Project Name | `socra-essay` |
-| Framework Preset | **Vite** |
-| Root Directory | `apps/essay` |
-| Build Command | `pnpm build` |
-| Output Directory | `dist` |
-| Install Command | `pnpm install` |
-
-### 2. 添加环境变量
-
-在创建项目时或之后， 添加以下环境变量：
-
-| Name | Value |
-|------|-------|
-| `VITE_SUPABASE_URL` | `https://avwknvhdewommwealsrd.supabase.co` |
-| `VITE_SUPABASE_ANON_KEY` | `<与 Socrates 相同>` |
-| `VITE_DASHSCOPE_API_KEY` | `<通义千问 API Key>` |
-
-### 3. 配置域名
-
-1. 进入项目 → Settings → Domains
-2. 添加 `essay.socra.cn`
-3. DNS 已在 Cloudflare 预先配置， 会自动验证
-
-### 4. 部署测试
-
-访问 `https://essay.socra.cn` 测试：
-- [ ] 登录/注册功能
-- [ ] 作文批改功能
-- [ ] 历史记录功能
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+DASHSCOPE_API_KEY=
+```
 
 ---
 
@@ -144,7 +180,22 @@ pnpm dev
 # 或单独启动
 cd apps/landing && pnpm dev    # http://localhost:3001
 cd apps/socrates && pnpm dev   # http://localhost:3000
+cd apps/essay && pnpm dev      # http://localhost:3002
 ```
+
+---
+
+## 开发进度 (v1.7.19)
+
+| Phase | 功能 | 状态 |
+|-------|------|------|
+| Phase 0 | 合规基础 (隐私政策、用户协议) | ✅ |
+| Phase 1 | 基础设施 (积分、邀请系统) | ✅ |
+| Phase 1.5 | 学习诊断 (知识图谱、学习风格) | ✅ |
+| Phase 2 | 用户增长 (分享海报、微信分享) | ✅ |
+| Phase 2.5 | 家长增强 (多子女Dashboard、周报) | ✅ |
+| Phase 3 | 商业化 (订阅、支付、Pro权限) | ✅ |
+| Phase 4 | 合规功能 (青少年模式、时长限制) | ✅ |
 
 ---
 
@@ -153,14 +204,16 @@ cd apps/socrates && pnpm dev   # http://localhost:3000
 ### Q1: 部署失败？
 
 检查 Vercel 项目配置：
-- Root Directory 是否正确
+- Root Directory 是否正确 (如 `apps/socrates`)
 - Build Command: `pnpm build`
 - Install Command: `pnpm install`
+- 确保从正确的应用目录部署
 
 ### Q2: 环境变量未生效？
 
 1. 在 Vercel Dashboard 添加环境变量
-2. 重新部署项目
+2. 确保环境变量添加到正确的项目
+3. 重新部署项目
 
 ### Q3: 域名无法访问？
 
@@ -168,7 +221,22 @@ cd apps/socrates && pnpm dev   # http://localhost:3000
 2. 确认代理状态为橙色云朵
 3. 等待 DNS 生效（最多 24 小时）
 
+### Q4: Monorepo 部署问题？
+
+- 不要从根目录部署
+- 每个应用需要单独部署
+- 确保每个应用的 `.vercel/project.json` 配置正确
+
 ---
 
-**文档版本**: v2.1
-**最后更新**: 2026-03-03
+## 相关链接
+
+- [Vercel Dashboard](https://vercel.com/dashboard)
+- [Cloudflare Dashboard](https://dash.cloudflare.com)
+- [Supabase Dashboard](https://supabase.com/dashboard)
+- [GitHub 仓库](https://github.com/ghz98315/socra-platform)
+
+---
+
+**文档版本**: v2.2
+**最后更新**: 2026-03-11
