@@ -31,7 +31,7 @@
 |--------|----------------|------|------|
 | socra-landing | apps/landing | socra.cn | ✅ 已部署 |
 | socra-socrates | apps/socrates | socrates.socra.cn | ✅ 已部署 |
-| socra-platform-essay | apps/essay | essay.socra.cn | ✅ 已部署 |
+| socra-essay | apps/essay | essay.socra.cn | ✅ 已部署 |
 
 ### .vercel/project.json 配置
 
@@ -58,7 +58,7 @@
 {
   "projectId": "prj_30eHoHt8CCkzaLZDQ0IHgVZ5x8K2",
   "orgId": "team_oGAI73uHlj5rSJavgqQ1mANw",
-  "projectName": "socra-platform-essay"
+  "projectName": "socra-essay"
 }
 ```
 
